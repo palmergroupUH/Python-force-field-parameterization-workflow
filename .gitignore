@@ -1,24 +1,24 @@
+lj_force_potential_matching
+
 ReferenceData/
 
-prepsystem/ 
+prepsystem/
 
-mWAC_force_potential_matching/  
+mWAC_force_potential_matching
 
 mW_force_potential_matching/
 
-test/ 
-
-# ignore log file 
-
-*.log 
+test/
 
 # ignore .pyc file 
 
-*.pyc 
+src/*.pyc 
 
 # ignore .so file 
 
-*.so 
+src/*.so
+
+
 
 
 
