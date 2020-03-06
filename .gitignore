@@ -12,13 +12,11 @@ test/
 
 # ignore .pyc file 
 
-src/*.pyc 
+src/*.pyc
 
 # ignore .so file 
 
 src/*.so
-
-
 
 
 
