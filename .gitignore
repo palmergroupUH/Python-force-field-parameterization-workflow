@@ -1,0 +1,25 @@
+ReferenceData/
+
+prepsystem/ 
+
+mWAC_force_potential_matching/  
+
+mW_force_potential_matching/
+
+test/ 
+
+# ignore log file 
+
+*.log 
+
+# ignore .pyc file 
+
+*.pyc 
+
+# ignore .so file 
+
+*.so 
+
+
+
+
