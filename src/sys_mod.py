@@ -223,6 +223,7 @@ class ReadCommandLine():
 #-----------------------------------------------------------------------------
 
 class ParseInputFile():  
+
 	# each line of data must matched with the order of following inputkeyword
 
 	inputkeyword = ["units",
@@ -232,6 +233,7 @@ class ParseInputFile():
 					"guess_parameter",
 					"fit_and_fix",
 					"constraints",
+					"termination_criterion",
 					"options",
 					"argument"] 
 
@@ -582,6 +584,28 @@ class ParseInputFile():
 		self.pointer = self.pointer + 1 
 
 		return None
+
+	# get the termination criterino: maximum number of iterations,parameters tol, objective tol: 
+
+	def termination_criterion(self): 
+
+		try: 
+    
+			self.max_iteration = int(self.parameters[self.pointer][0]) 
+	
+			self.para_tol = float(self.parameters[self.pointer][1]) 
+
+			self.obj_tol = float(self.parameters[self.pointer][2]) 
+     
+		except ( ValueError, TypeError): 
+
+			print "Input file Errors: Maximum number of iteration must be integer; parameters and objective tol be float"
+
+			sys.exit() 
+
+		self.pointer = self.pointer + 1  
+
+		return None 	
 
 	# get the options of either Perturb or Restart  
 
