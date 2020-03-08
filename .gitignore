@@ -18,6 +18,8 @@ src/*.pyc
 
 src/*.so
 
+# ignore run folders: 
 
+*.log 
 
 
