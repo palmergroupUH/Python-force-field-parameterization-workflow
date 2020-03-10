@@ -1197,27 +1197,61 @@ def PrintNelderMeadRuntime(ordered_para,vertices_sorted):
 
 	return None 
 
-def Nelder_Mead_simplex_converge(n_itera,n_max_itera,vertices_sorted,ordered_para,obj_tol,para_tol):
+def optimization_output(best_para,best_obj):
+
+	with open("optimization_%s_is_done.txt"%str(JOBID),"w") as finish_out:
+
+		finish_out.write(str(best_obj)+ "\n" )
+
+		finish_out.write(" ".join(str(para) for para in best_para) + "\n" )
+
+	return None 
+
+def Nelder_Mead_simplex_converge(n_itera,n_max_itera,vertices_sorted,ordered_para,obj_tol,para_tol,best_para):
 
 	terminate_logger = logging.getLogger(__name__) 	
 
 	terminate_logger.debug("function:terminate function entered successfully !") 
 
-	if ( np.std(vertices_sorted) < obj_tol ): 
+	if ( (np.amax(vertices_sorted)/np.amin(vertices_sorted) - 1)< obj_tol ): 
 
-		log.info("Convergence criterion 1 is met: the standard deviation of objective functions in all vertices is < %.4f  !\n"%obj_tol)
+		sci_obj = "{0:.1e}".format(obj_tol) 
 
-		log.info( "Optimization converges and Program exit ! \n")
+		log.info("Convergence criterion 1 is met: Ratio of obj_max/obj_min -1  < %.6f !\n"%sci_obj)
+
+		log.info( "Optimization converges and program exits ! \n")
+
+		optimization_output(best_para,vertices_sorted[0]) 
+	
+		sys.exit()
+
+		return None 
+
+	unique_obj,repeat = np.unique(vertices_sorted,return_counts=True) 
+
+	if ( unique_obj.size < vertices_sorted.size ):
+
+		log.info("Convergence criterion 2 is met: some objective functions of different vertex begin to converge" )
+	
+		log.info(" ".join(str(obj) for obj in vertices_sorted) ) 
+
+		log.info( "Optimization converges and program exits ! \n")
+
+		optimization_output(best_para,vertices_sorted[0]) 
 
 		sys.exit()
 
 		return None 
 	
 	if ( np.all(np.std(ordered_para) < para_tol ) ):	
+		
+		sci_para = "{0:.1e}".format(para_tol)
 	
-		log.info("Convergence criterion 2 is met: the standard deviation of force-field paramteters in all vertices is <%.4f  !\n"%para_tol)
+		log.info("Convergence criterion 3 is met: the standard deviation of force-field paramteters across all vertices is <%.6f  !\n"%sci_para)
 
-		log.info( "Optimization converges and Program exit ! \n")
+		log.info( "Optimization converges and program exits ! \n")
+
+		optimization_output(best_para,vertices_sorted[0])
 
 		sys.exit()
 
@@ -1225,7 +1259,9 @@ def Nelder_Mead_simplex_converge(n_itera,n_max_itera,vertices_sorted,ordered_par
 
 	if ( n_itera  == n_max_itera ): 
 
-		log.info("Convergence criterion 3 is met: Maximum number of iteration is reached !\n")
+		log.info("Convergence criterion 4 is met: Maximum number of iteration is reached !\n")
+
+		optimization_output(best_para,vertices_sorted[0])
 
 		sys.exit( "Maximum iteration %d is reached and Program exit !"%n_max_itera)
 
@@ -1235,7 +1271,11 @@ if ( __name__) == "__main__":
 
 	# ----------------------- Commmand Line argument --------------------------
 
-	log,TOTAL_CORES,INPUTFILES,JOBID = sys_mod.ReadCommandLine.Finish()  
+	#log,TOTAL_CORES,INPUTFILES,JOBID = sys_mod.ReadCommandLine.Finish()  
+
+	log,TOTAL_CORES,INPUTFILES,JOBID = sys_mod.ReadCommandLine.Finish(jobID="Jupeter-Notebook_demo",
+																	  total_cores=2,
+																	  input_file="in.para")  
 
 	# ----------------------- Parse Input file -----------------------------------
 
@@ -1243,15 +1283,17 @@ if ( __name__) == "__main__":
 
 	# ----------------------- Set up working folders -----------------------------
 
-	HOME,ref_address,predict_address = sys_mod.Setup(JOBID,in_para.matching).Finish() 	
+	HOME,ref_address,predict_address = sys_mod.Setup(JOBID,in_para.matching,overwrite=True).Finish() 	
 	
-	# ----------------------- Initialize Simulations ----------------------------
+	# ----------------------- Initialize simulation engine  ----------------------------
 
 	LAMMPS = simulation.Invoke_LAMMPS(in_para,predict_address,TOTAL_CORES,HOME)	
 
 	# ----------------------- Initialize Output -------------------------------- 
 	
 	output = sys_mod.Output(in_para,JOBID) 
+
+	# ------------------------ Print the input --------------------- 
 
 	PrintInputSettings(in_para.guess_parameter,
 					   in_para.fit_and_fix,
@@ -1280,7 +1322,7 @@ if ( __name__) == "__main__":
 
 	alpha,kai,gamma,sigma = SelectNelderMeadParameters("adaptive",NVertices-1) 	
 
-	log.info("------------------------------------- Optimization begins ---------------------------------------\n \n ") 
+	log.info("Optimization begins ... \n ") 
 
 	for itera in range(in_para.max_iteration+1):
 
@@ -1305,7 +1347,7 @@ if ( __name__) == "__main__":
 
 		output.Write_Restart(itera,ordered_para[best,:],ordered_para,vertices_sorted) 
 
-		Nelder_Mead_simplex_converge(itera,in_para.max_iteration,vertices_sorted,ordered_para,in_para.obj_tol,in_para.para_tol) 	
+		Nelder_Mead_simplex_converge(itera,in_para.max_iteration,vertices_sorted,ordered_para,in_para.obj_tol,in_para.para_tol,best_para) 	
 
 		# compute centroid	
 
