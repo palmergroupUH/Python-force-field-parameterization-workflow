@@ -1,4 +1,5 @@
 import numpy as np 
+import time 
 import os 
 import logging
 import subprocess 
@@ -65,11 +66,33 @@ class ReadCommandLine():
 		return None  
 
 	@classmethod
-	def Finish(cls):  
+	def Finish(cls,jobID=None,total_cores=None,input_file=None,mode=None):  
 
-		cls.Take_Command_Line_Args() 
+		if ( jobID is not None ):
 
-		cls.Parse_Input_Argument()
+			cls.JOBID = jobID 
+
+		if ( total_cores is not None ): 
+
+			cls.TOTAL_CORES = total_cores
+		
+		if ( input_file is not None ): 
+
+			cls.INPUT = input_file	
+			
+		if ( mode is None ):  
+
+			cls.MODE = "run"
+
+		else: 
+
+			cls.MODE = "debug"
+
+		if ( total_cores is None and jobID is None and input_file is None and mode is None ):
+		
+			cls.Take_Command_Line_Args() 
+
+			cls.Parse_Input_Argument()
 	
 		cls.logger = cls.Set_Run_Mode(cls.JOBID +".log",cls.MODE)  
 			
@@ -103,6 +126,7 @@ class ReadCommandLine():
 	
 		cls.TOTAL_CORES = cls.argument["cores"] 
 
+		"""
 		if ( cls.argument["mode"] == None):
 
 			cls.MODE = "run" 
@@ -111,6 +135,7 @@ class ReadCommandLine():
 
 			cls.MODE = "debug" 
 
+		"""
 		cls.INPUT = cls.argument["input"] 
 
 		return None  
@@ -789,7 +814,15 @@ class Setup():
 
 	predict_folder = "Predicted"
 
-	def __init__(self,jobid,matching_in): 
+	def __init__(self,jobid,matching_in,overwrite=None): 
+
+		if ( overwrite == True ):
+		
+			self.overwrite = True	
+
+		else: 
+
+			self.overwrite = False
 
 		self.home = os.getcwd() 
 
@@ -873,9 +906,23 @@ class Setup():
 		job_folder = self.jobid + "/"
 
 		working_folders = job_folder + self.predict_folder 
+	
+		if ( os.path.isdir(job_folder) and self.overwrite==False): 
 
-		os.mkdir(job_folder) 
+			print "%s exists! set 'overwrite=True' upon instantiation "%job_folder	
+
+			sys.exit()
+
+		elif ( os.path.isdir(job_folder) and self.overwrite==True ):
 		
+			print "overwrite the existing folder: %s ! "%job_folder	
+
+			os.system("rm -r %s"%job_folder) 
+
+			time.sleep(1) 	
+			
+		os.mkdir(job_folder)
+
 		os.mkdir(working_folders)
 
 		os.mkdir(job_folder + "Restart") 
@@ -1068,37 +1115,39 @@ class Output():
 
 	def RestartContent(self,f,itera,vertice_para,vertice_cost):  
 
-		contents_header = "# Iteration: " + str(itera) + "\n"
+		contents_header = "# Iteration: " + str(itera) + "\n\n"
 
-		bestparameter_header = "# Guess initial Parameters: \n"
+		bestparameter_header = "# Guess initial Parameters: \n\n"
 
 		f.write(contents_header) 
 
 		f.write("\n")
 
-		f.write("# Units\n") 
+		f.write("# LAMMPS units\n\n") 
 
 		f.write(self.input_para.units_name) 
 
 		f.write("\n \n") 
 
-		f.write("# Matching type ( type, subindex, weight,cores for lammps, cores for analysis \n")
+		f.write("# Matching type ( type, subindex, weight,cores for lammps, cores for analysis \n\n")
 
 		for match in self.input_para.matching: 
 	
 			f.write(match + "\n") 	
 
-		f.write("# Command \n")
+		f.write("\n")
+	
+		f.write("# Command \n\n")
 
-		f.write(self.input_para.run_command + "\n") 
+		f.write(self.input_para.run_command + "\n\n") 
 
-		f.write("# Restart frequency \n")
+		f.write("# Restart frequency \n\n")
 
 		f.write(str(self.input_para.restart)) 
 
 		#f.write(self.best_and_fix) 
 
-		f.write("\n")
+		f.write("\n\n")
 
 		f.write(bestparameter_header) 		
 
@@ -1126,6 +1175,13 @@ class Output():
 
 		f.write("\n\n") 
 
+		f.write("#set termination criterion: max number of iteration, tolerance for parameters,tolerance for objective \n\n") 
+
+		termination = np.array([self.input_para.max_iteration,self.input_para.obj_tol,self.input_para.para_tol]) 	
+
+		np.savetxt(f,termination,newline=" ", fmt="%s") 
+
+		f.write("\n\n") 
 		f.write("# create (Perturb) or use existing vertices (Restart): ") 
 		f.write("\n \n") 
 
