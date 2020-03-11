@@ -20,6 +20,16 @@ src/*.so
 
 # ignore run folders: 
 
-*.log 
+run/*.log
 
+run/out.e*
 
+run/out.o*
+
+run/*/
+
+run/in.para
+
+run/run_NelderMead
+
+src/__pycache__/

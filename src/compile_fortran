@@ -1,6 +1,6 @@
 #!/bin/bash 
 
-module load python/2.7
+conda  activate optimize 
 
 module load intel/psxe-2019-64-bit
 
