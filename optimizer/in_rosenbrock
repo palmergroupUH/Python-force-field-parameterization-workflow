@@ -1,0 +1,20 @@
+# guess parameters of rosenbrock function  
+
+Rosenbrock 1 2  
+
+# fit (1) and fix (0) parameters: 
+
+1 1 
+
+# constraints (index lower upper)  ... ): 
+
+None
+
+# set termination criterion: max number of iteration, tolerance for parameters,tolerance for objective 
+
+2000 1e-10 1e-10 
+
+# create (Perturb) or use existing vertices (Restart): 
+
+Nelder-Mead Perturb random 0.1 
+

@@ -1,0 +1,38 @@
+# LAMMPS real Units 
+
+real 
+
+# ( matching type),(subfolder_ID),(matching type weight), (cores for LAMMPS),(cores for analysis),w ( energy weight ) ( force weight ) 
+
+force mW 1.0 2 2 w 0.0 1.0 bf 5001  
+rdf mW 0.5 4 2 
+
+# Invoke the shell command to launch LAMMPS simulation 
+
+module load intel/psxe-2019-64-bit && srun -n %d --mpi=pmi2 --nodes=1 lmp_ml_water < in.%s 
+
+# dump Nelder-mead simplex information every x iteration: 
+
+5 
+
+# initial guess parameters ( LAMMPS pair style name + guess parameters ): 
+
+# potential 
+stillinger_weber 6.417697318634404 2.349505178138421 1.8307666124741249 21.61901829109305 1.2096181256662568 -0.33665381527635113 7.049556277 0.6665578907763293 3.85959336643696 0.1216675641855484 0
+
+# fit (1) and fix (0) parameters: 
+
+1 1 1 1 1 1 0 1 1 1 0   
+
+# constraints (index lower upper)  ... ): 
+
+10 0 4 
+
+# set termination criterion: max number of iteration, tolerance for parameters,tolerance for objective 
+
+3000 1e-7 1e-8  
+
+# create (Perturb) or use existing vertices (Restart): 
+
+Nelder-Mead Perturb random 0.1 
+
