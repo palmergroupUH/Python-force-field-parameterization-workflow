@@ -1,8 +1,6 @@
-## A Sysmatic and Reproduciable approach to parameterize force-field parameters  
+# A data-driven approach to optimize force-field parameters in a systematic and reproduciable way  
 
-This is a force-field parameterization program.  
-
-Software Requirements:
+## Software Requirements:
 
 1.compiled LAMMPS executable 
 
