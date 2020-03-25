@@ -1,6 +1,6 @@
-Python Optimization Workflow
+## A Sysmatic and Reproduciable approach to parameterize force-field parameters  
 
-This is a general-purpose force-field parameterization program.  
+This is a force-field parameterization program.  
 
 Software Requirements:
 
