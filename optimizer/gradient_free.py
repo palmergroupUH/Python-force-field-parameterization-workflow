@@ -1,12 +1,12 @@
 import numpy as np 
 import logging 
 import sys 
-import optimizer.optimizer_mod
+import optimizer_mod
 import random 
 
 # a gradient-free optimizer: Nelder-Mead simplex metho:  
 
-class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
+class NelderMeadSimplex(optimizer_mod.set_optimizer):
     
     def __init__(self,
                 input_files,
@@ -22,7 +22,7 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
 
         super().__init__(input_files,logname,skipped)
 
-        # Fileds Inherited: 
+        # Fileds Inherited from set_optimizer : 
 
         # 1. guess parameters (self.guess_parameter)   
         # 2. parameters to be fitted or fixed ( self.fit_and_fix )  
