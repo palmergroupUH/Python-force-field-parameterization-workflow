@@ -1,11 +1,20 @@
-# A data-driven approach to optimize force-field parameters in a systematic and reproduciable way  
+# A data-driven approach to systematically and reproduciably optimize force-field parameters 
 
-## Software Requirements:
+## Features: 
 
-1.compiled LAMMPS executable 
+* Externally launch third-parties simulation packages in parallel  
 
-2.Slurm job scheduler     
 
-3.Numpy
+## Installation: 
 
-4.Python/3.7  
+* conda install -c conda-forge optimize 
+
+## Software required:
+
+* compiled LAMMPS executable 
+
+* Slurm Workload Manager  
+
+* Numpy  
+
+* Python/3.7  
