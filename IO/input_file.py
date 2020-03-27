@@ -1,11 +1,11 @@
 import os 
 import sys 
-
+import check_file  
 def parse(filename,skip_lines=None,stop_after=None): 
 
-    if ( not os.path.isfile(filename) ): 
-        
-        sys.exit("input file does not exist") 
+    if ( not check_file.status_is_ok(filename) ):   
+
+        sys.exit("input file does not exist or is empty ! ") 
 
     if ( skip_lines is None ): 
 

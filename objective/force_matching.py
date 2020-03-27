@@ -6,9 +6,7 @@ import IO
 class force_matching(): 
 
 
-    def __init__(force_matching_command):
+    def __init__(force_matching_command): 
 
 
-
-
-     
+	
