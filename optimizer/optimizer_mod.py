@@ -2,13 +2,84 @@ import numpy as np
 import logging
 import sys 
 import IO.input_file
-import IO.type_check
+import IO.check_type
 
 
 #class parse_input(): 
 
 class set_optimizer: 
+       
+    """
+
+    Description: This is a template class that will be inherited by 
+    all other optimizer class to do the followings: 
+
+     1. parse a input file with a predetermined format, 
+     2. method to constrain certain fitted parameters within bounds  
+     3. method to recombine fixed and fitted parameters before 
+        passing them to objective function    
+     4. method to write optimizer output 
+
+
+     Inherited variables descriptions:
+
+     self.dump_para ( arraym integer ):  
+        an array of integer that specify how frequent to dump the restart file 
+        and best parameters.  
+
+     self.optimizer_logger (object): 
+         an logger object that dump all output into a log file. 
+
+     self.para_type ( str ):
+        a string defining the type of guess parameters    
+
+     self.guess_parameters (array,np.float64): 
+         an array of guessed floating point value given by users  
+
+     self.fit_and_fix ( array, integer ): 
+         an array with value either 1 or 0 to determine which parameters to be fixed or fitted 
+
+     self.constraints_index ( array, integer ): 
+         an array of index value determine which guess parameters 
+         to be constrained:  
+
+         e.g. 1 means 1st guess parameters, 10 means 10th guess parameters 
     
+     self.constraints_bound ( array, np.float64): 
+         an array of values size 2 with lower and upper 
+   
+     self.constraints_fit_index ( array, integer ):
+         an array of index value determine which guess parameters
+         to be constrained ( index may be adjusted depending on which  
+         arameters are fitted and which are fixed ): 
+
+    self.optimizer_type ( a string ): 
+        The optimizer name: Nelder-Mead simplex, Levenberg–Marquardt ...  
+       
+    self.optimizer_argument ( a string ):   
+        The optimizer argument associated with spcecific optimizer   
+
+    self.optimizer_input ( a input argument ):  
+        The optimizer input: input values used by optimizers ( optional )     
+
+    Inherited method descriptions: 
+    
+    self.regroup_with_fixed():  
+        recombine the fitted parameters with the fixed parameters into
+        an array of full parameters.   
+        
+    self.constrain(): 
+        perform constrain operations on some fitted parameters  
+
+    self.write_optimizer_output():  
+
+    self.print_optimizer_log():  
+    
+    self.optimizer_restart_content(): 
+    
+ 
+    """
+ 
     def __init__(self,input_file,logname,skipped=None,stop_after=None): 
 
         # create logger for the optimization jobs
@@ -26,6 +97,13 @@ class set_optimizer:
         self.values_lst = list(self.input_data_dict.values() ) 
 
         # following the order in input file parse all input values
+        # self.pointer: point to current line in the input file  
+        # self.pointer += 1 for each line read 
+        # set pointer to the begining 
+
+        self.pointer = 0 
+
+        self.parse_dumping_freq()     
 
         self.parse_guess()
 
@@ -35,9 +113,9 @@ class set_optimizer:
 
         self.parse_termination()
 
-        self.parse_optimizer()  
+        self.parse_optimizer() 
 
-        self.check_input_parameters()  
+        self.check_input_parameters() 
 
     def add_logger(self,logname): 
 
@@ -55,9 +133,45 @@ class set_optimizer:
 
         return None 
 
+    # dumping the current best parameters, restart simplex, 
+
+    def write_optimizer_output(self,freq,n_iteration,output_address,filename,mode,content_dict):  
+
+        if ( n_iteration%freq == 0 ):  
+
+            if ( output_address is None ): 
+
+                outputfile = filename 
+
+            elif ( not os.path.isdir(output_address) ):  
+
+                os.makedirs(output_address)
+
+                outputfile = os.path.join(output_address,filename) 
+
+            self.write_output_to_file(n_iteration,outputfile,mode,content_dict)
+
+        return None 
+
+    # write output:  
+    
+    def write_output_to_file(self,n_iteration,outputfile,mode,content):  
+
+        if ( mode =="a" and n_iteration ==0 ): 
+            
+            open(outputfile,"w").close() 
+
+        with open(outputfile,mode) as output:  
+
+            for line in content.keys(): 
+                
+                output.write( content[line] )  
+
+        return None 
+
     def parse_dumping_freq(self):
 
-        dump_freq = self.input_data_dict[self.keys_lst[0]] 
+        dump_freq = self.input_data_dict[self.keys_lst[self.pointer]] 
 
         try: 
         
@@ -65,21 +179,50 @@ class set_optimizer:
 
         except ( ValueError, TypeError ): 
         
-            self.optimzer_logger.info("type and value errors in reading dump frequency" ) 
+            self.optimizer_logger.info("type and value errors in reading dump frequency" ) 
     
             sys.exit("Check errors in log file !") 
+    
+        # update pointer: only 1 line is read and so point to next line  
+
+        self.set_dump_freq() 
+
+        self.pointer += 1 
+
+        return None 
+
+    def set_dump_freq(self): 
+
+        if ( self.dump_para.size < 2 ):
+
+            self.optimizer_logger.error("ERROR: At least two dump frequency" 
+                                        "arguments are needed: "
+                                        "One for restart,"
+                                        "One for optimization parameters ")
+                       
+            self.output_freq = self.dump_para[0] 
+
+            self.restart_freq = self.dump_para[0] 
+                
+        else: 
+
+            self.output_freq = self.dump_para[0] 
+            
+            self.restart_freq = self.dump_para[1]
 
         return None 
 
     def parse_guess(self):
 
-        guess_parameters = self.input_data_dict[self.keys_lst[0]] 
+        guess_parameters = self.input_data_dict[self.keys_lst[self.pointer]] 
     
         all_parameters = [] 
 
         for guess in guess_parameters:
         
-            if ( IO.type_check.is_string(guess) ):
+            if ( IO.check_type.is_string(guess) ):
+
+                self.para_type = guess 
 
                 continue  
     
@@ -91,9 +234,15 @@ class set_optimizer:
 
         self.guess_parameter = np.array(all_parameters).astype(np.float64) 
 
+        # update pointer: only 1 line is read and so point to next line  
+
+        self.pointer += 1 
+
+        return None 
+
     def parse_fit_and_fixed(self):
 
-        fit_and_fix = self.input_data_dict[self.keys_lst[1]]
+        fit_and_fix = self.input_data_dict[self.keys_lst[self.pointer]]
 
         try:  
 
@@ -101,7 +250,7 @@ class set_optimizer:
 
         except (ValueError, TypeError ):
 
-            self.optimzer_logger.info("type and value errors in fit_and_fixed variables")  
+            self.optimizer_logger.info("type and value errors in fit_and_fixed variables")  
              
             sys.exit("Check errors in log file !") 
 
@@ -111,9 +260,15 @@ class set_optimizer:
 
         self.check_guess_parameters()  
 
+        # update pointer: only 1 line is read and so point to next line  
+
+        self.pointer += 1 
+       
+        return None  
+
     def parse_constraints(self):  
 
-        self.constraints = self.input_data_dict[self.keys_lst[2]]  
+        self.constraints = self.input_data_dict[self.keys_lst[self.pointer]]  
 
         num_constraints = int(len(self.constraints)/3) 
 
@@ -151,11 +306,15 @@ class set_optimizer:
 
             self.constraints_bound.astype(np.float64)
 
+        # update pointer: only 1 line is read and so point to next line  
+
+        self.pointer += 1 
+
         return None 
 
     def parse_termination(self):
 
-        optimize_settings = self.input_data_dict[self.keys_lst[3]]
+        optimize_settings = self.input_data_dict[self.keys_lst[self.pointer]]
         
         try: 
         
@@ -172,13 +331,15 @@ class set_optimizer:
         
             sys.exit("Check errors in log file !")
 
+        # update pointer: only 1 line is read and so point to next line  
+
+        self.pointer += 1
+
         return None 
 
     def parse_optimizer(self):
 
-        optimizer_settings = self.input_data_dict[self.keys_lst[4]] 
-
-        num_arguments = len(self.keys_lst) 
+        optimizer_settings = self.input_data_dict[self.keys_lst[self.pointer]] 
 
         try: 
        
@@ -192,7 +353,7 @@ class set_optimizer:
 
             # rest of arguments ofr the optimizer: 
 
-            self.optimizer_input = self.values_lst[5:num_arguments]
+            self.optimizer_input = self.values_lst[self.pointer+1:]
 
         except( ValueError, TypeError):
 
@@ -357,12 +518,65 @@ class set_optimizer:
 
         return para_all  
 
-if (__name__ == "__main__"): 
+    def print_optimizer_log(self):  
 
-    test = optimizer("in_para",skipped=16)
-
-    print (test.parse_guess())
-
-    print ( test.parse_optimizer())
+        num_fit = self.guess_parameter[self.fit_and_fix==1].size 
         
-    print ( test.optimizer_input) 
+        num_fix = self.guess_parameter[self.fit_and_fix==0].size
+
+        self.optimizer_logger.info("\n") 
+        self.optimizer_logger.info("------------------------- Initialize Optimization Input Parameters -----------------------------------\n") 
+        self.optimizer_logger.info("Optimizer: %s \n"%self.optimizer_type )
+        self.optimizer_logger.info("-------------------------------------------------------------------------------------------------------\n")  
+        self.optimizer_logger.info("Number of Vertices: %d \n"%(num_fit + 1 ))  
+        self.optimizer_logger.info("-------------------------------------------------------------------------------------------------------\n")  
+        self.optimizer_logger.info("Guess parameters are: \n " )  
+        self.optimizer_logger.info(" ".join(str(para) for para in self.guess_parameter) + "\n" )  
+        self.optimizer_logger.info("-------------------------------------------------------------------------------------------------------\n")  
+        self.optimizer_logger.info("%d Fitting parameters are:  \n"  %(num_fit)) 
+        self.optimizer_logger.info(" ".join(str(para) for para in self.guess_parameter[self.fit_index] ) + "\n")
+        self.optimizer_logger.info("-------------------------------------------------------------------------------------------------------\n")
+        self.optimizer_logger.info("%d Fixed parameters are: \n"%(num_fix) ) 
+        self.optimizer_logger.info(" ".join(str(para) for para in self.guess_parameter[self.unfit_index]) + "\n" )
+        self.optimizer_logger.info("-------------------------------------------------------------------------------------------------------\n")  
+        self.optimizer_logger.info("%d constrained parameters : \n" %(self.constraints_index.size)) 
+        for i in range(self.constraints_index.size): 
+
+            self.optimizer_logger.info("The guess parameter: %.6f is constrained between %.6f and %.6f "%( float(guess[self.constraints_index[i]]),float(self.constraints_bound[i][0]),float(self.constraints_bound[i][1]) ) + "\n")
+
+        self.optimizer_logger.info("-------------------------------------------------------------------------------------------------------\n")
+
+        self.optimizer_logger.info(" ".join( str(i) for i in self.optimizer_argument ) + "\n")
+
+        return None 
+
+    def optimizer_restart_content(self,itera,best_para):  
+
+        # content of restart file following the same as the input file
+        # dictionary: keys: line number, values: content of restart file 
+
+        # write only general options:  
+
+        optimizer_restart_content = {} 
+        optimizer_restart_content[0] = "# Current iteration %d: This is a restart file \n\n"%itera
+        optimizer_restart_content[1] = "# output and restart frequency \n\n"
+        optimizer_restart_content[2] = " ".join(str(para) for para in self.dump_para) + "\n\n" 
+        optimizer_restart_content[3] = "# This is the guess parameters: \n\n"
+        optimizer_restart_content[4] = "# " + self.para_type + " ".join( str(ele) for ele in self.guess_parameter) + "\n\n" 
+        optimizer_restart_content[5] = "# This is the current best parameters: \n\n" 
+        optimizer_restart_content[6] = self.para_type + " " + " ".join( str(para) for para in best_para) + "\n\n" 
+        optimizer_restart_content[7] = "# fit (1) and fix (0) parameters: \n\n" 
+        optimizer_restart_content[8] = " ".join(str(para) for para in self.fit_and_fix) + "\n\n"  
+        optimizer_restart_content[9] = "# constraints ( index lower-bound upper-bound ... ):\n\n "
+        optimizer_restart_content[10] = " ".join(str(para) for para in self.constraints) + "\n\n" 
+        optimizer_restart_content[11] = "#set termination criterion: max number of iteration, tolerance for parameters,tolerance for objective \n\n" 
+        optimizer_restart_content[12] = "%d "%self.max_iteration + " " +  "{0:.1e}".format(self.obj_tol) + " " + "{0:.1e}".format(self.para_tol) + "\n\n" 
+
+        optimizer_restart_content[13] = "# create (Perturb) or use existing vertices (Restart): \n\n"
+        optimizer_restart_content[14] = "# " + self.optimizer_type + " " + " ".join( para for para in self.optimizer_argument)+ "\n\n"
+        optimizer_restart_content[15] = "# " + " ".join(str(para) for para in self.optimizer_input) + "\n\n" 
+        optimizer_restart_content[16] = self.optimizer_type + " Restart \n\n"
+
+        return optimizer_restart_content  
+
+  
