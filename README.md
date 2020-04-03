@@ -2,7 +2,7 @@
 
 ## Features: 
 
-* Externally launch third-parties simulation packages in parallel  
+* Externally launch third-parties simulation packages in parallel   ![optimization workflow](images/workflow.svg) 
 
 
 ## Installation: 
