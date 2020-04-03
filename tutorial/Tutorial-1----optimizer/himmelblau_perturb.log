@@ -1,0 +1,665 @@
+
+
+------------------------- Initialize Optimization Input Parameters -----------------------------------
+
+Optimizer: Nelder-Mead 
+
+-------------------------------------------------------------------------------------------------------
+
+Number of Vertices: 3 
+
+-------------------------------------------------------------------------------------------------------
+
+Guess parameters are: 
+ 
+-2.3 1.0
+
+-------------------------------------------------------------------------------------------------------
+
+2 Fitting parameters are:  
+
+-2.3 1.0
+
+-------------------------------------------------------------------------------------------------------
+
+0 Fixed parameters are: 
+
+
+
+-------------------------------------------------------------------------------------------------------
+
+0 constrained parameters : 
+
+-------------------------------------------------------------------------------------------------------
+
+Nelder-Mead Perturb random 1
+
+2 step size is : 
+
+1.0 -1.0
+-------------------------------------------------------------------------------------------------------
+
+
+ 
+
+====================================================================
+
+Current iteration: 0 starts 
+
+
+Compute the centroid  ...
+
+Perform reflection ... 
+
+Reflected vertex is in between second-worst vertex and worst vertex ... 
+Perform outside contraction ... 
+
+
+Outside contraction is accepted ... 
+
+Current iteration: 0 finishes 
+
+
+Current Best objective: 8294.4916908100
+
+
+Current Best parameters: -2.3 1.0
+
+
+Then, start next iteration ... 
+
+====================================================================
+
+Current iteration: 1 starts 
+
+
+Compute the centroid  ...
+
+Perform reflection ... 
+
+Reflection is accepted ... 
+
+Current iteration: 1 finishes 
+
+
+Current Best objective: 8294.4916908100
+
+
+Current Best parameters: -2.3 1.0
+
+
+Then, start next iteration ... 
+
+====================================================================
+
+Current iteration: 2 starts 
+
+
+Compute the centroid  ...
+
+Perform reflection ... 
+
+Perform expansion to further explore the reflected direction ... 
+
+Reflection is accepted ... 
+
+Current iteration: 2 finishes 
+
+
+Current Best objective: 3795.9045390827
+
+
+Current Best parameters: -3.45 1.75
+
+
+Then, start next iteration ... 
+
+====================================================================
+
+Current iteration: 3 starts 
+
+
+Compute the centroid  ...
+
+Perform reflection ... 
+
+Perform expansion to further explore the reflected direction ... 
+
+Expansion is accepted ... 
+
+Current iteration: 3 finishes 
+
+
+Current Best objective: 1057.4321626175
+
+
+Current Best parameters: -1.7250000000000005 2.625
+
+
+Then, start next iteration ... 
+
+====================================================================
+
+Current iteration: 4 starts 
+
+
+Compute the centroid  ...
+
+Perform reflection ... 
+
+Perform expansion to further explore the reflected direction ... 
+
+Reflection is accepted ... 
+
+Current iteration: 4 finishes 
+
+
+Current Best objective: 7.3306620121
+
+
+Current Best parameters: -2.875000000000001 3.375
+
+
+Then, start next iteration ... 
+
+====================================================================
+
+Current iteration: 5 starts 
+
+
+Compute the centroid  ...
+
+Perform reflection ... 
+
+Reflected vertex is worst than that of the worst vertex ...
+
+Perform inside contraction ... 
+
+
+Inside contraction is accepted ... 
+
+Current iteration: 5 finishes 
+
+
+Current Best objective: 7.3306620121
+
+
+Current Best parameters: -2.875000000000001 3.375
+
+
+Then, start next iteration ... 
+
+====================================================================
+
+Current iteration: 6 starts 
+
+
+Compute the centroid  ...
+
+Perform reflection ... 
+
+Reflected vertex is worst than that of the worst vertex ...
+
+Perform inside contraction ... 
+
+
+Inside contraction is accepted ... 
+
+Current iteration: 6 finishes 
+
+
+Current Best objective: 7.3306620121
+
+
+Current Best parameters: -2.875000000000001 3.375
+
+
+Then, start next iteration ... 
+
+====================================================================
+
+Current iteration: 7 starts 
+
+
+Compute the centroid  ...
+
+Perform reflection ... 
+
+Reflected vertex is worst than that of the worst vertex ...
+
+Perform inside contraction ... 
+
+
+Inside contraction is accepted ... 
+
+Current iteration: 7 finishes 
+
+
+Current Best objective: 7.3306620121
+
+
+Current Best parameters: -2.875000000000001 3.375
+
+
+Then, start next iteration ... 
+
+====================================================================
+
+Current iteration: 8 starts 
+
+
+Compute the centroid  ...
+
+Perform reflection ... 
+
+Reflected vertex is in between second-worst vertex and worst vertex ... 
+Perform outside contraction ... 
+
+
+Outside contraction is accepted ... 
+
+Current iteration: 8 finishes 
+
+
+Current Best objective: 5.5418429193
+
+
+Current Best parameters: -3.0546875000000004 3.1953125
+
+
+Then, start next iteration ... 
+
+====================================================================
+
+Current iteration: 9 starts 
+
+
+Compute the centroid  ...
+
+Perform reflection ... 
+
+Reflected vertex is worst than that of the worst vertex ...
+
+Perform inside contraction ... 
+
+
+Inside contraction is accepted ... 
+
+Current iteration: 9 finishes 
+
+
+Current Best objective: 0.5073438096
+
+
+Current Best parameters: -2.8480468750000005 3.001953125
+
+
+Then, start next iteration ... 
+
+====================================================================
+
+Current iteration: 10 starts 
+
+
+Compute the centroid  ...
+
+Perform reflection ... 
+
+Reflected vertex is worst than that of the worst vertex ...
+
+Perform inside contraction ... 
+
+
+Inside contraction is accepted ... 
+
+Current iteration: 10 finishes 
+
+
+Current Best objective: 0.5073438096
+
+
+Current Best parameters: -2.8480468750000005 3.001953125
+
+
+Then, start next iteration ... 
+
+====================================================================
+
+Current iteration: 11 starts 
+
+
+Compute the centroid  ...
+
+Perform reflection ... 
+
+Perform expansion to further explore the reflected direction ... 
+
+Reflection is accepted ... 
+
+Current iteration: 11 finishes 
+
+
+Current Best objective: 0.3545384402
+
+
+Current Best parameters: -2.7065429687500013 3.04345703125
+
+
+Then, start next iteration ... 
+
+====================================================================
+
+Current iteration: 12 starts 
+
+
+Compute the centroid  ...
+
+Perform reflection ... 
+
+Reflected vertex is worst than that of the worst vertex ...
+
+Perform inside contraction ... 
+
+
+Inside contraction is accepted ... 
+
+Current iteration: 12 finishes 
+
+
+Current Best objective: 0.0028275778
+
+
+Current Best parameters: -2.8452392578125005 3.1297607421875
+
+
+Then, start next iteration ... 
+
+====================================================================
+
+Current iteration: 13 starts 
+
+
+Compute the centroid  ...
+
+Perform reflection ... 
+
+Reflection is accepted ... 
+
+Current iteration: 13 finishes 
+
+
+Current Best objective: 0.0028275778
+
+
+Current Best parameters: -2.8452392578125005 3.1297607421875
+
+
+Then, start next iteration ... 
+
+====================================================================
+
+Current iteration: 14 starts 
+
+
+Compute the centroid  ...
+
+Perform reflection ... 
+
+Reflected vertex is worst than that of the worst vertex ...
+
+Perform inside contraction ... 
+
+
+Inside contraction is accepted ... 
+
+Current iteration: 14 finishes 
+
+
+Current Best objective: 0.0028275778
+
+
+Current Best parameters: -2.8452392578125005 3.1297607421875
+
+
+Then, start next iteration ... 
+
+====================================================================
+
+Current iteration: 15 starts 
+
+
+Compute the centroid  ...
+
+Perform reflection ... 
+
+Reflected vertex is worst than that of the worst vertex ...
+
+Perform inside contraction ... 
+
+
+Inside contraction is accepted ... 
+
+Current iteration: 15 finishes 
+
+
+Current Best objective: 0.0028275778
+
+
+Current Best parameters: -2.8452392578125005 3.1297607421875
+
+
+Then, start next iteration ... 
+
+====================================================================
+
+Current iteration: 16 starts 
+
+
+Compute the centroid  ...
+
+Perform reflection ... 
+
+Reflected vertex is in between second-worst vertex and worst vertex ... 
+Perform outside contraction ... 
+
+
+Outside contraction is accepted ... 
+
+Current iteration: 16 finishes 
+
+
+Current Best objective: 0.0012965133
+
+
+Current Best parameters: -2.8249015808105473 3.155567169189453
+
+
+Then, start next iteration ... 
+
+====================================================================
+
+Current iteration: 17 starts 
+
+
+Compute the centroid  ...
+
+Perform reflection ... 
+
+Reflected vertex is worst than that of the worst vertex ...
+
+Perform inside contraction ... 
+
+
+Inside contraction is accepted ... 
+
+Current iteration: 17 finishes 
+
+
+Current Best objective: 0.0001226980
+
+
+Current Best parameters: -2.7916883468627938 3.142491340637207
+
+
+Then, start next iteration ... 
+
+====================================================================
+
+Current iteration: 18 starts 
+
+
+Compute the centroid  ...
+
+Perform reflection ... 
+
+Reflected vertex is worst than that of the worst vertex ...
+
+Perform inside contraction ... 
+
+
+Inside contraction is accepted ... 
+
+Current iteration: 18 finishes 
+
+
+Current Best objective: 0.0001226980
+
+
+Current Best parameters: -2.7916883468627938 3.142491340637207
+
+
+Then, start next iteration ... 
+
+====================================================================
+
+Current iteration: 19 starts 
+
+
+Compute the centroid  ...
+
+Perform reflection ... 
+
+Perform expansion to further explore the reflected direction ... 
+
+Reflection is accepted ... 
+
+Current iteration: 19 finishes 
+
+
+Current Best objective: 0.0000275701
+
+
+Current Best parameters: -2.7935538768768313 3.126319169998169
+
+
+Then, start next iteration ... 
+
+====================================================================
+
+Current iteration: 20 starts 
+
+
+Compute the centroid  ...
+
+Perform reflection ... 
+
+Reflected vertex is worst than that of the worst vertex ...
+
+Perform inside contraction ... 
+
+
+Inside contraction is accepted ... 
+
+Current iteration: 20 finishes 
+
+
+Current Best objective: 0.0000036313
+
+
+Current Best parameters: -2.809694111347199 3.1369001269340515
+
+
+Then, start next iteration ... 
+
+====================================================================
+
+Current iteration: 21 starts 
+
+
+Compute the centroid  ...
+
+Perform reflection ... 
+
+Reflected vertex is in between second-worst vertex and worst vertex ... 
+Perform outside contraction ... 
+
+
+Outside contraction is accepted ... 
+
+Current iteration: 21 finishes 
+
+
+Current Best objective: 0.0000013060
+
+
+Current Best parameters: -2.806591817736626 3.126168802380562
+
+
+Then, start next iteration ... 
+
+====================================================================
+
+Current iteration: 22 starts 
+
+
+Compute the centroid  ...
+
+Perform reflection ... 
+
+Reflected vertex is worst than that of the worst vertex ...
+
+Perform inside contraction ... 
+
+
+Inside contraction is accepted ... 
+
+Current iteration: 22 finishes 
+
+
+Current Best objective: 0.0000006505
+
+
+Current Best parameters: -2.8008484207093716 3.128926817327738
+
+
+Then, start next iteration ... 
+
+====================================================================
+
+Current iteration: 23 starts 
+
+
+Compute the centroid  ...
+
+Perform reflection ... 
+
+Reflected vertex is worst than that of the worst vertex ...
+
+Perform inside contraction ... 
+
+
+Inside contraction is accepted ... 
+
+Current iteration: 23 finishes 
+
+
+Current Best objective: 0.0000000129
+
+
+Current Best parameters: -2.806707115285099 3.1322239683941007
+
+
+Convergence criterion 4 is met: the standard deviation of force-field paramteters across all vertices is 1.0e-06  !
+
+Optimization converges and program exits ... 
+

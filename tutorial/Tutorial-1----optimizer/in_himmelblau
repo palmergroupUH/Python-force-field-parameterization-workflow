@@ -1,6 +1,10 @@
+# output frequency: current best parameters/obj, restart simplex  
+
+2 2 
+
 # guess parameters of Himmelblau function  
 
-Himmelblau 2.5 -1   
+Himmelblau -2.3 1   
 
 # fit (1) and fix (0) parameters: 
 
@@ -16,6 +20,6 @@ None
 
 # create (Perturb) or use existing vertices (Restart): 
 
-Nelder-Mead Perturb random 2      
+Nelder-Mead Perturb random 1.0 
 
-
+ 

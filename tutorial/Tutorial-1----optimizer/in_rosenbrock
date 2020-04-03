@@ -1,3 +1,7 @@
+# output frequency: current best parameters/obj, restart simplex  
+
+5 5 
+
 # guess parameters of rosenbrock function  
 
 Rosenbrock -1 1 

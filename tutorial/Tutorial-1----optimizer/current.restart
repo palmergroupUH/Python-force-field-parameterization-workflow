@@ -1,0 +1,42 @@
+# Current iteration 26: This is a restart file 
+
+# output and restart frequency 
+
+2 2
+
+# This is the guess parameters: 
+
+# Himmelblau-2.3 1.0
+
+# This is the current best parameters: 
+
+Himmelblau -2.8020750595431325 3.131230645114556
+
+# fit (1) and fix (0) parameters: 
+
+1.0 1.0
+
+# constraints ( index lower-bound upper-bound ... ):
+
+ None
+
+#set termination criterion: max number of iteration, tolerance for parameters,tolerance for objective 
+
+4000  1.0e-06 1.0e-06
+
+# create (Perturb) or use existing vertices (Restart): 
+
+# Nelder-Mead Nelder-Mead Perturb random 1.0
+
+# 
+
+Nelder-Mead Restart 
+
+9.020631201927991e-08 4.2854734372533057e-07 9.506225746445718e-07
+
+-2.8020750595431325 3.131230645114556
+
+-2.8050855065463125 3.1353437239304185
+
+-2.807423435524108 3.1268801540136337
+
