@@ -10,8 +10,8 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
     
     def __init__(self,
                 input_files,
-                logname, 
                 f_objective,  
+                logname=None , 
                 skipped=None, 
                 Output=None,
                 optimize_mode=None,
@@ -25,7 +25,7 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
         self.best_parameters_file = "best_parameters.txt"
         
         # Inherit the following from parent class: "set_optimizer" in "optimizer_mod.py"
-        super().__init__(input_files,logname,skipped)
+        super().__init__(input_files,logname=logname,skipped=skipped)
 
         # variables and methods Inherited from set_optimizer : 
         
@@ -674,7 +674,7 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
                 np.savetxt(f,np.c_[ [ self.vertices_sorted[0,:] ]] ) 
       
 #===========================================================================================
-#                               Nelder Mead Algorithm                                       
+#                            Nelder Mead Simplex Algorithm                                  
 #===========================================================================================
 
     def run_optimization(self):  
@@ -815,6 +815,9 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
 
                         continue    
             
+#===========================================================================================
+#                             Termination criterion                                          
+#===========================================================================================
     def termination_criterion_is_met(self,n_itera): 
 
         self.optimizer_logger.debug("Class NelderMeadSimplex:terminate function entered successfully !")

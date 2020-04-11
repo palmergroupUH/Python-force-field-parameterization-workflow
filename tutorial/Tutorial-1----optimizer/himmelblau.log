@@ -36,7 +36,7 @@ Nelder-Mead Perturb random 1.0
 
 2 step size is : 
 
--1.0 1.0
+1.0 1.0
 -------------------------------------------------------------------------------------------------------
 
 
@@ -51,12 +51,7 @@ Compute the centroid  ...
 
 Perform reflection ... 
 
-Reflected vertex is worst than that of the worst vertex ...
-
-Perform inside contraction ... 
-
-
-Inside contraction is accepted ... 
+Reflection is accepted ... 
 
 Current iteration: 0 finishes 
 
@@ -107,10 +102,10 @@ Reflection is accepted ...
 Current iteration: 2 finishes 
 
 
-Current Best objective: 469.9535685202
+Current Best objective: 55.2658428100
 
 
-Current Best parameters: -3.45 2.75
+Current Best parameters: -2.3 3.0
 
 
 Then, start next iteration ... 
@@ -124,9 +119,12 @@ Compute the centroid  ...
 
 Perform reflection ... 
 
-Perform expansion to further explore the reflected direction ... 
+Reflected vertex is worst than that of the worst vertex ...
 
-Reflection is accepted ... 
+Perform inside contraction ... 
+
+
+Inside contraction is accepted ... 
 
 Current iteration: 3 finishes 
 
@@ -134,7 +132,7 @@ Current iteration: 3 finishes
 Current Best objective: 55.2658428100
 
 
-Current Best parameters: -2.3000000000000003 3.0
+Current Best parameters: -2.3 3.0
 
 
 Then, start next iteration ... 
@@ -148,19 +146,15 @@ Compute the centroid  ...
 
 Perform reflection ... 
 
-Reflected vertex is in between second-worst vertex and worst vertex ... 
-Perform outside contraction ... 
-
-
-Outside contraction is accepted ... 
+Reflection is accepted ... 
 
 Current iteration: 4 finishes 
 
 
-Current Best objective: 36.1262939696
+Current Best objective: 55.2658428100
 
 
-Current Best parameters: -3.1625 3.3125
+Current Best parameters: -2.3 3.0
 
 
 Then, start next iteration ... 
@@ -174,20 +168,15 @@ Compute the centroid  ...
 
 Perform reflection ... 
 
-Reflected vertex is worst than that of the worst vertex ...
-
-Perform inside contraction ... 
-
-
-Inside contraction is accepted ... 
+Reflection is accepted ... 
 
 Current iteration: 5 finishes 
 
 
-Current Best objective: 17.1504208070
+Current Best objective: 55.2658428100
 
 
-Current Best parameters: -3.090625 2.953125
+Current Best parameters: -2.3 3.0
 
 
 Then, start next iteration ... 
@@ -211,10 +200,10 @@ Inside contraction is accepted ...
 Current iteration: 6 finishes 
 
 
-Current Best objective: 0.1791054703
+Current Best objective: 55.2658428100
 
 
-Current Best parameters: -2.7132812500000005 3.06640625
+Current Best parameters: -2.3 3.0
 
 
 Then, start next iteration ... 
@@ -238,10 +227,10 @@ Inside contraction is accepted ...
 Current iteration: 7 finishes 
 
 
-Current Best objective: 0.1791054703
+Current Best objective: 10.2900994992
 
 
-Current Best parameters: -2.7132812500000005 3.06640625
+Current Best parameters: -3.090625 3.046875
 
 
 Then, start next iteration ... 
@@ -255,15 +244,19 @@ Compute the centroid  ...
 
 Perform reflection ... 
 
-Reflection is accepted ... 
+Reflected vertex is in between second-worst vertex and worst vertex ... 
+Perform outside contraction ... 
+
+
+Outside contraction is accepted ... 
 
 Current iteration: 8 finishes 
 
 
-Current Best objective: 0.1791054703
+Current Best objective: 10.2900994992
 
 
-Current Best parameters: -2.7132812500000005 3.06640625
+Current Best parameters: -3.090625 3.046875
 
 
 Then, start next iteration ... 
@@ -287,10 +280,10 @@ Inside contraction is accepted ...
 Current iteration: 9 finishes 
 
 
-Current Best objective: 0.0193165279
+Current Best objective: 5.1848217534
 
 
-Current Best parameters: -2.858154296875 3.165771484375
+Current Best parameters: -2.5380859375 3.0595703125
 
 
 Then, start next iteration ... 
@@ -304,19 +297,20 @@ Compute the centroid  ...
 
 Perform reflection ... 
 
-Reflected vertex is in between second-worst vertex and worst vertex ... 
-Perform outside contraction ... 
+Reflected vertex is worst than that of the worst vertex ...
+
+Perform inside contraction ... 
 
 
-Outside contraction is accepted ... 
+Inside contraction is accepted ... 
 
 Current iteration: 10 finishes 
 
 
-Current Best objective: 0.0193165279
+Current Best objective: 0.7324305425
 
 
-Current Best parameters: -2.858154296875 3.165771484375
+Current Best parameters: -2.6380371093750004 3.122314453125
 
 
 Then, start next iteration ... 
@@ -340,10 +334,10 @@ Inside contraction is accepted ...
 Current iteration: 11 finishes 
 
 
-Current Best objective: 0.0104731337
+Current Best objective: 0.0378163585
 
 
-Current Best parameters: -2.7839630126953128 3.0838775634765625
+Current Best parameters: -2.83934326171875 3.06890869140625
 
 
 Then, start next iteration ... 
@@ -357,19 +351,15 @@ Compute the centroid  ...
 
 Perform reflection ... 
 
-Reflected vertex is in between second-worst vertex and worst vertex ... 
-Perform outside contraction ... 
-
-
-Outside contraction is accepted ... 
+Reflection is accepted ... 
 
 Current iteration: 12 finishes 
 
 
-Current Best objective: 0.0032584869
+Current Best objective: 0.0378163585
 
 
-Current Best parameters: -2.80602035522461 3.168773651123047
+Current Best parameters: -2.83934326171875 3.06890869140625
 
 
 Then, start next iteration ... 
@@ -393,10 +383,10 @@ Inside contraction is accepted ...
 Current iteration: 13 finishes 
 
 
-Current Best objective: 0.0005487458
+Current Best objective: 0.0048813900
 
 
-Current Best parameters: -2.8265729904174806 3.1460485458374023
+Current Best parameters: -2.7636779785156254 3.111297607421875
 
 
 Then, start next iteration ... 
@@ -420,10 +410,10 @@ Inside contraction is accepted ...
 Current iteration: 14 finishes 
 
 
-Current Best objective: 0.0000280915
+Current Best objective: 0.0048813900
 
 
-Current Best parameters: -2.800129842758179 3.1206443309783936
+Current Best parameters: -2.7636779785156254 3.111297607421875
 
 
 Then, start next iteration ... 
@@ -437,19 +427,17 @@ Compute the centroid  ...
 
 Perform reflection ... 
 
-Reflected vertex is in between second-worst vertex and worst vertex ... 
-Perform outside contraction ... 
+Perform expansion to further explore the reflected direction ... 
 
-
-Outside contraction is accepted ... 
+Reflection is accepted ... 
 
 Current iteration: 15 finishes 
 
 
-Current Best objective: 0.0000280915
+Current Best objective: 0.0005437269
 
 
-Current Best parameters: -2.800129842758179 3.1206443309783936
+Current Best parameters: -2.794737243652344 3.1532669067382812
 
 
 Then, start next iteration ... 
@@ -473,10 +461,10 @@ Inside contraction is accepted ...
 Current iteration: 16 finishes 
 
 
-Current Best objective: 0.0000257209
+Current Best objective: 0.0002791937
 
 
-Current Best parameters: -2.8175731927156447 3.1320935636758804
+Current Best parameters: -2.824805068969727 3.121580123901367
 
 
 Then, start next iteration ... 
@@ -490,17 +478,20 @@ Compute the centroid  ...
 
 Perform reflection ... 
 
-Perform expansion to further explore the reflected direction ... 
+Reflected vertex is worst than that of the worst vertex ...
 
-Reflection is accepted ... 
+Perform inside contraction ... 
+
+
+Inside contraction is accepted ... 
 
 Current iteration: 17 finishes 
 
 
-Current Best objective: 0.0000040922
+Current Best objective: 0.0001609617
 
 
-Current Best parameters: -2.8006860882043836 3.1371050626039505
+Current Best parameters: -2.7867245674133305 3.1243605613708496
 
 
 Then, start next iteration ... 
@@ -524,10 +515,10 @@ Inside contraction is accepted ...
 Current iteration: 18 finishes 
 
 
-Current Best objective: 0.0000003054
+Current Best objective: 0.0000071774
 
 
-Current Best parameters: -2.8046297416090966 3.1276218220591545
+Current Best parameters: -2.8002510309219364 3.138118624687195
 
 
 Then, start next iteration ... 
@@ -551,10 +542,10 @@ Inside contraction is accepted ...
 Current iteration: 19 finishes 
 
 
-Current Best objective: 0.0000003054
+Current Best objective: 0.0000023055
 
 
-Current Best parameters: -2.8046297416090966 3.1276218220591545
+Current Best parameters: -2.80914643406868 3.1264098584651947
 
 
 Then, start next iteration ... 
@@ -578,10 +569,64 @@ Inside contraction is accepted ...
 Current iteration: 20 finishes 
 
 
-Current Best objective: 0.0000000561
+Current Best objective: 0.0000023055
 
 
-Current Best parameters: -2.8040293679572637 3.133515112567693
+Current Best parameters: -2.80914643406868 3.1264098584651947
+
+
+Then, start next iteration ... 
+
+====================================================================
+
+Current iteration: 21 starts 
+
+
+Compute the centroid  ...
+
+Perform reflection ... 
+
+Reflected vertex is worst than that of the worst vertex ...
+
+Perform inside contraction ... 
+
+
+Inside contraction is accepted ... 
+
+Current iteration: 21 finishes 
+
+
+Current Best objective: 0.0000006692
+
+
+Current Best parameters: -2.800205191224814 3.1302883215248585
+
+
+Then, start next iteration ... 
+
+====================================================================
+
+Current iteration: 22 starts 
+
+
+Compute the centroid  ...
+
+Perform reflection ... 
+
+Reflected vertex is worst than that of the worst vertex ...
+
+Perform inside contraction ... 
+
+
+Inside contraction is accepted ... 
+
+Current iteration: 22 finishes 
+
+
+Current Best objective: 0.0000001474
+
+
+Current Best parameters: -2.8024634217843416 3.1332338573411107
 
 
 Convergence criterion 4 is met: the standard deviation of force-field paramteters across all vertices is 1.0e-06  !

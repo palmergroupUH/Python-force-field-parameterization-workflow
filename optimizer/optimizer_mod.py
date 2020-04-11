@@ -115,9 +115,9 @@ class set_optimizer:
         self.check_input_parameters() 
 
     def add_logger(self,logname): 
-
-        if ( logname is None ):   
-
+        
+        if ( logname is not None ):   
+            
             self.optimizer_logger = logging.getLogger(__name__) 
 
             self.optimizer_logger.setLevel(logging.INFO)              
@@ -131,7 +131,7 @@ class set_optimizer:
             self.optimizer_logger.addHandler(fh)
 
         else: 
-
+            
             self.optimizer_logger = logging.getLogger(__name__) 
 
         return None 

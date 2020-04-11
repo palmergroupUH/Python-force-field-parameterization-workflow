@@ -11,7 +11,7 @@ Himmelblau_test_obj = objective.test_optimizer.Himmelblau(x,y)
 
 #Himmelblau_test.visualize()
 
-optimize_Himmelblau = optimizer.gradient_free.NelderMeadSimplex("in_himmelblau","himmelblau.log",Himmelblau_test_obj,skipped=0)
+optimize_Himmelblau = optimizer.gradient_free.NelderMeadSimplex("in_himmelblau",Himmelblau_test_obj,skipped=0)
 
 optimize_Himmelblau.run_optimization()
 

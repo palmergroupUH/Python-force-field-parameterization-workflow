@@ -1,20 +1,23 @@
+# ignore installation:  
+Python_optimization_workflow.egg-info/ 
+
+
 # ignore .pyc file 
-
 *.pyc 
-
+# git command 
+#
+git_command_lst 
 
 # ignore .so file 
 *.so 
 *.txt
 # ignore build 
-build/bdist.linux-x86_64/* 
+
+build/
 
 # ignore distribution
 dist/*
 old/*
-
-# ignore installation:  
-Python_optimization_workflow.egg-info/ 
 
 IO/__pycache__/*
 
