@@ -1,35 +1,17 @@
-lj_force_potential_matching
-
-ReferenceData/
-
-prepsystem/
-
-mWAC_force_potential_matching
-
-mW_force_potential_matching/
-
 test/
 
 # ignore .pyc file 
 
-src/*.pyc
-
 # ignore .so file 
+*.pyc 
+*.so 
+*.txt
+# ignore 
 
-src/*.so
+*.dcd
 
-# ignore run folders: 
 
-run/*.log
+ReferenceData/ 
 
-run/out.e*
+prepsystem/
 
-run/out.o*
-
-run/*/
-
-run/in.para
-
-run/run_NelderMead
-
-src/__pycache__/
