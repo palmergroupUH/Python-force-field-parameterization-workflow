@@ -1,13 +1,10 @@
 # A data-driven approach to systematically and reproduciably optimize force-field parameters 
 
-## Features: 
-
-* Externally launch third-parties simulation packages in parallel   ![optimization workflow](images/workflow.png =1000x400) 
-
+## Features: <img src="images/workflow.png" width="500">
 
 ## Installation: 
 
-* conda install -c conda-forge optimize 
+* conda install -c conda-forge optimize ( not official )
 
 ## Software required:
 
@@ -18,3 +15,4 @@
 * Numpy  
 
 * Python/3.7  
+

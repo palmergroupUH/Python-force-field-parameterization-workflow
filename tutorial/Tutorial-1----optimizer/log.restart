@@ -10,7 +10,7 @@
 
 # This is the current best parameters: 
 
-Himmelblau -2.3 1.0
+Himmelblau -2.3 2.0
 
 # fit (1) and fix (0) parameters: 
 
@@ -32,13 +32,13 @@ Himmelblau -2.3 1.0
 
 Nelder-Mead Restart 
 
-8294.491690810002 11891.160971560006 15982.397242518791
+1751.7656868100003 8294.491690810002 13091.458700857656
+
+-2.3 2.0
 
 -2.3 1.0
 
--2.3 0.5
-
--1.15 1.0
+-1.15 1.25
 
 # Current iteration 2: This is a restart file 
 
@@ -52,7 +52,7 @@ Nelder-Mead Restart
 
 # This is the current best parameters: 
 
-Himmelblau -2.3 1.0
+Himmelblau -3.45 2.75
 
 # fit (1) and fix (0) parameters: 
 
@@ -74,13 +74,13 @@ Himmelblau -2.3 1.0
 
 Nelder-Mead Restart 
 
-8294.491690810002 8634.499245525036 11237.485374087537
+469.95356852015686 1751.7656868100003 3795.904539082654
 
--2.3 1.0
+-3.45 2.75
 
--3.45 1.0
+-2.3 2.0
 
--3.4499999999999997 0.5
+-3.4499999999999997 1.75
 
 # Current iteration 4: This is a restart file 
 
@@ -94,7 +94,7 @@ Nelder-Mead Restart
 
 # This is the current best parameters: 
 
-Himmelblau -1.7250000000000005 2.0
+Himmelblau -3.1625 3.3125
 
 # fit (1) and fix (0) parameters: 
 
@@ -116,13 +116,13 @@ Himmelblau -1.7250000000000005 2.0
 
 Nelder-Mead Restart 
 
-3436.1542336874745 7733.212827924752 8294.491690810002
+36.12629396961838 55.26584280999993 469.95356852015686
 
--1.7250000000000005 2.0
+-3.1625 3.3125
 
--0.5750000000000002 2.0
+-2.3000000000000003 3.0
 
--2.3 1.0
+-3.45 2.75
 
 # Current iteration 6: This is a restart file 
 
@@ -136,7 +136,7 @@ Nelder-Mead Restart
 
 # This is the current best parameters: 
 
-Himmelblau -1.4375000000000018 3.5
+Himmelblau -2.7132812500000005 3.06640625
 
 # fit (1) and fix (0) parameters: 
 
@@ -158,13 +158,13 @@ Himmelblau -1.4375000000000018 3.5
 
 Nelder-Mead Restart 
 
-1941.204054013121 3436.1542336874745 4624.0
+0.1791054703110175 17.150420807008917 36.12629396961838
 
--1.4375000000000018 3.5
+-2.7132812500000005 3.06640625
 
--1.7250000000000005 2.0
+-3.090625 2.953125
 
--8.881784197001252e-16 3.0
+-3.1625 3.3125
 
 # Current iteration 8: This is a restart file 
 
@@ -178,7 +178,7 @@ Nelder-Mead Restart
 
 # This is the current best parameters: 
 
-Himmelblau -3.1625000000000014 2.5
+Himmelblau -2.7132812500000005 3.06640625
 
 # fit (1) and fix (0) parameters: 
 
@@ -200,13 +200,13 @@ Himmelblau -3.1625000000000014 2.5
 
 Nelder-Mead Restart 
 
-308.419522974218 1530.1734581589699 1941.204054013121
+0.1791054703110175 2.5499701098501006 3.381998758926973
 
--3.1625000000000014 2.5
+-2.7132812500000005 3.06640625
 
--2.8750000000000027 4.0
+-2.6548828125000004 3.2744140625
 
--1.4375000000000018 3.5
+-3.0322265625 3.1611328125
 
 # Current iteration 10: This is a restart file 
 
@@ -220,7 +220,7 @@ Nelder-Mead Restart
 
 # This is the current best parameters: 
 
-Himmelblau -2.785156250000002 3.46875
+Himmelblau -2.858154296875 3.165771484375
 
 # fit (1) and fix (0) parameters: 
 
@@ -242,13 +242,13 @@ Himmelblau -2.785156250000002 3.46875
 
 Nelder-Mead Restart 
 
-26.013377385982515 138.1670538392227 308.419522974218
+0.01931652786068688 0.1782319448271454 0.1791054703110175
 
--2.785156250000002 3.46875
+-2.858154296875 3.165771484375
 
--2.228125000000002 3.375
+-2.85113525390625 3.03692626953125
 
--3.1625000000000014 2.5
+-2.7132812500000005 3.06640625
 
 # Current iteration 12: This is a restart file 
 
@@ -262,7 +262,7 @@ Nelder-Mead Restart
 
 # This is the current best parameters: 
 
-Himmelblau -2.8345703125000017 2.9609375
+Himmelblau -2.80602035522461 3.168773651123047
 
 # fit (1) and fix (0) parameters: 
 
@@ -284,13 +284,13 @@ Himmelblau -2.8345703125000017 2.9609375
 
 Nelder-Mead Restart 
 
-1.2982380826252993 13.234025711380628 26.013377385982515
+0.003258486877668133 0.010473133745302128 0.01931652786068688
 
--2.8345703125000017 2.9609375
+-2.80602035522461 3.168773651123047
 
--2.518994140625002 3.294921875
+-2.7839630126953128 3.0838775634765625
 
--2.785156250000002 3.46875
+-2.858154296875 3.165771484375
 
 # Current iteration 14: This is a restart file 
 
@@ -304,7 +304,7 @@ Nelder-Mead Restart
 
 # This is the current best parameters: 
 
-Himmelblau -2.9146575927734393 3.0469970703125
+Himmelblau -2.800129842758179 3.1206443309783936
 
 # fit (1) and fix (0) parameters: 
 
@@ -326,13 +326,13 @@ Himmelblau -2.9146575927734393 3.0469970703125
 
 Nelder-Mead Restart 
 
-0.4781679965272597 1.2982380826252993 1.8971092332631263
+2.8091482111357122e-05 0.0005487457931800561 0.003258486877668133
 
--2.9146575927734393 3.0469970703125
+-2.800129842758179 3.1206443309783936
 
--2.8345703125000017 2.9609375
+-2.8265729904174806 3.1460485458374023
 
--2.730969238281252 3.29833984375
+-2.80602035522461 3.168773651123047
 
 # Current iteration 16: This is a restart file 
 
@@ -346,7 +346,7 @@ Nelder-Mead Restart
 
 # This is the current best parameters: 
 
-Himmelblau -2.802791595458986 3.151153564453125
+Himmelblau -2.8175731927156447 3.1320935636758804
 
 # fit (1) and fix (0) parameters: 
 
@@ -368,13 +368,13 @@ Himmelblau -2.802791595458986 3.151153564453125
 
 Nelder-Mead Restart 
 
-0.0002614485105545205 0.43104797814504175 0.4781679965272597
+2.572088984329797e-05 2.8091482111357122e-05 0.00021579658956702693
 
--2.802791595458986 3.151153564453125
+-2.8175731927156447 3.1320935636758804
 
--2.8828788757324237 3.237213134765625
+-2.800129842758179 3.1206443309783936
 
--2.9146575927734393 3.0469970703125
+-2.81701694726944 3.1156328320503235
 
 # Current iteration 18: This is a restart file 
 
@@ -388,7 +388,7 @@ Nelder-Mead Restart
 
 # This is the current best parameters: 
 
-Himmelblau -2.802791595458986 3.151153564453125
+Himmelblau -2.8046297416090966 3.1276218220591545
 
 # fit (1) and fix (0) parameters: 
 
@@ -410,13 +410,13 @@ Himmelblau -2.802791595458986 3.151153564453125
 
 Nelder-Mead Restart 
 
-0.0002614485105545205 0.00847229711431264 0.03461959458612188
+3.0539590160804104e-07 4.092166675544792e-06 2.572088984329797e-05
 
--2.802791595458986 3.151153564453125
+-2.8046297416090966 3.1276218220591545
 
--2.819714069366457 3.0852012634277344
+-2.8006860882043836 3.1371050626039505
 
--2.878746414184572 3.1205902099609375
+-2.8175731927156447 3.1320935636758804
 
 # Current iteration 20: This is a restart file 
 
@@ -430,7 +430,7 @@ Nelder-Mead Restart
 
 # This is the current best parameters: 
 
-Himmelblau -2.802791595458986 3.151153564453125
+Himmelblau -2.8040293679572637 3.133515112567693
 
 # fit (1) and fix (0) parameters: 
 
@@ -452,137 +452,11 @@ Himmelblau -2.802791595458986 3.151153564453125
 
 Nelder-Mead Restart 
 
-0.0002614485105545205 0.0003524786883074545 0.0010389224356197012
+5.6113615030724395e-08 3.0539590160804104e-07 7.060498431793198e-07
 
--2.802791595458986 3.151153564453125
+-2.8040293679572637 3.133515112567693
 
--2.804931443929674 3.1096317768096924
+-2.8046297416090966 3.1276218220591545
 
--2.777506041526796 3.116971015930176
-
-# Current iteration 22: This is a restart file 
-
-# output and restart frequency 
-
-2 2
-
-# This is the guess parameters: 
-
-# Himmelblau-2.3 1.0
-
-# This is the current best parameters: 
-
-Himmelblau -2.807423435524108 3.1268801540136337
-
-# fit (1) and fix (0) parameters: 
-
-1.0 1.0
-
-# constraints ( index lower-bound upper-bound ... ):
-
- None
-
-#set termination criterion: max number of iteration, tolerance for parameters,tolerance for objective 
-
-4000  1.0e-06 1.0e-06
-
-# create (Perturb) or use existing vertices (Restart): 
-
-# Nelder-Mead Nelder-Mead Perturb random 1.0
-
-# 
-
-Nelder-Mead Restart 
-
-9.506225746445718e-07 3.4764855272277514e-05 0.0002614485105545205
-
--2.807423435524108 3.1268801540136337
-
--2.817039258778097 3.137103497982025
-
--2.802791595458986 3.151153564453125
-
-# Current iteration 24: This is a restart file 
-
-# output and restart frequency 
-
-2 2
-
-# This is the guess parameters: 
-
-# Himmelblau-2.3 1.0
-
-# This is the current best parameters: 
-
-Himmelblau -2.807423435524108 3.1268801540136337
-
-# fit (1) and fix (0) parameters: 
-
-1.0 1.0
-
-# constraints ( index lower-bound upper-bound ... ):
-
- None
-
-#set termination criterion: max number of iteration, tolerance for parameters,tolerance for objective 
-
-4000  1.0e-06 1.0e-06
-
-# create (Perturb) or use existing vertices (Restart): 
-
-# Nelder-Mead Nelder-Mead Perturb random 1.0
-
-# 
-
-Nelder-Mead Restart 
-
-9.506225746445718e-07 2.8567138063012816e-06 1.9371879092467354e-05
-
--2.807423435524108 3.1268801540136337
-
--2.797895648051055 3.131349351257086
-
--2.807511471305044 3.141572695225477
-
-# Current iteration 26: This is a restart file 
-
-# output and restart frequency 
-
-2 2
-
-# This is the guess parameters: 
-
-# Himmelblau-2.3 1.0
-
-# This is the current best parameters: 
-
-Himmelblau -2.8020750595431325 3.131230645114556
-
-# fit (1) and fix (0) parameters: 
-
-1.0 1.0
-
-# constraints ( index lower-bound upper-bound ... ):
-
- None
-
-#set termination criterion: max number of iteration, tolerance for parameters,tolerance for objective 
-
-4000  1.0e-06 1.0e-06
-
-# create (Perturb) or use existing vertices (Restart): 
-
-# Nelder-Mead Nelder-Mead Perturb random 1.0
-
-# 
-
-Nelder-Mead Restart 
-
-9.020631201927991e-08 4.2854734372533057e-07 9.506225746445718e-07
-
--2.8020750595431325 3.131230645114556
-
--2.8050855065463125 3.1353437239304185
-
--2.807423435524108 3.1268801540136337
+-2.810115553811192 3.1322285030037165
 

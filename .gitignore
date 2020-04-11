@@ -1,15 +1,28 @@
-test/
-
 # ignore .pyc file 
 
-# ignore .so file 
 *.pyc 
+
+
+# ignore .so file 
 *.so 
 *.txt
-# ignore 
+# ignore build 
+build/bdist.linux-x86_64/* 
 
-*.dcd
+# ignore distribution
+dist/*
+old/*
 
+# ignore installation:  
+Python_optimization_workflow.egg-info/ 
+
+IO/__pycache__/*
+
+objective/__pycache__/*
+
+sampling/__pycache__/*
+
+optimizer/__pycache__/* 
 
 ReferenceData/ 
 
