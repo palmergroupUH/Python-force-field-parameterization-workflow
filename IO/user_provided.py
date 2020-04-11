@@ -1,8 +1,9 @@
 import logging 
+import numpy as np 
 import sys 
-import type_check 
+import IO.check_type  
 
-class input():
+class from_command_line():
 
     @classmethod
     def __init__(cls,jobID=None,total_cores=None,input_file=None,mode=None): 
@@ -20,15 +21,15 @@ class input():
             cls.JOBID = str(jobID) 
             
             cls.logger = cls.Set_Run_Mode(cls.JOBID + ".log",cls.MODE)
-
+        
         if ( total_cores is not None ): 
-
+            
             cls.TOTAL_CORES = total_cores
         
         if ( input_file is not None ): 
 
             cls.INPUT = input_file  
-
+        
         all_options = np.array([ total_cores ,jobID ,input_file ])
 
         # if None of total_cores ,jobID ,input_file assigned, then use the command line options
@@ -38,28 +39,30 @@ class input():
             cls.Take_Command_Line_Args() 
 
             cls.set_global()
+        
+        if ( np.any(all_options  != None ) 
+            and np.any(all_options == None) ):  
 
-	    if ( np.any(all_options  != None ) 
-
-		 and np.any(all_options == None )): 	
-
-			sys.exit("ERROR: either assign all values as arguments or read all input from command line") 	
+            sys.exit("ERROR: either assign all values as arguments or read all input from command line")    
 
         # check the following mandatory attributes  
-
+        
         cls.check_necessary_attributes("JOBID")
         cls.check_necessary_attributes("TOTAL_CORES")
         cls.check_necessary_attributes("INPUT")
         cls.check_necessary_attributes("logger")
+        
+        # check the type of user-provided input: 
 
-		# check the type of user-provided input: 
+        cls.check_total_cores() 
+        
 
-		cls.check_total_cores()	
-    
-	@classmethod
+        return None 
+
+    @classmethod
     def finish_reading(cls): 
 
-        return cls.logger,cls.TOTAL_CORES,cls.INPUT, cls.JOBID
+        return cls.logger,cls.TOTAL_CORES, cls.INPUT, cls.JOBID
 
     @classmethod
     def check_necessary_attributes(cls,attribute): 
@@ -70,16 +73,16 @@ class input():
 
         return None  
 
-	@classmethod
-	def check_total_cores(cls): 
+    @classmethod
+    def check_total_cores(cls): 
 
-		if ( not type_check.is_int(cls.TOTAL_CORES)):  
+        if ( not IO.check_type.is_int(cls.TOTAL_CORES)):  
 
-			cls.logger.error("ERROR: varable: 'total_cores' must be an integer ! ")
-		
-			sys.exit("Check errors in log file ! ") 
-	
-		return None	
+            cls.logger.error("ERROR: varable: 'total_cores' must be an integer ! ")
+        
+            sys.exit("Check errors in log file ! ") 
+    
+        return None 
 
     @classmethod 
     def Take_Command_Line_Args(cls): 
@@ -97,6 +100,13 @@ class input():
                             required=False,default="run",
                             help="choose run or debug mode")
 
+        parser.add_argument("-Ref", "--mode", type=str, 
+                            required=False,default="../ReferenceData",
+                            help="provide the path of Reference data folder")
+
+        parser.add_argument("-prep", "--mode", type=str, 
+                            required=False,default="../prepsystem",
+                            help="provide the path of prepsystem folder")
         args = parser.parse_args()
 
         cls.argument = dict( args.__dict__.iteritems() )  
@@ -154,5 +164,5 @@ class input():
 
         logger.addHandler(fh) 
 
-		return logger 
+        return logger 
 

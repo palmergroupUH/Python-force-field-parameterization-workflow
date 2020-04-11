@@ -1,9 +1,10 @@
 import os 
 import sys 
-import check_file  
+import IO.check_file  
+
 def parse(filename,skip_lines=None,stop_after=None): 
 
-    if ( not check_file.status_is_ok(filename) ):   
+    if ( not IO.check_file.status_is_ok(filename) ):   
 
         sys.exit("input file does not exist or is empty ! ") 
 

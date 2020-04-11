@@ -15,6 +15,8 @@ def is_float(a):
     try:
 
         float(a)
+    
+        #return True 
 
     except ValueError:
 
