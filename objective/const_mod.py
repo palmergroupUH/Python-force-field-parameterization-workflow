@@ -21,9 +21,10 @@ water_mol_mass = 18.01528
 
 class Units(): 
 
-    units_logger = logging.getLogger()  
 
     def __init__(self,keyword):  
+
+        self.units_logger = logging.getLogger(__name__)  
 
         units_list = { 
 
@@ -31,7 +32,6 @@ class Units():
         "metal": "MetaToSI"
 
         } 
-
     
         existence = units_list.get(keyword) 
         

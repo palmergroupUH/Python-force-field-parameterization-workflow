@@ -24,27 +24,29 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
         self.best_obj_file = "best_objective.txt"
         self.best_parameters_file = "best_parameters.txt"
         
-        # Inherit the following from parent class: set_optimizer
+        # Inherit the following from parent class: "set_optimizer" in "optimizer_mod.py"
         super().__init__(input_files,logname,skipped)
 
         # variables and methods Inherited from set_optimizer : 
-
         
         # 0. dump frequecny self.dump_para:    
+        # 1. self.para_type_lst ( list of string defining the type of parameters )
         # 1. guess parameters (self.guess_parameter)   
         # 2. parameters to be fitted or fixed ( self.fit_and_fix )  
         # 3. index of guess parameters to be constrained ( self.constraints_fit_index ) 
         # 4. constraints bounds (self.constraints_bounds )  
         # 5. the type of optimizer ( self.optimizer_type ) 
         # 5. mode of Nelder-Mead simplex: "Perturb" or "Restart" ( self.optimizer_argument )  
-        # 6. contents of optimizer ( self.optimizer_input )  
+        # 6. contents of optimizer ( self.optimizer_input ) 
        
 
-        # Methods Inherited: 
+        # Methods Inherited:
 
-        # 1. self.constrain() 
+        # 1. self.constrain()
         # 2. self.regroup_parameter() 
-
+        # 3. self.dump_restart()  
+        # 4. self.dump_best_parameters()  
+        # 5. self.dump_best_objective()  
 
         # computing objective function 
 
@@ -553,7 +555,7 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
 
             in_parameters_full = self.regroup_with_fixed(in_parameters) 
 
-            func_vertices[i] = self.f_obj.optimize(in_parameters_full)
+            func_vertices[i] = self.f_obj.optimize(self.para_type_lst,in_parameters_full)
         
         return func_vertices   
 
@@ -703,7 +705,7 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
             
             reflected_vertex = self.Reflect(centroid) 
             
-            func_reflect = self.f_obj.optimize(reflected_vertex) 
+            func_reflect = self.f_obj.optimize(self.para_type_lst,reflected_vertex) 
             
             if ( self.best <= func_reflect < self.lousy ): 
                 
@@ -723,7 +725,7 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
 
                 expanded_vertex = self.Expand(reflected_vertex,centroid)          
 
-                func_expand = self.f_obj.optimize(expanded_vertex)
+                func_expand = self.f_obj.optimize(self.para_type_lst,expanded_vertex)
 
                 if ( func_expand < func_reflect ):      
 
@@ -759,7 +761,7 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
                
                     outside_contract_vertex = self.Outside_Contract(centroid,reflected_vertex) 
 
-                    func_out_contract = self.f_obj.optimize(outside_contract_vertex)
+                    func_out_contract = self.f_obj.optimize(self.para_type_lst,outside_contract_vertex)
 
                     if ( func_out_contract <= func_reflect ): 
             
@@ -789,7 +791,7 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
 
                     inside_contract_vertex = self.Inside_Contract(centroid) 
     
-                    func_inside_contract = self.f_obj.optimize(inside_contract_vertex)
+                    func_inside_contract = self.f_obj.optimize(self.para_type_lst,inside_contract_vertex)
 
                     if ( func_inside_contract < self.worst ):     
                         
@@ -889,51 +891,21 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
 
         # Add output functions here 
 
-        self.dump_restart(itera)  
+        restart_content_dict = self.Nelder_Mead_restart_output(itera)
 
-        self.dump_best_objective(itera)
+        # inherited from optimizer_mod 
+        self.dump_restart(itera,[self.log_file,self.current_file],self.output_address,restart_content_dict)  
+
+        # inherited from optimizer_mod 
+        self.dump_best_objective(itera,self.best_obj_file,self.output_address,self.best)
 
         self.dump_current_simplex(itera)
 
-        self.dump_best_parameters(itera) 
+        # inherited from optimizer_mod 
+        self.dump_best_parameters(itera,self.best_parameters_file,self.output_address,self.best_vertex) 
        
         return None  
 
-    def dump_restart(self,itera):
-        
-        restart_content_dict = self.Nelder_Mead_restart_output(itera) 
-            
-        self.write_optimizer_output(self.restart_freq,
-                                   itera,
-                                   self.output_address,
-                                   self.log_file,
-                                   "a",
-                                   restart_content_dict )
-
-    
-        self.write_optimizer_output(self.restart_freq,
-                                   itera,
-                                   self.output_address,
-                                   self.current_file,
-                                   "w",
-                                   restart_content_dict )
-
-        return None 
-     
-    def dump_best_parameters(self,itera):   
-
-        best_para = {} 
-       
-        best_para[0] = " ".join(str(para) for para in self.vertices_sorted[self.best_indx,:])  
-
-        self.write_optimizer_output(self.output_freq, 
-                                    itera,
-                                    self.output_address,
-                                    self.best_parameters_file,
-                                    "w", 
-                                    best_para)  
-
-        return None 
 
     def dump_current_simplex(self,itera): 
 
@@ -956,17 +928,4 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
 
         return None 
 
-    def dump_best_objective(self,itera): 
 
-        best_objective = {} 
-    
-        best_objective[0] = str(self.best) + "\n"
-        
-        self.write_optimizer_output(self.output_freq, 
-                                    itera,
-                                    self.output_address,
-                                    self.best_obj_file,
-                                    "a", 
-                                    best_objective)  
-
-        return None 

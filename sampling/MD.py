@@ -5,87 +5,20 @@ import time
 import logging
 import os 
 # customized library:
-import potential 
+import sampling.potential_LAMMPS 
 
-# Wrapper functions to invoke LAMMPS as a MD engines 
+# Launch and Terminate sampling jobs 
 
-def Invoke_LAMMPS(in_para,predict_address,TOTAL_CORES_ASSIGN,HOME): 
-
-    lammpslogger = logging.getLogger(__name__) 
-
-    lammpslogger.debug("Initialize LAMMPS ...") 
-    
-    total_cores_requested = 0
-
-    # loop over all type of property matching 
-    for matching in in_para.matching:       
-                
-        list_arg = matching.split()
-
-        typename = list_arg[0] 
-
-        # get the number of cores requested by user  
-
-        cores_requested = int(list_arg[3])  
-    
-        subfolder = list_arg[1] 
-    
-        wk_folders_lst = predict_address[typename][subfolder] 
-
-        num_jobs = len(wk_folders_lst) 
-
-        cores_per_job = Core_Assigment(typename,num_jobs,cores_requested)
-
-        command = in_para.run_command 
-
-        ptype = in_para.ptype
-
-        command = command%(cores_per_job,typename)  
-
-        LAMMPS = RunSimulations("LAMMPS",matching,wk_folders_lst,command,cores_per_job,HOME,ptype=ptype) 
-        
-        total_cores_requested = total_cores_requested + cores_requested 
-
-    if ( total_cores_requested > TOTAL_CORES_ASSIGN ):  
-
-        lammpslogger.error("ERROR:Total cores requested for all LAMMPS jobs are more than assigned by Slurm ") 
-
-        sys.exit() 
-
-    else: 
-
-        lammpslogger.debug("LAMMPS initialization finish ...") 
-
-        return LAMMPS 
-
-# Determine and check the number of cores used by each job 
-def Core_Assigment(matchingtype,num_jobs,total_cores_assigned): 
-
-    runlogger = logging.getLogger("Core_Assignment: ")  
-
-    cores_per_job = total_cores_assigned/num_jobs   
-
-    if ( cores_per_job ==0): 
-
-        cores_per_job = 1 
-
-        runlogger.warning("WARNING: "+ matchingtype  + " : " 
-                        + "The number of cores assigned, %d "%(total_cores_assigned)
-                        + "is less than the number jobs, %d  ... "%(num_jobs) )
-
-    return cores_per_job 
-
-# Launch and Terminate LAMMPS jobs 
-class setup(): 
+class run_as_subprocess(): 
 
     """ 
-    Invoke simulations engines to calculate properties using  force-field    
-    potential in every iterations.  
+    Invoke external sampling softwares of choice to calculate properties using force-field  
+    potential in every iterations:  
     
     -Parameters: 
     ------------
 
-    matchingtype: 
+    matching_type: 
     e.g."rdf", "force" ....  
 
     wk_folder: which folders simulations should be run 
@@ -107,71 +40,69 @@ class setup():
     
     wk_folder_list_cls = [ ] 
 
-    Name = "In simulation_engine_mod " 
+    def __init__(self,
+                 packagename,
+                 matching_type,
+                 wk_folder_lst,
+                 num_jobs,
+                 command,
+                 total_cores_assigned,
+                 HOME): 
 
-    @classmethod 
-    def __init__( 
+        self.packagename= packagename
 
-            cls,packagename,matchingtype,wk_folder_lst,command,cores,HOME,ptype=None): 
+        self.matching_type = matching_type 
 
-        if ( ptype ): cls.potential_type = ptype
 
-        cls.packagename= packagename
+        self.sampling_cores_assignment(matching_type,
+                                      num_jobs,
+                                      total_cores_assigned)
+        self.num_jobs = num_jobs 
 
-        cls.matchingtype = matchingtype 
+        self.HOME = HOME 
 
-        cls.command = command
-
-        cls.cores = cores
-
-        cls.num_jobs = len(wk_folder_lst) 
-
-        cls.HOME = HOME 
+        self.command = command%(self.cores_per_job,matching_type) 
 
         # For every matching type, save their command and working folders into list 
 
-        cls.Update_Matching(command,wk_folder_lst) 
+        self.update_matching(command,wk_folder_lst) 
         
         # Print the Initialization information:  
 
-        cls.Print_Initialization() 
+        self.print_initialization() 
 
         return None  
+
+    def sampling_cores_assignment(self,matching_type,num_jobs,total_cores_assigned): 
+
+        cores_logger = logging.getLogger(__name__) 
+
+        self.cores_per_job = int(total_cores_assigned/num_jobs) 
+        
+        if ( self.cores_per_job == 0): 
+
+            cores_logger.error("ERROR: "+ matching_type  + " : " 
+                            + "The total number of cores requested ( %d ) through input file "%total_cores_assigned
+                            + "is less than the number jobs ( %d ) ...\n"%(num_jobs)
+                            + "Performance degration due to overutilized cores ! " )
     
-    @classmethod
-    def print_initialization(cls):  
+                        
 
-        runlogger = logging.getLogger(__name__) 
+            sys.exit("Check errors in the log file")
+
+        return None  
+
+    def print_initialization(self):  
+
+        logger = logging.getLogger(__name__)
+
+        logger.info("------------------------- Initialize sampling method: %s -------------------------\n\n"%(self.packagename)) 
+        
+        logger.info("Number of jobs: %d \n"%self.num_jobs) 
     
-        runlogger.info("------------------------- Initialize package: %s for %s matching-------------------------\n"%(cls.packagename,cls.matchingtype)) 
+        logger.info("Number of cores used per job:  %d \n"%( self.cores_per_job )) 
 
-        runlogger.info("Potential type: %s \n"%cls.potential_type) 
-
-        runlogger.info("Number of jobs: %d \n"%cls.num_jobs) 
-    
-        runlogger.info("Number of cores used per job:  %d \n"%( cls.cores )) 
-
-        runlogger.info("Command:  %s \n", cls.command) 
-
-        return None 
-
-    @classmethod 
-    def determine_core_assigment(matchingtype,num_jobs,total_cores_assigned): 
-
-        runlogger = logging.getLogger("Core_Assignment: ")  
-
-        cores_per_job = total_cores_assigned/num_jobs   
-
-        if ( cores_per_job ==0): 
-
-            cores_per_job = 1 
-
-            runlogger.warning("WARNING: "+ matchingtype  + " : " 
-                            + "The number of cores assigned, %d "%(total_cores_assigned)
-                            + "is less than the number jobs, %d  ... "%(num_jobs) )
-
-        return cores_per_job 
-
+        logger.info("Command:  %s \n", self.command) 
 
         return None 
 
@@ -184,19 +115,8 @@ class setup():
 
         return None   
 
-    @classmethod    
-    def launch_jobs(self,cmd,joblist): 
-
-        out = open("output","w") ; error = open("error","w") 
-
-        joblist.append( subprocess.Popen(cmd,\
-
-            stdout=out, stderr=error,shell=True) )  
-
-        return joblist  
-
     @classmethod
-    def run(cls,force_field_parameters): 
+    def run(cls,type_name,force_field_parameters): 
 
         """
         
@@ -219,15 +139,15 @@ class setup():
 
         """ 
 
-        runlogger = logging.getLogger(cls.Name+ "Run: ") 
+        run_logger = logging.getLogger(__name__) 
 
-        runlogger.debug( "Ready to Run jobs ... " ) 
+        run_logger.debug( "Ready to Run jobs ... " ) 
 
         #Use_LAMMPS_Potential(cls.potential_type,cls.wk_folder_list_cls,force_field_parameters)             
 
-        output_content_dict = potential.choose_lammps_potential(cls.potential_type,force_field_parameters)  
+        output_content_dict = sampling.potential_LAMMPS.choose_lammps_potential(type_name,force_field_parameters)  
         
-        potential.propagate_force_field(cls.wk_folder_list_cls,output_content_dict)     
+        sampling.potential_LAMMPS.propagate_force_field(cls.wk_folder_list_cls,output_content_dict)     
         
         All_jobs = []  
 
@@ -251,7 +171,7 @@ class setup():
 
         os.chdir(cls.HOME)  
 
-        runlogger.debug("All LAMMPS jobs are launched ... ") 
+        run_logger.debug("All LAMMPS jobs are launched ... ") 
 
         return None 
 
@@ -276,8 +196,8 @@ class setup():
 
         """
     
-        runlogger = logging.getLogger(cls.Name + "Exit: ") 
-        
+        exit_logger = logging.getLogger(__name__) 
+
         for type_index,matching in enumerate(cls.wk_folder_list_cls):
 
             for sub_index,fd in enumerate(matching): 
@@ -294,12 +214,12 @@ class setup():
     
                     at_folder = cls.wk_folder_list_cls[type_index][sub_index]
 
-                    runlogger.error( "ERROR: Command: %s, Folders: %s "\
+                    exit_logger.error( "ERROR: Command: %s, Folders: %s "\
                                         %( error_command, at_folder)) 
 
                     return False
 
-        runlogger.debug("LAMMPS exits successfully") 
+        exit_logger.debug("LAMMPS exits successfully") 
 
         return True 
                     

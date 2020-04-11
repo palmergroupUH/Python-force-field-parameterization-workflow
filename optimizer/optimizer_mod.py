@@ -30,7 +30,7 @@ class set_optimizer:
      self.optimizer_logger (object): 
          an logger object that dump all output into a log file. 
 
-     self.para_type ( str ):
+     self.para_type_lst ( str list ):
         a string defining the type of guess parameters    
 
      self.guess_parameters (array,np.float64): 
@@ -76,15 +76,12 @@ class set_optimizer:
     self.print_optimizer_log():  
     
     self.optimizer_restart_content(): 
-    
  
     """
  
-    def __init__(self,input_file,logname,skipped=None,stop_after=None): 
+    def __init__(self,input_file,logname=None,skipped=None,stop_after=None): 
 
         # create logger for the optimization jobs
-
-        self.optimizer_logger = logging.getLogger(__name__)   
 
         self.add_logger(logname) 
         
@@ -119,7 +116,9 @@ class set_optimizer:
 
     def add_logger(self,logname): 
 
-        if ( len(self.optimizer_logger.handlers) == 0 ): 
+        if ( logname is None ):   
+
+            self.optimizer_logger = logging.getLogger(__name__) 
 
             self.optimizer_logger.setLevel(logging.INFO)              
     
@@ -130,6 +129,10 @@ class set_optimizer:
             fh.setFormatter(formatter) 
 
             self.optimizer_logger.addHandler(fh)
+
+        else: 
+
+            self.optimizer_logger = logging.getLogger(__name__) 
 
         return None 
 
@@ -217,12 +220,14 @@ class set_optimizer:
         guess_parameters = self.input_data_dict[self.keys_lst[self.pointer]] 
     
         all_parameters = [] 
+    
+        self.para_type_lst = [] 
 
         for guess in guess_parameters:
         
             if ( IO.check_type.is_string(guess) ):
 
-                self.para_type = guess 
+                self.para_type_lst.append(guess)  
 
                 continue  
     
@@ -540,6 +545,7 @@ class set_optimizer:
         self.optimizer_logger.info(" ".join(str(para) for para in self.guess_parameter[self.unfit_index]) + "\n" )
         self.optimizer_logger.info("-------------------------------------------------------------------------------------------------------\n")  
         self.optimizer_logger.info("%d constrained parameters : \n" %(self.constraints_index.size)) 
+
         for i in range(self.constraints_index.size): 
 
             self.optimizer_logger.info("The guess parameter: %.6f is constrained between %.6f and %.6f "%( float(guess[self.constraints_index[i]]),float(self.constraints_bound[i][0]),float(self.constraints_bound[i][1]) ) + "\n")
@@ -562,9 +568,9 @@ class set_optimizer:
         optimizer_restart_content[1] = "# output and restart frequency \n\n"
         optimizer_restart_content[2] = " ".join(str(para) for para in self.dump_para) + "\n\n" 
         optimizer_restart_content[3] = "# This is the guess parameters: \n\n"
-        optimizer_restart_content[4] = "# " + self.para_type + " ".join( str(ele) for ele in self.guess_parameter) + "\n\n" 
+        optimizer_restart_content[4] = "# " + " ".join(self.para_type_lst) + " ".join( str(ele) for ele in self.guess_parameter) + "\n\n" 
         optimizer_restart_content[5] = "# This is the current best parameters: \n\n" 
-        optimizer_restart_content[6] = self.para_type + " " + " ".join( str(para) for para in best_para) + "\n\n" 
+        optimizer_restart_content[6] = " ".join(self.para_type_lst) + " " + " ".join( str(para) for para in best_para) + "\n\n" 
         optimizer_restart_content[7] = "# fit (1) and fix (0) parameters: \n\n" 
         optimizer_restart_content[8] = " ".join(str(para) for para in self.fit_and_fix) + "\n\n"  
         optimizer_restart_content[9] = "# constraints ( index lower-bound upper-bound ... ):\n\n "
@@ -579,4 +585,51 @@ class set_optimizer:
 
         return optimizer_restart_content  
 
-  
+    def dump_restart(self,itera,filename_lst,output_address,restart_content_dict) :
+        
+        self.write_optimizer_output(self.restart_freq,
+                                   itera,
+                                   output_address,
+                                   filename_lst[0],
+                                   "a",
+                                   restart_content_dict )
+
+    
+        self.write_optimizer_output(self.restart_freq,
+                                   itera,
+                                   output_address,
+                                   filename_lst[1],
+                                   "w",
+                                   restart_content_dict )
+
+        return None 
+
+    def dump_best_objective(self,itera,filename,output_address,best_value): 
+
+        best_objective = {} 
+    
+        best_objective[0] = str(best_value) + "\n"
+        
+        self.write_optimizer_output(self.output_freq, 
+                                    itera,
+                                    output_address,
+                                    filename,
+                                    "a", 
+                                    best_objective)  
+
+        return None 
+
+    def dump_best_parameters(self,itera,filename,output_address,best_parameters):   
+
+        best_para = {} 
+       
+        best_para[0] = " ".join(str(para) for para in best_parameters) 
+
+        self.write_optimizer_output(self.output_freq, 
+                                    itera,
+                                    output_address,
+                                    filename,
+                                    "w", 
+                                    best_para)  
+        return None 
+    
