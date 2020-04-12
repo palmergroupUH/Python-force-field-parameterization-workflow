@@ -1,0 +1,19 @@
+#!/bin/bash
+#SBATCH -J ML-BOP
+#SBATCH -o out.o%j  
+#SBATCH -e out.e%j 
+#SBATCH -t 5-2:57:33
+#SBATCH -n 12 -N 1   
+
+
+
+
+# --------------------------------- Command Line Options --------------------------------
+# -c (cores) "number of cores assigned"
+# -j (jobid) "slurm jobid"
+# -m (mode) "debug" or "run" (Optional) 
+# -i (input) "input parameters" 
+# $SLUMR_NTASKS: Number of cores requested from SBATCH -n 
+# $SLUMR_JOBID: JOB ID assigned after submitting the job 
+
+./optimize -c $SLURM_NTASKS -j test_$SLURM_JOBID -i in_obj 

@@ -1,0 +1,34 @@
+#!/usr/bin/env python3
+import numpy as np 
+import IO.user_provided
+import objective.setup_objective
+import optimizer.gradient_free
+
+# all input from command line
+
+#logger, TOTAL_CORES,INPUT,JOBID = IO.user_provided.from_command_line(jobID="1234",total_cores=10,input_file="in_obj").finish_reading() 
+logger, TOTAL_CORES,INPUT,JOBID = IO.user_provided.from_command_line().finish_reading() 
+
+# initialize properties matching  
+
+ref_dict,predict_dict,argument_dict,LAMMPS,last_line = objective.setup_objective.setup(INPUT,TOTAL_CORES,JOBID,overwrite=True).finish()  
+
+"""
+matching_objective = objective.compute_objective(ref_dict,predict_dict,argument_dict,LAMMPS) 
+"""
+""" 
+optimize_Himmelblau = optimizer.gradient_free.NelderMeadSimplex(INPUT,Himmelblau_test_obj,skipped=last_line)
+
+optimize_Himmelblau.run_optimization()
+
+print ( ref_dict ) 
+print ( predict_dict )
+print ( argument_dict ) 
+"""
+
+force_field = np.array([1.0,1.0,0.0,77638.534354,16.148387, -0.471029, 0.770018, 1e-06, 2.19964, 10921.97125, 3.282761, 0.270511, 2.750522,38840.92139 ]) 
+
+LAMMPS.run( "tersoff",force_field ) 
+
+job_successfull = LAMMPS.exit() 
+

@@ -1,0 +1,39 @@
+# units: 
+
+real   
+
+# objective function defined: 
+
+#force mW 1 2 2 w 1.0 1.0 bf 5001 
+isobar mW 2 12 1 penalty 5   
+
+# sampling command  # sampling input file names:  in.force, in.rdf, in.isobar
+# sampling by default is LAMMPS 
+
+module load intel && srun -n %d --mpi=pmi2 --nodes=1 lmp_ml_water < in.%s 
+
+# output frequency: current best parameters/obj, restart simplex  
+
+2 2 
+
+# guess parameters of Himmelblau function  
+
+Himmelblau -2.3 1   
+
+# fit (1) and fix (0) parameters: 
+
+1 1 
+
+# constraints (index lower upper)  ... ): 
+
+None
+
+# set termination criterion: max number of iteration, tolerance for parameters,tolerance for objective 
+
+4000 1e-6 1e-6 
+
+# create (Perturb) or use existing vertices (Restart): 
+
+Nelder-Mead Perturb random 1.0 
+
+ 
