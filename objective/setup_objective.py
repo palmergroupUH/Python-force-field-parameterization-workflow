@@ -282,8 +282,8 @@ class setup():
         if ( total_cores < total_cores_by_sampling ):   
 
             self.objective_logger.error("ERROR: total number of cores ( %d )"
-                                        "used by sampling method is more than"
-                                        "the cores ( %d )assigned by slurm"%(
+                                        " used by sampling method is more than"
+                                        " the cores ( %d ) assigned by slurm"%(
                                         total_cores_by_sampling,total_cores))         
          
 

@@ -11,8 +11,7 @@ import sampling.potential_LAMMPS
 
 class run_as_subprocess(): 
 
-    """ 
-    Invoke external sampling softwares of choice to calculate properties using force-field  
+    """Invoke external sampling softwares of choice to calculate properties using force-field  
     potential in every iterations:  
     
     -Parameters: 
@@ -31,7 +30,6 @@ class run_as_subprocess():
     --------
 
     finish: True if all jobs run successfully and False otherwise   
-
     """ 
 
     # Class variables visible for all objects
@@ -40,7 +38,8 @@ class run_as_subprocess():
     
     wk_folder_list_cls = [ ] 
 
-    def __init__(self,
+    @classmethod
+    def __init__(cls,
                  packagename,
                  matching_type,
                  wk_folder_lst,
@@ -49,37 +48,40 @@ class run_as_subprocess():
                  total_cores_assigned,
                  HOME): 
 
-        self.packagename= packagename
+        cls.packagename= packagename
 
-        self.matching_type = matching_type 
+        cls.matching_type = matching_type 
 
 
-        self.sampling_cores_assignment(matching_type,
+        cls.sampling_cores_assignment(matching_type,
                                       num_jobs,
                                       total_cores_assigned)
-        self.num_jobs = num_jobs 
+        cls.num_jobs = num_jobs 
 
-        self.HOME = HOME 
+        command_modified = command%(cls.cores_per_job,matching_type) 
 
-        self.command = command%(self.cores_per_job,matching_type) 
+        cls.command = command_modified  
 
         # For every matching type, save their command and working folders into list 
 
-        self.update_matching(command,wk_folder_lst) 
+        cls.update_matching(command_modified,wk_folder_lst) 
         
         # Print the Initialization information:  
 
-        self.print_initialization() 
+        cls.print_initialization() 
+
+        cls.HOME = HOME 
 
         return None  
 
-    def sampling_cores_assignment(self,matching_type,num_jobs,total_cores_assigned): 
+    @classmethod 
+    def sampling_cores_assignment(cls,matching_type,num_jobs,total_cores_assigned): 
 
         cores_logger = logging.getLogger(__name__) 
 
-        self.cores_per_job = int(total_cores_assigned/num_jobs) 
+        cls.cores_per_job = int(total_cores_assigned/num_jobs) 
         
-        if ( self.cores_per_job == 0): 
+        if ( cls.cores_per_job == 0): 
 
             cores_logger.error("ERROR: "+ matching_type  + " : " 
                             + "The total number of cores requested ( %d ) through input file "%total_cores_assigned
@@ -92,19 +94,31 @@ class run_as_subprocess():
 
         return None  
 
-    def print_initialization(self):  
+    @classmethod
+    def print_initialization(cls):  
 
         logger = logging.getLogger(__name__)
 
-        logger.info("------------------------- Initialize sampling method: %s -------------------------\n\n"%(self.packagename)) 
+        logger.info("------------------------- Initialize sampling method: %s -------------------------\n\n"%(cls.packagename)) 
         
-        logger.info("Number of jobs: %d \n"%self.num_jobs) 
+        logger.info("Number of jobs: %d \n"%cls.num_jobs) 
     
-        logger.info("Number of cores used per job:  %d \n"%( self.cores_per_job )) 
+        logger.info("Number of cores used per job:  %d \n"%( cls.cores_per_job )) 
 
-        logger.info("Command:  %s \n", self.command) 
+        logger.info("Command:  %s \n",cls.command) 
 
         return None 
+
+    @classmethod    
+    def Launch_Jobs(cls,cmd,joblist): 
+
+        out = open("output","w") ; error = open("error","w") 
+
+        joblist.append( subprocess.Popen(cmd,\
+
+            stdout=out, stderr=error,shell=True) )  
+
+        return joblist  
 
     @classmethod
     def update_matching(cls,command,working_folders):
@@ -160,7 +174,7 @@ class run_as_subprocess():
             for folder in cls.wk_folder_list_cls[indx]:  
 
                 os.chdir(folder)    
-
+                
                 each_matching_type = cls.Launch_Jobs(cmd,each_matching_type)            
 
                 time.sleep(0.02) 
@@ -168,7 +182,7 @@ class run_as_subprocess():
             All_jobs.append(each_matching_type) 
 
         cls.exit_codes = [ [ job.wait() for job in matching_type ] for matching_type in All_jobs ]  
-
+        
         os.chdir(cls.HOME)  
 
         run_logger.debug("All LAMMPS jobs are launched ... ") 

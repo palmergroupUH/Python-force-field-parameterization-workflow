@@ -1,4 +1,5 @@
 import logging 
+import argparse 
 import numpy as np 
 import sys 
 import IO.check_type  
@@ -100,16 +101,16 @@ class from_command_line():
                             required=False,default="run",
                             help="choose run or debug mode")
 
-        parser.add_argument("-Ref", "--mode", type=str, 
+        parser.add_argument("-Ref", "--ReferenceData", type=str, 
                             required=False,default="../ReferenceData",
                             help="provide the path of Reference data folder")
 
-        parser.add_argument("-prep", "--mode", type=str, 
+        parser.add_argument("-prep", "--prepsystem", type=str, 
                             required=False,default="../prepsystem",
                             help="provide the path of prepsystem folder")
         args = parser.parse_args()
 
-        cls.argument = dict( args.__dict__.iteritems() )  
+        cls.argument = dict( args.__dict__.items() )  
 
         return None  
 

@@ -5,7 +5,7 @@ def status_is_ok(filename):
     # file does not exist ! 
 
     if ( not os.path.isfile(filename)): 
-
+        
         return False 
 
     # file is empty !  

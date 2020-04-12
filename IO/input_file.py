@@ -3,10 +3,10 @@ import sys
 import IO.check_file  
 
 def parse(filename,skip_lines=None,stop_after=None): 
-
+    
     if ( not IO.check_file.status_is_ok(filename) ):   
 
-        sys.exit("input file does not exist or is empty ! ") 
+        sys.exit("ERROR: input file does not exist or is empty ! ") 
 
     if ( skip_lines is None ): 
 

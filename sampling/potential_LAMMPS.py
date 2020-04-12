@@ -145,15 +145,17 @@ def __pair_style_tersoff(ptype,force_field_parameters):
 
     lammps_cmd_comment ="#pair style: %s is used \n"%ptype 
 
+    element = "WT"
+
     if ( "table" in ptype): 
 
-        command1 = "pair_style   tersoff/table"     
+        command1 = "pair_style   tersoff/table\n"     
 
     else: 
 
-        command1 = "pair_style   tersoff"
+        command1 = "pair_style   tersoff\n"
 
-    command2 = "pair_coeff" + " * * " + potential_filename + " " + element
+    command2 = "pair_coeff" + " * * " + potential_file + " " + element
 
     pair_command =  ( element + " " )*3 + " ".join(str(para) for para in force_field_parameters)
 
