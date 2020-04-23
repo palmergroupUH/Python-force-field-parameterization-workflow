@@ -15,6 +15,45 @@ dcd_lib = CDLL("./fortran_dcd_reader.so")
 
 txt_lib = CDLL("./fortran_txt_reader.so")
 
+#-------------------------------------------------------------------------
+#                         Parallel workload manager                       
+#-------------------------------------------------------------------------
+
+def parallel_assignment(first,last,buffer_size): 
+
+    total_workload = last - first + 1 
+
+    load_times = int(total_workload/buffer_size) + 1  
+
+    work_load_ary =  np.zeros(load_times) 
+    
+    # every core used no more than buffersize of frames  
+
+    work_load_ary[:] = buffer_size 
+
+    # the left-over (remainder) workload will be sent to the last core:  
+    # So, the last core may have workload < buffersize 
+
+    work_load_ary[-1] = total_workload%buffer_size  
+
+    work_load_ary = work_load_ary[work_load_ary != 0] 
+ 
+    pointer_ary = np.zeros(np.count_nonzero(work_load_ary))  
+     
+    pointer_ary[0] = first 
+   
+    for i in range(pointer_ary.size-1):
+
+        pointer_ary[i+1] = work_load_ary[i] + pointer_ary[i] 
+
+    return pointer_ary,work_load_ary 
+
+#-------------------------------------------------------------------------
+#                          Python Read  LAMMPS traj                       
+#-------------------------------------------------------------------------
+
+lammps_traj_header_length = 9 
+
 def read_LAMMPS_traj_as_iterator(fileaddress,start,end,n_col_selected,col_start,col_end):  
 
     with open(fileaddress,"r") as itear: 
