@@ -39,7 +39,7 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
         # 5. mode of Nelder-Mead simplex: "Perturb" or "Restart" ( self.optimizer_argument )  
         # 6. contents of optimizer ( self.optimizer_input ) 
        
-
+        
         # Methods Inherited:
 
         # 1. self.constrain()
@@ -555,7 +555,7 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
 
             in_parameters_full = self.regroup_with_fixed(in_parameters) 
 
-            func_vertices[i] = self.f_obj.optimize(self.para_type_lst,in_parameters_full)
+            func_vertices[i] = self.f_obj.optimize(self.para_type_lst[0],in_parameters_full)
         
         return func_vertices   
 
@@ -705,7 +705,7 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
             
             reflected_vertex = self.Reflect(centroid) 
             
-            func_reflect = self.f_obj.optimize(self.para_type_lst,reflected_vertex) 
+            func_reflect = self.f_obj.optimize(self.para_type_lst[0],reflected_vertex) 
             
             if ( self.best <= func_reflect < self.lousy ): 
                 
@@ -725,7 +725,7 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
 
                 expanded_vertex = self.Expand(reflected_vertex,centroid)          
 
-                func_expand = self.f_obj.optimize(self.para_type_lst,expanded_vertex)
+                func_expand = self.f_obj.optimize(self.para_type_lst[0],expanded_vertex)
 
                 if ( func_expand < func_reflect ):      
 
@@ -761,7 +761,7 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
                
                     outside_contract_vertex = self.Outside_Contract(centroid,reflected_vertex) 
 
-                    func_out_contract = self.f_obj.optimize(self.para_type_lst,outside_contract_vertex)
+                    func_out_contract = self.f_obj.optimize(self.para_type_lst[0],outside_contract_vertex)
 
                     if ( func_out_contract <= func_reflect ): 
             
@@ -791,7 +791,7 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
 
                     inside_contract_vertex = self.Inside_Contract(centroid) 
     
-                    func_inside_contract = self.f_obj.optimize(self.para_type_lst,inside_contract_vertex)
+                    func_inside_contract = self.f_obj.optimize(self.para_type_lst[0],inside_contract_vertex)
 
                     if ( func_inside_contract < self.worst ):     
                         
