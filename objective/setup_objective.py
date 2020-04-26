@@ -498,6 +498,12 @@ class setup():
             # get folder paths of all reference folders  
             num_ref_folders,ref_sub_folders = self.Get_Path(ref_address)  
 
+            # sort and make the folder list as tuples 
+           
+            predict_sub_folders = tuple(sorted(predict_sub_folders)) 
+
+            ref_sub_folders = tuple(sorted(ref_sub_folders)) 
+
             # ---------- Initialize sampling method ------------
             
             self.sampling_method = sampling.MD.run_as_subprocess(self.packagename,
@@ -509,9 +515,10 @@ class setup():
                                          self.HOME) 
 
             # ---------- Initialize output path and argument  ----
-            self.ref_address_dict[matching_type] = {sub_folder: sorted(ref_sub_folders) } 
+
+            self.ref_address_dict[matching_type] = {sub_folder: ref_sub_folders} 
         
-            self.predict_address_dict[matching_type] = {sub_folder: sorted(predict_sub_folders)} 
+            self.predict_address_dict[matching_type] = {sub_folder: predict_sub_folders} 
 
             self.argument_dict[matching_type] = {sub_folder: 
                                                  ( weight,
