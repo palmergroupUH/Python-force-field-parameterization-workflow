@@ -1,6 +1,11 @@
 # A data-driven approach to systematically and reproduciably optimize force-field parameters 
 
-## Features: <img src="images/workflow.png" width="500">
+<img src="workflow.png" width="1000">
+
+## Features: 
+* Externally invoking a LAMMPS exectuable to perform force-matching  
+* Flexible inclusion of diverse source of reference data  
+* Modular design to achieve the customizability of objective functions, force-field potentials, sampling methods, and optimizers 
 
 ## Installation: 
 
@@ -8,7 +13,7 @@
 
 ## Software required:
 
-* compiled LAMMPS executable 
+* A compiled LAMMPS executable 
 
 * Slurm Workload Manager  
 
