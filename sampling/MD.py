@@ -42,12 +42,12 @@ class run_as_subprocess():
     def __init__(cls,
                  packagename,
                  matching_type,
-                 wk_folder_lst,
+                 wk_folder_tple,
                  num_jobs,
                  command,
                  total_cores_assigned,
                  HOME): 
-
+        
         cls.packagename= packagename
 
         cls.matching_type = matching_type 
@@ -64,7 +64,7 @@ class run_as_subprocess():
 
         # For every matching type, save their command and working folders into list 
 
-        cls.update_matching(command_modified,wk_folder_lst) 
+        cls.update_matching(command_modified,wk_folder_tple) 
         
         # Print the Initialization information:  
 
@@ -158,7 +158,7 @@ class run_as_subprocess():
         run_logger.debug( "Ready to Run jobs ... " ) 
 
         #Use_LAMMPS_Potential(cls.potential_type,cls.wk_folder_list_cls,force_field_parameters)             
-
+       
         output_content_dict = sampling.potential_LAMMPS.choose_lammps_potential(type_name,force_field_parameters)  
         
         sampling.potential_LAMMPS.propagate_force_field(cls.wk_folder_list_cls,output_content_dict)     
