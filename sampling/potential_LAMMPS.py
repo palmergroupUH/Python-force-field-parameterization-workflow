@@ -47,29 +47,30 @@ def choose_lammps_potential(ptype,force_field_parameters):
     
     return output_force_field_dict 
 
-def propagate_force_field(wk_folder_lst,output_force_field_dict):
+def propagate_force_field(wk_folder_tple,output_force_field_dict):
 
     potential_logger = logging.getLogger(__name__)
 
     potential_logger.debug("function:propagate_force_field entered successfully !")
 
-    all_wk_folder_tp = tuple(itertools.chain.from_iterable( wk_folder_lst)) 
+    #all_wk_folder_tp = tuple(itertools.chain.from_iterable( wk_folder_lst)) 
+    for every_type in wk_folder_tple:  
 
-    for each_folder in all_wk_folder_tp: 
-
-        for output_file in output_force_field_dict: 
-
-            output_content = output_force_field_dict[output_file] 
-
-            filename = os.path.join(each_folder,output_file)
+        for each_folder in every_type: 
             
-            with open(filename,"w") as output: 
+            for output_file in output_force_field_dict: 
 
-                for line in output_content: 
+                output_content = output_force_field_dict[output_file] 
 
-                    output.write(line)      
+                filename = os.path.join(each_folder,output_file)
+                
+                with open(filename,"w") as output: 
 
-                    #output.write("\n") 
+                    for line in output_content: 
+
+                        output.write(line)      
+
+                        #output.write("\n") 
 
     potential_logger.debug("function:propagate_force_field returned successfully ; force-field parameters ")
 
