@@ -1,5 +1,10 @@
 import os 
 
+
+KB = float(1<<10) # Kilobytes 
+MB = float(1<<20) # Megabytes  
+GB = float(1<<30) # Gigabytes
+
 def status_is_ok(filename): 
 
     # file does not exist ! 
@@ -18,28 +23,26 @@ def status_is_ok(filename):
 
     return True 
 
+def get_file_size(filename,units):   
+
+    file_size_bytes = os.path.getsize(filename)
+
+    if ( units == "MB"):
+
+        return file_size_bytes/MB 
+
+    elif ( units == "GB"):  
+    
+        return file_size_bytes/GB 
+
 def file_size_is_too_big(filename,threshold_size,units): 
 
-    file_size_bytes = os.stat(filename).st_size 
+    file_size_bytes = os.path.getsize(filename)
 
-    if ( units == "MB"): 
+    file_size = get_file_size(filename,units) 
 
-        # bit shift ( convert bytes into MB )  
+    if ( file_size > threshold_size ):  
 
-        file_size_MB = file_size_bytes >> 20  
+        return True 
 
-        if ( file_size_MB > threshold_size ):  
-
-            return True 
-
-    elif ( units =="GB"): 
-
-        file_size_GB = file_size_bytes >> 30         
-
-        if ( file_size_GB > threshold_size ):
-
-            return True  
-
-    return False 
-		
  
