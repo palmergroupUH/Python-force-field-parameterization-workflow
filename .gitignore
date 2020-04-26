@@ -31,4 +31,9 @@ tutorial/Tutorial-2---objective/ReferenceData/
 
 prepsystem/
 
+*.so 
+
+*.mod
+
+
 
