@@ -1,8 +1,0 @@
-#!/bin/bash 
-
-# intel compiler is used to compile fortran program into dynamic library: *.so file    
-
-ifort -fPIC -shared system_mod.f90 dcd_reader_mod.f90  -o fortran_dcd_reader.so 
-ifort -fPIC -shared system_mod.f90 txt_reader_mod.f90  -o fortran_txt_reader.so 
-
-
