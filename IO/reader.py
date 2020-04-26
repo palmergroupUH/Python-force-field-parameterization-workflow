@@ -1,5 +1,7 @@
 # Python standard library 
 import numpy as np 
+import multiprocessing as mp 
+import os 
 import sys 
 import itertools 
 import ctypes 
@@ -7,29 +9,32 @@ import logging
 from ctypes import CDLL, POINTER, c_int, c_double,c_char_p,c_long,c_float,byref 
 
 # Local library: 
-from type_conversion import string_to_ctypes_string, int_to_ctypes_int, np_to_ctypes_array  
+import IO
+from IO.type_conversion import string_to_ctypes_string, int_to_ctypes_int, np_to_ctypes_array  
 
 # Third-party library: 
 
-dcd_lib = CDLL("./fortran_dcd_reader.so") 
+fortranlib_address =  os.path.join(os.path.dirname(IO.__file__) , "fortran") 
 
-txt_lib = CDLL("./fortran_txt_reader.so")
+dcd_lib = CDLL(os.path.join(fortranlib_address,"fortran_dcd_reader.so")) 
+
+txt_lib = CDLL(os.path.join(fortranlib_address,"fortran_txt_reader.so"))
 
 #-------------------------------------------------------------------------
 #                         Parallel workload manager                       
 #-------------------------------------------------------------------------
 
-def parallel_assignment(first,last,buffer_size): 
+def job_assignment(first,last,buffer_size): 
 
     total_workload = last - first + 1 
 
     load_times = int(total_workload/buffer_size) + 1  
 
-    work_load_ary =  np.zeros(load_times) 
+    work_load_ary =  np.zeros(load_times,dtype=int) 
     
     # every core used no more than buffersize of frames  
 
-    work_load_ary[:] = buffer_size 
+    work_load_ary[:] = int(buffer_size) 
 
     # the left-over (remainder) workload will be sent to the last core:  
     # So, the last core may have workload < buffersize 
@@ -38,7 +43,7 @@ def parallel_assignment(first,last,buffer_size):
 
     work_load_ary = work_load_ary[work_load_ary != 0] 
  
-    pointer_ary = np.zeros(np.count_nonzero(work_load_ary))  
+    pointer_ary = np.zeros(np.count_nonzero(work_load_ary),dtype=np.int)  
      
     pointer_ary[0] = first 
    
@@ -48,23 +53,98 @@ def parallel_assignment(first,last,buffer_size):
 
     return pointer_ary,work_load_ary 
 
+def parallel_assignment(start_at,work_load,num_cores,buffer_size): 
+
+    work_load_jobs = np.zeros(num_cores,dtype=np.int ) 
+
+    start_ary = np.zeros(num_cores,dtype=np.int)
+
+    work_load_per_core = int(work_load/num_cores) 
+
+    work_load_jobs[:] = work_load_per_core   
+
+    work_load_jobs[-1] += work_load%num_cores  
+
+    start_ary[0] = start_at  
+
+    job_assembly_lines = [] 
+    
+    for i in range(num_cores): 
+      
+        end = start_ary[i] + work_load_jobs[i]  
+
+        if ( i < num_cores - 1): 
+            
+            start_ary[i+1] = end
+
+        pointer_ary,work_load_ary = job_assignment(start_ary[i],end-1,buffer_size) 
+       
+        #job_assembly_lines.append() 
+        job_assembly_lines.append(( tuple(zip(pointer_ary,work_load_ary)) ))
+   
+    return job_assembly_lines 
+
 #-------------------------------------------------------------------------
-#                          Python Read  LAMMPS traj                       
+#                          Python Read LAMMPS traj                       
 #-------------------------------------------------------------------------
 
-lammps_traj_header_length = 9 
+def get_num_configs_LAMMPS_traj(total_atoms,total_lines):
+
+    # LAMMPS format: The header contains 9 lines  
+    lammps_traj_header_length = 9 
+
+    return int(total_lines/(total_atoms + lammps_traj_header_length))
+
+def get_num_lines_LAMMPS_traj(keyword,total_atoms,num_configs): 
+
+    # LAMMPS format: The header contains 9 lines  
+    lammps_traj_header_length = 9 
+
+    if ( num_configs == 1 ): 
+
+        return 0  
+
+    elif( keyword =="start") :
+        
+        return int((num_configs-1)*(total_atoms + lammps_traj_header_length ))
+
+    elif ( keyword =="end"):
+
+        return int(num_configs*(total_atoms + lammps_traj_header_length ))
+
+def read_LAMMPS_traj_num_atoms(file_address):
+
+    with open(file_address,"r") as content: 
+        """ LAMMPS Format: 
+            ITEM: TIMESTEP
+            1
+            ITEM: NUMBER OF ATOMS
+        """
+        # skip first 3 lines:
+
+        content.readline()     
+        content.readline()     
+        content.readline()     
+        natoms = int(content.readline()) 
+
+    return natoms 
 
 def read_LAMMPS_traj_as_iterator(fileaddress,start,end,n_col_selected,col_start,col_end):  
+    
+    with open(fileaddress,"r") as file_content: 
 
-    with open(fileaddress,"r") as itear: 
-
-        content = itertools.islice(itear,start,end) 
+        content = itertools.islice(file_content,start,end) 
 
         for each_line in content:  
 
             linedata = each_line.split() 
-
+            
+            # use the length of the columns to determine which line to be read 
+            
             if ( len(linedata)== n_col_selected ):
+               
+                # return iterator rather than actual data
+                # need to convert this iterator into an array to use it 
 
                 yield linedata[col_start:col_end]
 
@@ -72,13 +152,13 @@ def read_LAMMPS_traj(dtype,fileaddress,start,end,n_col_selected,col_start,col_en
 
     read_LAMMPS = logging.getLogger(__name__) 
 
-    data_itera = read_file_as_iterator(fileaddress,start,end,n_col_selected,col_start,col_end) 
+    data_itera = read_LAMMPS_traj_as_iterator(fileaddress,start,end,n_col_selected,col_start,col_end) 
 
     if ( dtype == "double"):  
 
         return np.fromiter(itertools.chain.from_iterable(data_itera),dtype=np.float64)
 
-    elif ( dtype == "single"):  
+    elif ( dtype == "single" ):  
 
         return np.fromiter(itertools.chain.from_iterable(data_itera),dtype=np.float32)
 
@@ -88,7 +168,54 @@ def read_LAMMPS_traj(dtype,fileaddress,start,end,n_col_selected,col_start,col_en
 
         sys.exit("Check errors in the log file!") 
 
-    return None 
+        return None 
+
+def read_LAMMPS_traj_in_parallel(file_address,
+                                 num_cores,
+                                 total_atoms,
+                                 num_configs,
+                                 first,
+                                 buffer_size,
+                                 workers=None): 
+
+    work_flow = parallel_assignment(first,num_configs,num_cores,buffer_size)      
+    
+    if ( workers is None ): 
+
+        workers = mp.Pool(num_cores)  
+
+    # set up and launch the job : 
+
+    job_list = [] 
+
+    # the row with exactly 5 columns of data will be parsed
+    n_col_selected = 5
+
+    # the column index start reading fx,fy,fz  
+    col_start = 2
+
+    col_end =5 
+
+    for each_core in work_flow:
+    
+        for start_at,num_configs in each_core:
+
+            end = start_at + num_configs - 1 
+            
+            lines_start = get_num_lines_LAMMPS_traj("start",total_atoms,start_at) 
+    
+            lines_end = get_num_lines_LAMMPS_traj("end",total_atoms,end)
+            
+            job_list.append(workers.apply_async(read_LAMMPS_traj, 
+                                                args=("double", 
+                                                file_address,
+                                                lines_start,
+                                                lines_end,
+                                                n_col_selected,
+                                                col_start,
+                                                col_end )))
+
+    return job_list  
 
 #-------------------------------------------------------------------------
 #                          Fortran dcd reader                             
