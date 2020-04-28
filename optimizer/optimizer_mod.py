@@ -1,6 +1,7 @@
 import numpy as np 
 import logging
 import sys 
+import os 
 import IO.input_file
 import IO.check_type
 
@@ -10,7 +11,6 @@ import IO.check_type
 class set_optimizer: 
        
     """
-
     Description: This is a template class that will be inherited by 
     all other optimizer class to do the followings: 
 
@@ -76,7 +76,6 @@ class set_optimizer:
     self.print_optimizer_log():  
     
     self.optimizer_restart_content(): 
- 
     """
  
     def __init__(self,input_file,logname=None,skipped=None,stop_after=None): 
@@ -146,9 +145,9 @@ class set_optimizer:
 
                 outputfile = filename 
 
-            elif ( not os.path.isdir(output_address) ):  
+            elif ( os.path.isdir(output_address) ):  
 
-                os.makedirs(output_address)
+                #os.makedirs(output_address)
 
                 outputfile = os.path.join(output_address,filename) 
 
@@ -242,7 +241,7 @@ class set_optimizer:
         # update pointer: only 1 line is read and so point to next line  
 
         self.pointer += 1 
-
+        
         return None 
 
     def parse_fit_and_fixed(self):
@@ -290,15 +289,16 @@ class set_optimizer:
             try: 
                 self.constraints_index = np.array([self.constraints[idx*3]  
                                         for idx in range(num_constraints)]).astype(np.int)-1  
-
+                
                 self.constraints_fit_index = np.zeros(self.constraints_index.size).astype(np.int) 
 
                 for nindex in range(self.constraints_index.size): 
 
                     num_shift = sum( i < self.constraints_index[nindex] for i in self.unfit_index) 
 
-                    self.constraints_fit_index[nindex] -= num_shift 
+                    self.constraints_fit_index[nindex] = self.constraints_index[nindex] - num_shift 
 
+                    
                 self.constraints_bound = np.array([ [ self.constraints[3*indx+1], self.constraints[3*indx+2]] for indx in range(num_constraints)]) 
 
             except ( ValueError, TypeError) :          
@@ -484,8 +484,8 @@ class set_optimizer:
 
                 else:
 
-                    self.optimze_logger.info( "Lower constraints are applied...")
-                    self.optimze_logger.info( "Parameter: "     
+                    self.optimizer_logger.info( "Lower constraints are applied...")
+                    self.optimizer_logger.info( "Parameter: "     
                                               + str( array[self.constraints_fit_index[i]]) 
                                               + "  is constrained to " + str( lower))
 
@@ -501,9 +501,9 @@ class set_optimizer:
 
                 else:
 
-                    self.optimze_logger.info( "Upper constraints are applied..." )
+                    self.optimizer_logger.info( "Upper constraints are applied..." )
 
-                    self.optimze_logger.info( "Parameter: " 
+                    self.optimizer_logger.info( "Parameter: " 
                                               + str( array[self.constraints_fit_index[i]]) 
                                               + "  is constrained to " + str( upper))
 
@@ -515,7 +515,7 @@ class set_optimizer:
 
     def regroup_with_fixed(self,fitted_para): 
     
-        para_all= np.zeros(self.guess_parameter.size)
+        para_all= np.zeros(self.guess_parameter.size,dtype=np.float64)
 
         para_all[self.fit_and_fix==0] = self.guess_parameter[self.fit_and_fix==0] 
         
@@ -548,7 +548,7 @@ class set_optimizer:
 
         for i in range(self.constraints_index.size): 
 
-            self.optimizer_logger.info("The guess parameter: %.6f is constrained between %.6f and %.6f "%( float(guess[self.constraints_index[i]]),float(self.constraints_bound[i][0]),float(self.constraints_bound[i][1]) ) + "\n")
+            self.optimizer_logger.info("The guess parameter: %.6f is constrained between %.6f and %.6f "%( float(self.guess_parameter[self.constraints_index[i]]),float(self.constraints_bound[i][0]),float(self.constraints_bound[i][1]) ) + "\n")
 
         self.optimizer_logger.info("-------------------------------------------------------------------------------------------------------\n")
 

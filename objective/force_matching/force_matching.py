@@ -133,6 +133,8 @@ class load():
 
         count_time = 0 
 
+        self.logger.info("Waiting for predicted force data ... ") 
+
         while True: 
 
             predicted_num_lines = IO.reader.get_number_lines(predicted_data) 
@@ -141,7 +143,7 @@ class load():
         
                 time.sleep(5) 
 
-                self.logger.info("Waiting for predicted force data ; time elapsed: %d ... \n"%count_time)
+                self.logger.info("time elapsed: %d ... \n"%count_time)
 
                 count_time += 5 
 
@@ -178,14 +180,14 @@ class load():
     def parse_argument_dict(self,argument):  
         # argument is a tuple
         
-
+        
         # convert objective weight into float 
         
         self.obj_weight = float( argument[0] ) 
 
         # convert cores for analysis into integer
 
-        self.num_cores = int(argument[1] ) 
+        self.num_cores = int(argument[2] ) 
 
         # equally assign cores for processing predicted and reference data 
         self.num_cores_ref = int(self.num_cores/2) 
@@ -239,7 +241,9 @@ class load():
         self.num_atoms_lst = []
 
         self.ref_force_norm_lst = [] 
-   
+
+        self.workers = mp.Pool(self.num_cores) 
+
         for i,force_file_name in enumerate(self.Ref_force_file_lst):
 
             num_lines = self.ref_force_lines[i] 
@@ -258,11 +262,16 @@ class load():
                                          num_atoms,
                                          num_configs,
                                          first=1,
-                                         buffer_size=self.buffersize) 
+                                         buffer_size=self.buffersize,
+                                         workers=self.workers) 
 
             # computing the force normalization :
 
             self.ref_force_norm_lst.append(self.pre_compute_force_norm(force_ref_jobs,num_configs,num_atoms,num_column=3))
+
+        self.workers.close() 
+    
+        self.workers.join() 
 
         return None 
        
@@ -300,6 +309,10 @@ class load():
 
         for ref_file,predict_file in zip(self.Ref_force_file_lst,
                                          self.predict_force_file_lst):  
+
+            self.ref_workers = mp.Pool(self.num_cores_ref) 
+
+            self.predict_workers = mp.Pool(self.num_cores_predict) 
             
             # launch the job in parallel jobs 
             # start reading reference force data 
@@ -308,7 +321,8 @@ class load():
                                          self.num_atoms_lst[i],
                                          self.num_congigs_lst[i],
                                          first=1,
-                                         buffer_size=self.buffersize) 
+                                         buffer_size=self.buffersize,
+                                         workers=self.ref_workers) 
 
             # start reading predicted force data
             force_predict_jobs = IO.reader.read_LAMMPS_traj_in_parallel(predict_file,
@@ -316,20 +330,29 @@ class load():
                                          self.num_atoms_lst[i], 
                                          self.num_congigs_lst[i], 
                                          first=1,
-                                         buffer_size=self.buffersize) 
+                                         buffer_size=self.buffersize,
+                                         workers=self.predict_workers) 
 
             sum_sqr_diff = 0  
     
             # update the counter 
-            
 
             for ref_output,predict_output in zip(force_ref_jobs,force_predict_jobs): 
 
                 sum_sqr_diff  += np.sum(np.square(( ref_output.get() - predict_output.get() ))) 
-
+            
             self.fm_objective_lst.append(sum_sqr_diff/self.ref_force_norm_lst[i]) 
 
             i += 1 
+
+            self.ref_workers.close()     
+
+            self.predict_workers.close() 
+
+            self.ref_workers.join() 
+
+            self.predict_workers.join() 
+        
         return None  
 
 #----------------------------------------------------------------------------
@@ -363,7 +386,7 @@ class load():
                                                 skiprows=0,
                                                 return_numpy=True) 
 
-            energy_norm = np.var(ref_energy_data)*num_lines_eng 
+            energy_norm = np.var(ref_energy_data)
 
         return ref_energy_data,energy_norm    
 
@@ -381,70 +404,27 @@ class load():
                               skiprows=1,
                               return_numpy=True)
 
-           
-            self.energy_objective_lst.append(np.sum(( predicted_eng_data - self.ref_eng_data_lst[i] )**2)/self.ref_eng_norm_lst[i]) 
+            #self.energy_objective_lst.append( self.compute_scaled_energy(predicted_eng_data,self.ref_eng_data_lst[i],self.ref_eng_norm_lst[i] )) 
+    
+            self.energy_objective_lst.append(np.average(( predicted_eng_data - self.ref_eng_data_lst[i] )**2/self.ref_eng_norm_lst[i])) 
 
             i += 1 
              
         return None  
 
-#----------------------------------------------------------------------------
-#                             Load the data:                                 
-#----------------------------------------------------------------------------
+    def compute_scaled_energy(self,predicted_eng, ref_energy,eng_norm): 
 
-    def compute_scaled_force(num_cores, 
-                             total_configs,
-                             chunksize,
-                             num_atoms,
-                             num_column,
-                             dumpfile,
-                             Reffile,
-                             skip_ref,
-                             skip_dump):
+        diff = predicted_eng - ref_energy 
 
-        p = mp.Pool(num_cores) 
+        ave_diff = np.average( diff) 
 
-        datafile = [ Reffile,dumpfile ] 
+        relative_eng = ( diff -ave_diff )**2 
 
-        num_itera = total_configs/chunksize
-
-        remainder = total_configs%chunksize
-
-        if ( remainder != 0 ): 
-
-                #print "Chunksize has to be divisible by total configurations"
-                #print "Chunksize is: ", chunksize, " and total configurations are: ", total_configs
-                sys.exit()
-
-        sum_refforce = 0.0 ; sqr_ave = 0.0 ; sum_diff  = 0.0
-
-        datasize = chunksize*( num_atoms + 9 )
-
-        for i in range(num_itera):
-
-            start = i*datasize
-         
-            end = start + datasize
-
-            # push all jobs into a list 
-
-            results = [ p.apply_async( ReadFileByChunk, args=(data,start,end )) for data in datafile ]
-
-            Ref_chunkdata,Dump_chunkdata = [ array.get() for array in results ]
-
-            sum_diff = sum_diff + ComputeSumSquared(Ref_chunkdata,Dump_chunkdata)
+        return np.average(relative_eng/eng_norm) 
         
-            sum_refforce = sum_refforce + np.sum(Ref_chunkdata)
-
-            sqr_ave = sqr_ave + np.sum(Ref_chunkdata*Ref_chunkdata)
-
-        average_sqr = (sum_refforce/(total_configs*num_atoms*num_column))**2
-
-        sqr_average =  sqr_ave/(total_configs*num_atoms*num_column)
-
-        variances_ref = sqr_average - average_sqr
-
-        return sum_diff/variances_ref/(total_configs*num_atoms*num_column) 
+#----------------------------------------------------------------------------
+#                             Compute overall objective:                     
+#----------------------------------------------------------------------------
 
     def optimize(self): 
 
@@ -468,8 +448,7 @@ class load():
             scaled_eng_objective +=  eng_weight*e_obj 
 
             scaled_force_objective  += force_weight*f_obj
-
-        print ( scaled_eng_objective, scaled_force_objective )
-        
+    
+        print ( "scaled energy: ", scaled_eng_objective ,"scaled force: ", scaled_force_objective )
         return self.obj_weight*( scaled_eng_objective + scaled_force_objective )  
         

@@ -49,7 +49,7 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
         # 5. self.dump_best_objective()  
 
         # computing objective function 
-
+        
         self.f_obj = f_objective
 
         self.output_address = Output
@@ -80,12 +80,12 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
 
         # default: adaptive nelder-mead simplex coefficient 
 
-        self.TransformationCoeff("standard")
+        self.TransformationCoeff("adaptive")
 
         # print Nelder-Mead optimization initialization 
 
         self.print_Nelder_Mead_simplex_log() 
-
+        
     # check the general input:  
 
     def print_Nelder_Mead_simplex_log(self):  
@@ -354,7 +354,7 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
 
             self.num_fitting = self.num_vertices - 1  
 
-            vertices_mat = np.zeros((self.num_vertices,self.num_fitting)) 
+            vertices_mat = np.zeros((self.num_vertices,self.num_fitting),dtype=np.float64) 
             
             for i in range(len(self.optimizer_input[1:])):
               
@@ -523,7 +523,7 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
 
         if ( keyword == "standard" ): 
 
-            self.alpha = 1 
+            self.alpha = 1.0 
         
             self.kai =  2.0 
 
@@ -533,7 +533,7 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
 
         elif ( keyword == "adaptive" ): 
 
-            self.alpha = 1  
+            self.alpha = 1.0 
 
             self.kai =  1 + 2.0/self.num_fitting  
     
@@ -545,8 +545,8 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
 
         num_vertices = vertices_mat[:,0].size
 
-        func_vertices = np.zeros(num_vertices) 
-
+        func_vertices = np.zeros(num_vertices,dtype=np.float64) 
+        
         for i in range(num_vertices): 
     
             in_parameters = vertices_mat[i,:]
@@ -554,7 +554,7 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
             self.constrain(in_parameters)   
 
             in_parameters_full = self.regroup_with_fixed(in_parameters) 
-
+            
             func_vertices[i] = self.f_obj.optimize(self.para_type_lst[0],in_parameters_full)
         
         return func_vertices   
@@ -562,9 +562,13 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
     def check_convergence_status(self,n_iteration): 
 
         self.optimizer_logger.info("Current iteration: %d finishes \n\n" %n_iteration ) 
+        self.optimizer_logger.info(30*"-"+ "Optimization status: "+ 30*"-"+"\n")
         self.optimizer_logger.info("Current Best objective: %.10f\n\n" %self.best ) 
         self.optimizer_logger.info("Current Best parameters: " + " ".join(str(para) for para in self.vertices_sorted[self.best_indx,:])+ "\n\n") 
-
+        self.optimizer_logger.info("Current Worst objective: %.10f\n\n" %self.worst ) 
+        self.optimizer_logger.info("Current Worst parameters: " + " ".join(str(para) for para in self.vertices_sorted[self.worst_indx,:])+ "\n") 
+        self.optimizer_logger.info(70*"-"+"\n")
+        
         converged = self.termination_criterion_is_met(n_iteration) 
 
         if ( not converged ):  
@@ -593,12 +597,12 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
 
         self.optimizer_logger.info("Perform reflection ... \n") 
 
-        return self.regroup_with_fixed(reflected_vetertex) 
+        return reflected_vetertex 
  
     def Accept(self,vertex,func_vertex,transform_keyword):  
 
         # subsitude worst vertex 
-
+        
         self.vertices_sorted[self.worst_indx,:] = vertex  
 
         self.func_vertices_sorted[self.worst_indx] = func_vertex 
@@ -613,7 +617,7 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
 
         self.optimizer_logger.info("Perform expansion to further explore the reflected direction ... \n") 
 
-        return self.regroup_with_fixed(expanded_vertex)  
+        return expanded_vertex  
 
     def Outside_Contract(self,centroid,reflected_vertex):  
 
@@ -625,7 +629,7 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
                                    "second-worst vertex and worst vertex ... \n"
                                    "Perform outside contraction ... \n\n") 
 
-        return self.regroup_with_fixed(outside_vertex)  
+        return outside_vertex  
         
     def Inside_Contract(self,centroid):    
 
@@ -636,11 +640,11 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
         self.optimizer_logger.info("Reflected vertex is worst than that of the worst vertex ...\n\n" 
                                    "Perform inside contraction ... \n\n") 
 
-        return self.regroup_with_fixed(inside_vertex)   
+        return inside_vertex   
     
     def Shrink(self):   
 
-        shrinked_vertices = np.zeros(( self.num_vertices-1, self.num_vertices-1))
+        shrinked_vertices = np.zeros(( self.num_vertices-1, self.num_vertices-1),dtype=np.float64)
 
         for i in range(self.num_vertices -1): 
     
@@ -705,7 +709,7 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
             
             reflected_vertex = self.Reflect(centroid) 
             
-            func_reflect = self.f_obj.optimize(self.para_type_lst[0],reflected_vertex) 
+            func_reflect = self.f_obj.optimize(self.para_type_lst[0],self.regroup_with_fixed(reflected_vertex)) 
             
             if ( self.best <= func_reflect < self.lousy ): 
                 
@@ -713,7 +717,7 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
                 
                 self.sort_simplex(self.func_vertices_sorted,self.vertices_sorted) 
 
-                self.check_convergence_status(itera) 
+                self.converged = self.check_convergence_status(itera) 
 
                 self.optimization_output(itera) 
                 
@@ -725,7 +729,7 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
 
                 expanded_vertex = self.Expand(reflected_vertex,centroid)          
 
-                func_expand = self.f_obj.optimize(self.para_type_lst[0],expanded_vertex)
+                func_expand = self.f_obj.optimize(self.para_type_lst[0],self.regroup_with_fixed(expanded_vertex))
 
                 if ( func_expand < func_reflect ):      
 
@@ -761,7 +765,7 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
                
                     outside_contract_vertex = self.Outside_Contract(centroid,reflected_vertex) 
 
-                    func_out_contract = self.f_obj.optimize(self.para_type_lst[0],outside_contract_vertex)
+                    func_out_contract = self.f_obj.optimize(self.para_type_lst[0],self.regroup_with_fixed(outside_contract_vertex))
 
                     if ( func_out_contract <= func_reflect ): 
             
@@ -791,7 +795,7 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
 
                     inside_contract_vertex = self.Inside_Contract(centroid) 
     
-                    func_inside_contract = self.f_obj.optimize(self.para_type_lst[0],inside_contract_vertex)
+                    func_inside_contract = self.f_obj.optimize(self.para_type_lst[0],self.regroup_with_fixed(inside_contract_vertex))
 
                     if ( func_inside_contract < self.worst ):     
                         
@@ -830,7 +834,7 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
 
             return True 
 
-        if ( ( np.amax(self.func_vertices_sorted)/np.amin(self.func_vertices_sorted)-1) < self.obj_tol and divisisor !=0 ):
+        if ( ( np.amax(self.func_vertices_sorted)/np.amin(self.func_vertices_sorted)-1 ) < self.obj_tol ):
             
             sci_obj = "{0:.1e}".format(self.obj_tol) 
             
@@ -841,7 +845,7 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
             #optimization_output(best_para,self.func_vertices_sorted[0])             
 
             return True  
-    
+        
         unique_obj,repeat = np.unique(self.func_vertices_sorted,return_counts=True) 
 
         if ( unique_obj.size < self.func_vertices_sorted.size ):
@@ -850,6 +854,10 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
 
             self.optimizer_logger.info(" ".join(str(obj) for obj in self.vertices_sorted) )
 
+            self.optimizer_logger.info("The objective function values for all vertex are: \n ")
+            
+            self.optimizer_logger.info(" ".join(str(obj) for obj in self.func_vertices_sorted) )
+            
             self.optimizer_logger.info( "Optimization converges and program exits ! \n")
 
             #optimization_output(best_para,self.func_vertices_sorted[0])
@@ -902,7 +910,7 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
         # inherited from optimizer_mod 
         self.dump_best_objective(itera,self.best_obj_file,self.output_address,self.best)
 
-        self.dump_current_simplex(itera)
+        #self.dump_current_simplex(itera)
 
         # inherited from optimizer_mod 
         self.dump_best_parameters(itera,self.best_parameters_file,self.output_address,self.best_vertex) 
