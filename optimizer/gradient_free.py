@@ -820,8 +820,9 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
                         continue    
             
 #===========================================================================================
-#                             Termination criterion                                          
+#                             Termination criterion                                         
 #===========================================================================================
+
     def termination_criterion_is_met(self,n_itera): 
 
         self.optimizer_logger.debug("Class NelderMeadSimplex:terminate function entered successfully !")
@@ -876,7 +877,7 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
 
             return True  
 
-        if ( n_itera  == self.max_iteration ): 
+        if ( n_itera+1  == self.max_iteration ): 
 
             self.optimizer_logger.info("Convergence criterion 5 is met: Maximum number of iteration is reached !\n") 
 
@@ -916,7 +917,6 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
         self.dump_best_parameters(itera,self.best_parameters_file,self.output_address,self.best_vertex) 
        
         return None  
-
 
     def dump_current_simplex(self,itera): 
 
