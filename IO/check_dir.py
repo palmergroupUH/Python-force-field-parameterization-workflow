@@ -49,7 +49,11 @@ def check_folder_status(folder_path):
 
     return exist,empty 
 
-def decide_folder_status(folder_path):
+def decide_folder_status(folder_path,mesg=None):
+    
+    if ( mesg is None): 
+
+        mesg = ""
 
     exist,empty = check_folder_status(folder_path)
 
@@ -57,13 +61,13 @@ def decide_folder_status(folder_path):
 
     if ( not exist ): 
          
-        folder_status.error("ERROR: Folder: %s does not exist "%folder_path)
+        folder_status.error("ERROR: %s Folder: %s does not exist "%(mesg,folder_path))
 
         sys.exit("Check errors in log file !") 
 
     if ( empty ): 
 
-        folder_status.error("ERROR: Folder: %s  is empty !  "%folder_path)
+        folder_status.error("ERROR: %s Folder: %s  is empty !  "%(mesg,folder_path))
 
         sys.exit("Check errors in log file !") 
        

@@ -7,9 +7,14 @@ import IO.check_type
 class from_command_line():
 
     @classmethod
-    def __init__(cls,jobID=None,total_cores=None,input_file=None,mode=None): 
+    def __init__(cls,jobID=None,
+                 total_cores=None,
+                 input_file=None,
+                 mode=None,
+                 ref_address=None,
+                 prep_address=None): 
     
-        if ( mode is None ):  
+        if (mode is None):  
 
             cls.MODE = "run"
 
@@ -17,22 +22,38 @@ class from_command_line():
 
             cls.MODE = mode 
     
-        if ( jobID is not None ):
+        if (jobID is not None):
 
             cls.JOBID = str(jobID) 
             
             cls.logger = cls.Set_Run_Mode(cls.JOBID + ".log",cls.MODE)
         
-        if ( total_cores is not None ): 
+        if (total_cores is not None): 
             
             cls.TOTAL_CORES = total_cores
         
-        if ( input_file is not None ): 
+        if (input_file is not None): 
 
             cls.INPUT = input_file  
-        
-        all_options = np.array([ total_cores ,jobID ,input_file ])
 
+        if (ref_address is not None): 
+
+            cls.Ref_data = ref_address
+
+        else: 
+
+            cls.Ref_data ="../ReferenceData"
+
+        if (prep_address is not None):
+    
+            cls.prep_data = prep_address 
+
+        else: 
+
+            cls.prep_data = "../prepsystem"
+            
+        all_options = np.array([ total_cores ,jobID ,input_file ])
+        
         # if None of total_cores ,jobID ,input_file assigned, then use the command line options
 
         if ( np.all(all_options  == None ) ):  
@@ -44,7 +65,9 @@ class from_command_line():
         if ( np.any(all_options  != None ) 
             and np.any(all_options == None) ):  
 
-            sys.exit("ERROR: either assign all values as arguments or read all input from command line")    
+            sys.exit("ERROR: either assign all values for arguments "
+                     "in the class constructors "
+                     "or read all input from command line")    
 
         # check the following mandatory attributes  
         
@@ -52,6 +75,8 @@ class from_command_line():
         cls.check_necessary_attributes("TOTAL_CORES")
         cls.check_necessary_attributes("INPUT")
         cls.check_necessary_attributes("logger")
+        cls.check_necessary_attributes("Ref_data")
+        cls.check_necessary_attributes("prep_data")
         
         # check the type of user-provided input: 
 
@@ -63,7 +88,7 @@ class from_command_line():
     @classmethod
     def finish_reading(cls): 
 
-        return cls.logger,cls.TOTAL_CORES, cls.INPUT, cls.JOBID
+        return cls.logger,cls.TOTAL_CORES, cls.INPUT, cls.JOBID,cls.Ref_data,cls.prep_data
 
     @classmethod
     def check_necessary_attributes(cls,attribute): 
@@ -108,6 +133,7 @@ class from_command_line():
         parser.add_argument("-prep", "--prepsystem", type=str, 
                             required=False,default="../prepsystem",
                             help="provide the path of prepsystem folder")
+
         args = parser.parse_args()
 
         cls.argument = dict( args.__dict__.items() )  
@@ -124,6 +150,10 @@ class from_command_line():
         cls.INPUT = cls.argument["input"] 
 
         cls.logger = cls.Set_Run_Mode(cls.JOBID +".log",cls.MODE) 
+
+        cls.Ref_data = cls.argument["ReferenceData"]
+
+        cls.prep_data = cls.argument["prepsystem"] 
 
         return None  
 
@@ -166,4 +196,21 @@ class from_command_line():
         logger.addHandler(fh) 
 
         return logger 
+
+def parse_matching_argument(arugment_str,keyword,msg): 
+
+    try: 
+
+        keyword_indx = argument_str.index(keyword)  
+
+        argument = arugment_str[keyword_indx]  
+
+        return argument 
+
+    except ValueError: 
+
+        self.logger.warn("WARRNING: missing weight %s in the %s matching argument\n"%(keyword,msg)) 
+
+    return None 
+
 
