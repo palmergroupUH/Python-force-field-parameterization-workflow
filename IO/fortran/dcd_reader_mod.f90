@@ -59,7 +59,13 @@ contains
 
         end subroutine 
 
-    subroutine call_read_dcd_traj_in_chunk(dcdfile,strleng,start_at,num_configs,total_atoms,box,xyz) bind(c,name="call_dcd_traj_chunk")
+    subroutine call_read_dcd_traj_in_chunk(dcdfile,&
+                                         & strleng,&
+                                         & start_at,&
+                                         & num_configs,&
+                                         & total_atoms,&
+                                         & box,&
+                                         & xyz) bind(c,name="call_dcd_traj_chunk")
         implicit none 
         integer(c_int),intent(in) :: start_at,strleng,total_atoms,num_configs 
         character(kind=c_char,len=1),intent(in),dimension(1:strleng) :: dcdfile  

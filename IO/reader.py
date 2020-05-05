@@ -317,7 +317,7 @@ def get_number_lines(txtfile):
     num_lines = c_int() 
     
     txt_lib.get_txt_lines(txtfile,byref(strlength),byref(num_lines)) 
-
+    
     return num_lines.value 
 
 def loadtxt(txtfile,num_lines,skiprows,return_numpy): 
