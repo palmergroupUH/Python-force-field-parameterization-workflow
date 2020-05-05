@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # Standard python library
-import numpy as np
+import sys 
 import IO.user_provided
 import objective.setup_objective
 import optimizer.gradient_free
@@ -11,7 +11,7 @@ import objective.compute_objective
 # Third party library:
 
 
-def main():
+def optimize_main():
 
     #------------------------------------------------------------------------------
     #                       Taking the input from user                             
@@ -88,6 +88,14 @@ def main():
     optimize_fm.run_optimization()
 
     return None 
+
+def main(): 
+
+    if (sys.argv[0] =="optimize"):
+
+        optimize_main()  
+
+    return None  
 
 if ( __name__=="__main__"): 
 

@@ -15,7 +15,8 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     entry_points={ 
             'console_scripts':[ 
-                "optimize=main.__main__:main"
+                "optimize=main.__main__:main",
+                "clearjob=main.__main__:main"
 
             ] 
     },

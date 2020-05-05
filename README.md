@@ -5,7 +5,12 @@
 ## Features: 
 * Externally invoking a LAMMPS exectuable to perform force-matching  
 * Flexible inclusion of diverse source of reference data  
-* Modular design to achieve the customizability of objective functions, force-field potentials, sampling methods, and optimizers 
+* Modular design to achieve the customizability of: 
+    - objective functions
+    - force-field potentials
+    - sampling methods 
+    - and optimizers 
+    
 
 ## Installation: 
 
