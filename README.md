@@ -3,13 +3,11 @@
 <img src="workflow.png" width="1000">
 
 ## Features: 
-* Externally invoking a LAMMPS exectuable to perform force-matching  
-* Flexible inclusion of diverse source of reference data  
-* Modular design to achieve the customizability of: 
-    - objective functions
-    - force-field potentials
-    - sampling methods 
-    - and optimizers 
+* Flexible inclusion of diverse sources of reference data  
+* Modular design to facilitate the exstensions with user-defined:  
+    - objective functions 
+    - sampling methods/force-field potential forms
+    - optimizers 
     
 
 ## Installation: 

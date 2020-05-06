@@ -113,26 +113,26 @@ class from_command_line():
     @classmethod 
     def Take_Command_Line_Args(cls): 
         
-        parser = argparse.ArgumentParser()
+        parser = argparse.ArgumentParser(description="This is a Python software package implementing a force-field parameters optimization workflow")
 
-        parser.add_argument("-c", "--cores", type=int, required=True)
+        parser.add_argument("-c", "--cores", type=int, required=True,help="Number of cores requested")
 
-        parser.add_argument("-i", "--input", type=str, required=True)
+        parser.add_argument("-i", "--input", type=str, required=True,help="input file name")
 
         parser.add_argument("-j", "--job", type=str, 
-                            required=True,help="Specify a unique jobid associated with each working folder and log file") 
+                            required=True,help="Specify a job ID that will be attached to a job folder and log file") 
         
         parser.add_argument("-m", "--mode", type=str, 
                             required=False,default="run",
-                            help="choose run or debug mode")
+                            help="(Optional) Choose 'run' or 'debug'. Default is 'run' ")
 
         parser.add_argument("-Ref", "--ReferenceData", type=str, 
                             required=False,default="../ReferenceData",
-                            help="provide the path of Reference data folder")
+                            help="(Optional) Provide the path to Reference data folder. Default path is '../ReferenceData'")
 
         parser.add_argument("-prep", "--prepsystem", type=str, 
                             required=False,default="../prepsystem",
-                            help="provide the path of prepsystem folder")
+                            help="(Optional) Provide the path to prepsystem folder. Default path is '../prepsystem'")
 
         args = parser.parse_args()
 
