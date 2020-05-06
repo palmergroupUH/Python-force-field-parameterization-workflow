@@ -1,0 +1,36 @@
+# units: 
+
+real   
+
+# objective function defined: 
+
+force mW_300K_1bar_500 1 2 2 bf 5000 eng abs w 0.0 1.0 
+
+# sampling command  # sampling input file names:  in.force, in.rdf, in.isobar
+# sampling by default is LAMMPS 
+
+module load intel && srun -n %d -N1 -c1 --mpi=pmi2 lmp_ml_water < in.%s
+
+# output frequency: current best parameters/obj, restart simplex  
+
+5 5 
+
+#stillinger_weber 6.189  2.3925  1.80  23.15  1.20  -0.333333333333 7.049556277  0.6022245584  4.0  0.0 0.0  
+stillinger_weber 6.589  2.0925  1.87  29.15  1.02  -0.303333333333 7.049556277  0.6822245584  3.2  0.4 0.0  
+
+# fit (1) and fix (0) parameters: 
+
+1 1 1 1 1 1 0 1 1 1 0  
+
+# constraints (index lower upper)  ... ): 
+
+10 0 5
+
+# set termination criterion: max number of iteration, tolerance for parameters,tolerance for objective 
+
+25000 1e-14 1e-14
+
+# create (Perturb) or use existing vertices (Restart): 
+
+Nelder-Mead Perturb random 0.4  
+
