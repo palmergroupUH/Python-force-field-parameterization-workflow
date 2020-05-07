@@ -3,7 +3,8 @@
 <img src="workflow.png" width="1000">
 
 ## Features: 
-* Flexible inclusion of diverse sources of reference data  
+* Flexible inclusions of a different kinds of physical properties as reference data  
+* Diverse choices of potential functional forms compatiable with third-party MD packages 
 * Modular design to facilitate the exstensions with user-defined:  
     - objective functions 
     - sampling methods/force-field potential forms
