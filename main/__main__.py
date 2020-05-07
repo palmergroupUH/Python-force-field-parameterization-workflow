@@ -89,14 +89,22 @@ def optimize_main():
 
     return None 
 
+def clear_job_id_main(): 
+
+    return None 
+
 def main(): 
-
-    if (sys.argv[0] =="optimize"):
-
+    
+    if (sys.argv[0].find("optimize") >= 0):
+        
         optimize_main()  
+
+    elif ( sys.argv[0].find("clearJobID") >= 0):
+
+        clear_job_id_main() 
 
     return None  
 
 if ( __name__=="__main__"): 
-
+    
     main() 

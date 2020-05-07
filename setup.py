@@ -11,13 +11,12 @@ setuptools.setup(
     description="Systematic and Reproduciable parameterization of force-field",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/pypa/sampleproject",
+    url="https://github.com/jingxiangguo/Python-force-field-parameterization-workflow",
     packages=setuptools.find_packages(),
     entry_points={ 
             'console_scripts':[ 
                 "optimize=main.__main__:main",
-                "clearjob=main.__main__:main"
-
+                "clearJobID=main.__main__:main"
             ] 
     },
     classifiers=[
