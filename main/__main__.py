@@ -16,6 +16,7 @@ def optimize_main():
     #------------------------------------------------------------------------------
     #                       Taking the input from user                             
     #------------------------------------------------------------------------------
+    # You can copy this main program to any folder you like to run it locally
     # Uncomment the following docstring if running the program interactively
     """
     main_logger,TOTAL_CORES,INPUT,JOBID,Ref,prep = (IO
@@ -82,7 +83,7 @@ def optimize_main():
                        INPUT,
                        eval_objective,
                        skipped=last_line,
-                       Output=JOBID+"/Output"))
+                       output=JOBID))
 
     # run optimization ...
     optimize_fm.run_optimization()

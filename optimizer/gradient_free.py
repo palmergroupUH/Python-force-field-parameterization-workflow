@@ -1,6 +1,7 @@
 import numpy as np 
 import logging 
 import sys 
+import os 
 import optimizer.optimizer_mod
 import random 
 
@@ -13,7 +14,7 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
                 f_objective,  
                 logname=None , 
                 skipped=None, 
-                Output=None,
+                output=None,
                 optimize_mode=None,
                 nm_type=None):
     
@@ -36,7 +37,7 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
         # 3. index of guess parameters to be constrained ( self.constraints_fit_index ) 
         # 4. constraints bounds (self.constraints_bounds )  
         # 5. the type of optimizer ( self.optimizer_type ) 
-        # 5. mode of Nelder-Mead simplex: "Perturb" or "Restart" ( self.optimizer_argument )  
+        # 5. mode of Nelder-Mead simplex: "perturb" or "restart" ( self.optimizer_argument )  
         # 6. contents of optimizer ( self.optimizer_input ) 
        
         
@@ -52,8 +53,6 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
         
         self.f_obj = f_objective
 
-        self.output_address = Output
-    
         if ( optimize_mode is None ):  
         
             self.optimize_mode = "minimize" 
@@ -69,6 +68,9 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
         # self.worst: 
         # self.best 
         # self.lousy 
+    
+        # set the destination folders addresses for output and restart files 
+        self.set_the_dumping_address(output) 
 
         # check optimizer type and its mode:     
 
@@ -87,6 +89,22 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
         self.print_Nelder_Mead_simplex_log() 
         
     # check the general input:  
+    
+    def set_the_dumping_address(self,output):
+
+        if ( output is None ):
+        
+            self.output_address = os.getcwd() 
+
+            self.restart_address = os.getcwd()  
+
+        else: 
+
+            self.output_address = os.path.join(output,"Output")
+   
+            self.restart_address = os.path.join(output,"Restart") 
+       
+        return None  
 
     def print_Nelder_Mead_simplex_log(self):  
 
@@ -96,7 +114,7 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
         
         # Add only Nelder Mead simplex related info
 
-        if ( self.optimizer_argument[1] =="Perturb"): 
+        if ( self.optimizer_argument[1] =="perturb"): 
 
             self.optimizer_logger.info("%d step size is : \n"%(self.stepsize.size))  
 
@@ -106,7 +124,7 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
 
         self.optimizer_logger.info("\n \n") 
 
-        if ( self.optimizer_argument[1] == "Restart"): 
+        if ( self.optimizer_argument[1] == "restart"): 
            
             self.optimizer_logger.info("# objective function values (from left to right => smallest to largest) : \n") 
 
@@ -144,7 +162,7 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
 
             if (len(self.optimizer_argument) == 1 ): 
 
-                self.optimizer_logger.error("ERROR: Missing a mode argument: 'Peturb' or 'Restart'")
+                self.optimizer_logger.error("ERROR: Missing a mode argument: 'Peturb' or 'restart'")
     
                 sys.exit("Check errors in log file !") 
 
@@ -160,18 +178,18 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
 
         # Check each Nelder-Mead mode: 
 
-        if ( self.optimizer_argument[1] != "Perturb"
-         and self.optimizer_argument[1] != "Restart"):   
+        if ( self.optimizer_argument[1] != "perturb"
+         and self.optimizer_argument[1] != "restart"):   
 
-            self.optimizer_logger.error("ERROR: only two modes allowed in Nelder-Mead Simplex: Perturb or Restart")
+            self.optimizer_logger.error("ERROR: only two modes allowed in Nelder-Mead Simplex: perturb or restart")
             
             sys.exit("Check errors in log file !") 
 
-        # Extract Perturb argument:  
+        # Extract perturb argument:  
 
-        # if Perturb used and at least two arguments are provided: 
+        # if perturb used and at least two arguments are provided: 
 
-        if ( self.optimizer_argument[1] == "Perturb" 
+        if ( self.optimizer_argument[1] == "perturb" 
 
             and len(self.optimizer_argument) == 4 ): 
 
@@ -179,15 +197,15 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
 
             self.check_Nelder_Mead_perturb_mode(optimizer_mode_arg)
 
-        elif ( self.optimizer_argument[1] == "Perturb" 
+        elif ( self.optimizer_argument[1] == "perturb" 
 
             and len(self.optimizer_argument) == 2 ): 
 
             self.check_provided_perturb_stepsize()  
            
-        # Extract Restart argument 
+        # Extract restart argument 
 
-        if ( self.optimizer_argument[1] == "Restart" ):  
+        if ( self.optimizer_argument[1] == "restart" ):  
 
             self.check_restart_argument() 
 
@@ -201,7 +219,7 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
              and optimizer_mode_arg[0] != "+"
              and optimizer_mode_arg[0] != "-"  ): 
 
-            self.optimizer_logger.error("ERROR: If the 'Perturb' mode is used, its argument can only be: 'random', '+', '-'\n"
+            self.optimizer_logger.error("ERROR: If the 'perturb' mode is used, its argument can only be: 'random', '+', '-'\n"
                                          "The mode arugment: %s found in the input file"%optimizer_mode_arg[0] )
             
             sys.exit("Check errors in log file !") 
@@ -218,7 +236,7 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
 
         except ( ValueError, TypeError ): 
 
-            self.optimizer_logger.error("ERROR: When Nelder-Mead 'Perturb' mode is used"
+            self.optimizer_logger.error("ERROR: When Nelder-Mead 'perturb' mode is used"
                                         ",and arguments are provided "
                                         "; The second argument should be float ( percentage)")
              
@@ -230,7 +248,7 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
 
         if ( len(self.optimizer_input)  !=  1 ):   
 
-            self.optimizer_logger.error("ERROR: If Nelder-Mead 'Perturb' mode is used,and no Perturb arguments provided,\n" 
+            self.optimizer_logger.error("ERROR: If Nelder-Mead 'perturb' mode is used,and no perturb arguments provided,\n" 
                                         "then,1 row of stepsize ( 0.1, -0.2, 0.8 -0.3 ... ) should be provided by user\n"
                                         "%d rows found in the input file"%len(self.optimizer_input))     
                                         
@@ -245,7 +263,7 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
 
             self.optimizer_logger.error(
                        "ERROR: Invalide perturbed stepsize encountered"
-                       " when using Nelder-Mead 'Perturb' mode\n")  
+                       " when using Nelder-Mead 'perturb' mode\n")  
        
             sys.exit("Check errors in log file !") 
         
@@ -273,7 +291,7 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
             if ( self.stepsize.size != np.sum(self.fit_and_fix==1) ): 
 
                 self.optimizer_logger.error(
-                            "ERROR: When Nelder-Mead 'Perturb' mode is used;" 
+                            "ERROR: When Nelder-Mead 'perturb' mode is used;" 
                             "The nubmer of perturbed stepsize" 
                             "must be equal to" 
                             "the nubmer of fitted parameters ( = 1 )")
@@ -313,7 +331,7 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
 
         if ( len(self.optimizer_input)  < 3 ): 
 
-            self.optimizer_logger.error("ERROR: When Nelder-Mead Restart mode is used \n"
+            self.optimizer_logger.error("ERROR: When Nelder-Mead restart mode is used \n"
                                         "At least 3 rows of arguments: \n" 
                                         "( 1st row: objective functions, 2nd row: first vertex, 3rd row: second vertex ... \n"
                                         "%d rows found in the input file"%len(self.optimizer_input) ) 
@@ -326,7 +344,7 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
          
         if ( len(self.optimizer_input[1:]) != number_vertices ) : 
 
-            self.optimizer_logger.error("ERROR: When Nelder-Mead Restart mode is used: \n" 
+            self.optimizer_logger.error("ERROR: When Nelder-Mead restart mode is used: \n" 
                                         "Number of vertices should be equal to number of vertex parameter") 
             
             sys.exit("Check errors in log file !") 
@@ -337,7 +355,7 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
             
             if ( len(self.optimizer_input[i+1]) != number_vertices - 1 ):  
                
-               self.optimizer_logger.error("ERROR: When Nelder-Mead Restart mode is used: \n" 
+               self.optimizer_logger.error("ERROR: When Nelder-Mead restart mode is used: \n" 
                                            "Number parameters should be ( number_vertices - 1 )") 
 
                sys.exit("Check errors in log file !")
@@ -364,7 +382,7 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
 
         except ( ValueError, TypeError ): 
 
-            self.optimizer_logger.error("ERROR: When Nelder-Mead Restart mode is used: "                              
+            self.optimizer_logger.error("ERROR: When Nelder-Mead restart mode is used: "                              
                                         "ValueError or TypeError encountered in reading the restart simplex") 
 
             sys.exit("Check errors in log file !")
@@ -377,9 +395,9 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
 
         self.check_Nelder_Mead_mode()  
 
-        # "Perturb" create the new simplex  
+        # "perturb" create the new simplex  
 
-        if ( self.optimizer_mode == "Perturb"): 
+        if ( self.optimizer_mode == "perturb"): 
         
             # either read or create step size based on the input 
 
@@ -391,9 +409,9 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
     
             self.sort_simplex(func_vertices,vertices_mat) 
             
-        # "Restart" uses the existing simplex
+        # "restart" uses the existing simplex
 
-        elif ( self.optimizer_mode == "Restart"):  
+        elif ( self.optimizer_mode == "restart"):  
                 
             self.parse_existing_simplex()     
 
@@ -906,7 +924,7 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
         restart_content_dict = self.Nelder_Mead_restart_output(itera)
 
         # inherited from optimizer_mod 
-        self.dump_restart(itera,[self.log_file,self.current_file],self.output_address,restart_content_dict)  
+        self.dump_restart(itera,[self.log_file,self.current_file],self.restart_address,restart_content_dict)  
 
         # inherited from optimizer_mod 
         self.dump_best_objective(itera,self.best_obj_file,self.output_address,self.best)
