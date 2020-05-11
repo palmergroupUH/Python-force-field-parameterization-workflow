@@ -2,7 +2,7 @@ name: optimize
 channels:
   - conda-forge  
 dependencies:
-  - python=3.7   # or 2.7
+  - python=3.7   
   - numpy=1.18.*
   - matplotlib=3.2.1 
   - jupyter 
