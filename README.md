@@ -3,7 +3,7 @@
 <img src="workflow.png" width="1000">
 
 ## Features: 
-* Efficient adoption of parallism for interfacing with parallel simulators and evaluating objective functions 
+* Efficient adoption of parallism for invoking existing parallel simulators to perform sampling  
 * Flexible inclusions of distinct physical properties as reference data  
 * Diverse choices of potential functional forms from third-party packages 
 * Modular design to facilitate the exstensions with user-defined:  
@@ -18,7 +18,7 @@
 
 ## Software required:
 
-* A compiled MD/MC packages exectuable (LAMMPS is already supported in the package) 
+* A compiled MD/MC packages exectuable (LAMMPS is already supported) 
 
 * Slurm Workload Manager (or equivalent) 
 
