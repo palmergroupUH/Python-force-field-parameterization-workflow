@@ -197,20 +197,17 @@ class from_command_line():
 
         return logger 
 
-def parse_matching_argument(arugment_str,keyword,msg): 
+def keyword_exists(argument_str,keyword): 
 
     try: 
 
         keyword_indx = argument_str.index(keyword)  
 
-        argument = arugment_str[keyword_indx]  
-
-        return argument 
+        return keyword_indx 
 
     except ValueError: 
-
-        self.logger.warn("WARRNING: missing weight %s in the %s matching argument\n"%(keyword,msg)) 
-
-    return None 
+        
+        # '-1' means no such keyword exists in this string
+        return -1
 
 

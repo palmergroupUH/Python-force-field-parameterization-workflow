@@ -2,7 +2,7 @@ import os
 import sys 
 import IO.check_file  
 
-def parse(filename,skip_lines=None,stop_after=None): 
+def parse(filename,skip_lines=None,stop_after=None,include_comment=False): 
     
     if ( not IO.check_file.status_is_ok(filename) ):   
 
@@ -44,9 +44,18 @@ def parse(filename,skip_lines=None,stop_after=None):
     
                 continue  
 
+            # include the comment line for restart output:  
+
+            elif (include_comment):  
+        
+                input_files[line_number] = contents 
+
+                line_number += 1 
+
+                continue 
             # skip the line starting with "# or & " which are comments
  
-            elif ( "#" in contents[0] or "&" in contents[0]): 
+            elif ( "#" in contents[0] or "&" in contents[0] ): 
 
                 line_number += 1 
 

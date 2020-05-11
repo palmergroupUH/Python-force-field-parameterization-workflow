@@ -85,7 +85,7 @@ def parallel_assignment(start_at,work_load,num_cores,buffer_size):
     return job_assembly_lines 
 
 #-------------------------------------------------------------------------
-#                          Python Read LAMMPS traj                       
+#                          Python Read LAMMPS traj                        
 #-------------------------------------------------------------------------
 
 def get_num_configs_LAMMPS_traj(total_atoms,total_lines):
