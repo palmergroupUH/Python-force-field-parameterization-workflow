@@ -43,6 +43,6 @@ buffersize = 1000
 
 rdf_calc = pair_correlation.RadialDistribution(dcdfile,cores,cutoff,num_bins,buffersize)
 
-print (rdf_calc.compute()) 
+rdf_calc.dump_gr("dump.gr")
+rdf_calc.dump_r2hr("dump.hr")
 
-rdf_calc.dump("dump.gr")

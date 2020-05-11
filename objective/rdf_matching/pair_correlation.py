@@ -176,7 +176,7 @@ class RadialDistribution():
 
         return None      
         
-    def dump(self,filename):
+    def dump_gr(self,filename):
     
         with open(filename,"w") as output:
         
@@ -184,4 +184,12 @@ class RadialDistribution():
             
         return None  
 
+    def dump_r2hr(self,filename): 
 
+        r2hr = self.rdf_bins**2*(self.gr-1)
+
+        with open(filename,"w") as output: 
+
+            np.savetxt(output,np.c_[self.rdf_bins,r2hr]) 
+
+        return None 
