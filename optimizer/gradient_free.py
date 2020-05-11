@@ -140,6 +140,8 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
 
     def Nelder_Mead_restart_output(self,itera): 
 
+        #non_optimizer_content_dict = self.non_optimizer_restart_content() 
+
         restart_content_dict = self.optimizer_restart_content(itera,self.best_vertex) 
         
         keys_ary = np.array(list(restart_content_dict.keys())) 

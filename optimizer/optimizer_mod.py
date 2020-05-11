@@ -85,7 +85,11 @@ class set_optimizer:
         self.add_logger(logname) 
         
         # parse the input file
-
+    
+        # since restart file requires all the content, read the content before skipped 
+        self.input_data_non_optimizer_dict = IO.input_file.parse(input_file,0,skipped,include_comment=True)
+        
+        # read the conetnt for optimizer
         self.input_data_dict = IO.input_file.parse(input_file,skipped,stop_after)
 
         self.keys_lst = list(self.input_data_dict.keys())
@@ -556,34 +560,44 @@ class set_optimizer:
 
         return None 
 
+    def non_optimizer_restart_content(self,itera): 
+
+        content = {} 
+
+        content[0] = "# Current iteration %d: This is a restart file \n\n"%itera 
+
+        for i,line in enumerate(self.input_data_non_optimizer_dict.keys()):   
+
+            content[i+1] = " ".join(para for para in self.input_data_non_optimizer_dict[line]) + "\n" 
+           
+        return content,i  
+
     def optimizer_restart_content(self,itera,best_para):  
 
         # content of restart file following the same as the input file
         # dictionary: keys: line number, values: content of restart file 
 
         # write only general options:  
+        content,total_lines = self.non_optimizer_restart_content(itera) 
+        content[total_lines+1] = "# output and restart frequency \n\n"
+        content[total_lines+2] = " ".join(str(para) for para in self.dump_para) + "\n\n" 
+        content[total_lines+3] = "# This is the guess parameters: \n\n"
+        content[total_lines+4] = "# " + " ".join(self.para_type_lst) + " ".join( str(ele) for ele in self.guess_parameter) + "\n\n" 
+        content[total_lines+5] = "# This is the current best parameters: \n\n" 
+        content[total_lines+6] = " ".join(self.para_type_lst) + " " + " ".join( str(para) for para in best_para) + "\n\n" 
+        content[total_lines+7] = "# fit (1) and fix (0) parameters: \n\n" 
+        content[total_lines+8] = " ".join(str(para) for para in self.fit_and_fix) + "\n\n"  
+        content[total_lines+9] = "# constraints ( index lower-bound upper-bound ... ):\n\n "
+        content[total_lines+10] = " ".join(str(para) for para in self.constraints) + "\n\n" 
+        content[total_lines+11] = "#set termination criterion: max number of iteration, tolerance for parameters,tolerance for objective \n\n" 
+        content[total_lines+12] = "%d "%self.max_iteration + " " +  "{0:.1e}".format(self.obj_tol) + " " + "{0:.1e}".format(self.para_tol) + "\n\n" 
 
-        optimizer_restart_content = {} 
-        optimizer_restart_content[0] = "# Current iteration %d: This is a restart file \n\n"%itera
-        optimizer_restart_content[1] = "# output and restart frequency \n\n"
-        optimizer_restart_content[2] = " ".join(str(para) for para in self.dump_para) + "\n\n" 
-        optimizer_restart_content[3] = "# This is the guess parameters: \n\n"
-        optimizer_restart_content[4] = "# " + " ".join(self.para_type_lst) + " ".join( str(ele) for ele in self.guess_parameter) + "\n\n" 
-        optimizer_restart_content[5] = "# This is the current best parameters: \n\n" 
-        optimizer_restart_content[6] = " ".join(self.para_type_lst) + " " + " ".join( str(para) for para in best_para) + "\n\n" 
-        optimizer_restart_content[7] = "# fit (1) and fix (0) parameters: \n\n" 
-        optimizer_restart_content[8] = " ".join(str(para) for para in self.fit_and_fix) + "\n\n"  
-        optimizer_restart_content[9] = "# constraints ( index lower-bound upper-bound ... ):\n\n "
-        optimizer_restart_content[10] = " ".join(str(para) for para in self.constraints) + "\n\n" 
-        optimizer_restart_content[11] = "#set termination criterion: max number of iteration, tolerance for parameters,tolerance for objective \n\n" 
-        optimizer_restart_content[12] = "%d "%self.max_iteration + " " +  "{0:.1e}".format(self.obj_tol) + " " + "{0:.1e}".format(self.para_tol) + "\n\n" 
+        content[total_lines+13] = "# create (Perturb) or use existing vertices (Restart): \n\n"
+        content[total_lines+14] = "# " + self.optimizer_type + " " + " ".join( para for para in self.optimizer_argument)+ "\n\n"
+        content[total_lines+15] = "# " + " ".join(str(para) for para in self.optimizer_input) + "\n\n" 
+        content[total_lines+16] = self.optimizer_type + " Restart \n\n"
 
-        optimizer_restart_content[13] = "# create (Perturb) or use existing vertices (Restart): \n\n"
-        optimizer_restart_content[14] = "# " + self.optimizer_type + " " + " ".join( para for para in self.optimizer_argument)+ "\n\n"
-        optimizer_restart_content[15] = "# " + " ".join(str(para) for para in self.optimizer_input) + "\n\n" 
-        optimizer_restart_content[16] = self.optimizer_type + " Restart \n\n"
-
-        return optimizer_restart_content  
+        return content  
 
     def dump_restart(self,itera,filename_lst,output_address,restart_content_dict) :
         
