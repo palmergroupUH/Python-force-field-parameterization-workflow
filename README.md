@@ -5,10 +5,10 @@
 ## Features: 
 * Efficient adoption of parallism for invoking existing parallel simulators to perform sampling  
 * Flexible inclusions of distinct physical properties as reference data  
-* Diverse choices of potential functional forms implemented in third-party packages 
+* Diverse choices of potential functional forms implemented in the parallel simulators
 * Modular design to facilitate the exstensions with user-defined:  
     - objective functional forms 
-    - sampling methods/force-field potential forms
+    - sampling methods/force-field potential functional forms
     - optimization algorithms  
 
 ## Installation: 
