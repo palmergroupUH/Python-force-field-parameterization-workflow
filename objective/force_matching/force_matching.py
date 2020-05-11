@@ -9,7 +9,9 @@ import itertools
 
 # local library:  
 import IO.check_file 
+import IO.check_type
 import IO.reader 
+import IO.user_provided 
 
 # Third-party library: 
 
@@ -27,7 +29,7 @@ class load():
 
     def __init__(self,ref_address_tple,predit_address_tple,argument_dict): 
         
-        load.count_jobs += 1   
+        load.count_jobs += 1 
         
         self.logger = logging.getLogger(__name__)
 
@@ -37,7 +39,13 @@ class load():
 
         self.set_file_address_and_check_status(ref_address_tple,predit_address_tple) 
 
+        # parse the objective, cores information: 
+
         self.parse_argument_dict(argument_dict)
+    
+        # parse the user-defined input information: 
+
+        self.parse_user_defined(argument_dict) 
 
         self.Initialize_force_matching() 
 
@@ -117,7 +125,7 @@ class load():
 
             predicted_num_lines = IO.reader.get_number_lines(predicted_data)
         
-            if ( predicted_num_lines == self.ref_force_lines[i] ): 
+            if (predicted_num_lines == self.ref_force_lines[i]): 
             
                 self.logger.info("Predicted force data is ready  ... ")
 
@@ -177,13 +185,13 @@ class load():
 #                             Parse the input:                               
 #----------------------------------------------------------------------------
 
+    # parse mandatory user-input: 
     def parse_argument_dict(self,argument):  
         # argument is a tuple
         
-        
         # convert objective weight into float 
         
-        self.obj_weight = float( argument[0] ) 
+        self.obj_weight = float(argument[0]) 
 
         # convert cores for analysis into integer
 
@@ -194,33 +202,111 @@ class load():
 
         self.num_cores_predict = int(self.num_cores/2) 
 
+        return None 
+
+    # parse the user-defined input 
+    def parse_user_defined(self,argument): 
+
         # --------------- user defined argument ----------------------
+        # user defined: "w 1.0 1.0 bf 5000 eng abs virial"
         # get the weight between energy and force 
-        argument_str = argument[-1].split()  
         
+        argument_str = argument[-1].split()  
+
+        self.parse_weight_arg(argument_str) 
+        
+        self.parse_buffersize_arg(argument_str) 
+
+        self.parse_eng_arg(argument_str) 
+
+        return None 
+
+    def parse_weight_arg(self,argument_str): 
+
+        keyword_index = IO.user_provided.keyword_exists(argument_str,"w") 
+
+        if ( keyword_index < 0 ):  
+
+            self.logger.warn("WARRNING: missing weight 'w' in the force matching argument\n" 
+                             "If none, force and energy is assumed to be equally weighted") 
+
+            self.weight_force_eng = np.array([1.0,1.0],dtype=np.float64)
+
+            return None 
+
         try: 
 
-            self.weight_force_eng = np.array([float(argument_str[1]),float(argument_str[2]) ] )  
+            self.weight_force_eng = np.array([
+                                             float(argument_str[keyword_index+1]),
+                                             float(argument_str[keyword_index+2])])  
 
         except (ValueError,TypeError): 
 
-            logger.error("ERROR: type or value errors in get weight between force and energy; The format should be 'w float float' ")  
+            self.logger.error("ERROR: type or value errors in choosing weight between force and energy; The format should be 'w float float' ")  
 
             sys.exit("Check errors in the log file") 
 
-        # get buffersize ( number of frames ) to be readed into memory   
+            self.logger.warn("WARRNING: missing weight 'w' in the force matching argument\n"
+                             "If none, force and energy is assumed to be equally weighted")  
+             
+        return None 
+
+    def parse_buffersize_arg(self,argument_str): 
+
+        keyword_index = IO.user_provided.keyword_exists(argument_str,"bf") 
+
+        if ( keyword_index < 0 ):  
+
+            self.logger.error("ERROR: missing buffersize 'bf' in the force matching argument") 
+
+            sys.exit("Check errors in the log file") 
 
         try: 
 
-            self.buffersize = int(argument_str[4])  
+            self.buffersize = int(argument_str[keyword_index+1])  
 
         except ( ValueError,TypeError):
 
-            logger.error("ERROR: buffer index argument error; The format is 'bf integer' ") 
-            
+            self.logger.error("ERROR: buffer index argument error; The format is 'bf integer' ") 
+
             sys.exit("Check errors in the log file") 
 
+        return None 
+
+    def parse_eng_arg(self,argument_str):
+
+        keyword_index = IO.user_provided.keyword_exists(argument_str,"eng") 
+    
+        if ( keyword_index < 0 ): 
+
+            self.eng_keyword = "var" 
+
+            self.logger.warn("WARRNING: missing engergy matching 'eng' in the force matching argument\n")
+
+            self.logger.warn("if none, 'eng relative' is used instead\n") 
+
+            return None 
+
+        if ( not IO.check_type.is_string(argument_str[keyword_index+1])):  
+
+            self.logger.error("ERROR: energy keyword type error; The keyword is a string;'eng abs' or 'eng var'' ")
+
+            sys.exit("Check errors in the log file") 
+
+        try: 
+
+            self.eng_keyword = argument_str[keyword_index+1] 
+
+        except ( ValueError,TypeError): 
+
+            self.logger.error("ERROR: energy keyword type error; The keyword is a string;'eng abs' or 'eng relative'' ") 
+
+            sys.exit("Check errors in the log file")
+
+        return None 
+
     def print_objective_info(self):
+
         self.logger.info("Reference data address:  \n")
         self.logger.info("The sub_folder name: %s\n"%sub_folder) 
         self.logger.info("The weight of objective function : %.3f \n"%weight)  
@@ -235,6 +321,12 @@ class load():
 #----------------------------------------------------------------------------
 
     def Initialize_force_matching(self):
+
+        if (self.weight_force_eng[1] == 0.0):  
+
+            self.logger.warn("WARNNING: The weight for force matching is 0; skip the force matching\n") 
+
+            return None 
 
         self.num_congigs_lst = [] 
     
@@ -310,48 +402,54 @@ class load():
         for ref_file,predict_file in zip(self.Ref_force_file_lst,
                                          self.predict_force_file_lst):  
 
-            self.ref_workers = mp.Pool(self.num_cores_ref) 
+            if (self.weight_force_eng[1] != 0.0): 
 
-            self.predict_workers = mp.Pool(self.num_cores_predict) 
-            
-            # launch the job in parallel jobs 
-            # start reading reference force data 
-            force_ref_jobs = IO.reader.read_LAMMPS_traj_in_parallel(ref_file,
-                                         self.num_cores_ref,
-                                         self.num_atoms_lst[i],
-                                         self.num_congigs_lst[i],
-                                         first=1,
-                                         buffer_size=self.buffersize,
-                                         workers=self.ref_workers) 
+                self.ref_workers = mp.Pool(self.num_cores_ref) 
 
-            # start reading predicted force data
-            force_predict_jobs = IO.reader.read_LAMMPS_traj_in_parallel(predict_file,
-                                         self.num_cores_predict,
-                                         self.num_atoms_lst[i], 
-                                         self.num_congigs_lst[i], 
-                                         first=1,
-                                         buffer_size=self.buffersize,
-                                         workers=self.predict_workers) 
+                self.predict_workers = mp.Pool(self.num_cores_predict) 
+                
+                # launch the job in parallel jobs 
+                # start reading reference force data 
+                force_ref_jobs = IO.reader.read_LAMMPS_traj_in_parallel(ref_file,
+                                             self.num_cores_ref,
+                                             self.num_atoms_lst[i],
+                                             self.num_congigs_lst[i],
+                                             first=1,
+                                             buffer_size=self.buffersize,
+                                             workers=self.ref_workers) 
 
-            sum_sqr_diff = 0  
-    
-            # update the counter 
+                # start reading predicted force data
+                force_predict_jobs = IO.reader.read_LAMMPS_traj_in_parallel(predict_file,
+                                             self.num_cores_predict,
+                                             self.num_atoms_lst[i], 
+                                             self.num_congigs_lst[i], 
+                                             first=1,
+                                             buffer_size=self.buffersize,
+                                             workers=self.predict_workers) 
 
-            for ref_output,predict_output in zip(force_ref_jobs,force_predict_jobs): 
+                sum_sqr_diff = 0  
+        
+                # update the counter 
 
-                sum_sqr_diff  += np.sum(np.square(( ref_output.get() - predict_output.get() ))) 
-            
-            self.fm_objective_lst.append(sum_sqr_diff/self.ref_force_norm_lst[i]) 
+                for ref_output,predict_output in zip(force_ref_jobs,force_predict_jobs): 
 
-            i += 1 
+                    sum_sqr_diff  += np.sum(np.square(( ref_output.get() - predict_output.get() ))) 
+                
+                self.fm_objective_lst.append(sum_sqr_diff/self.ref_force_norm_lst[i]) 
 
-            self.ref_workers.close()     
+                i += 1 
 
-            self.predict_workers.close() 
+                self.ref_workers.close()     
 
-            self.ref_workers.join() 
+                self.predict_workers.close() 
 
-            self.predict_workers.join() 
+                self.ref_workers.join() 
+
+                self.predict_workers.join() 
+        
+            else: 
+
+                self.fm_objective_lst.append(0) 
         
         return None  
 
@@ -360,6 +458,14 @@ class load():
 #----------------------------------------------------------------------------
 
     def Initialize_energy_matching(self): 
+
+        # if weight of energy is 0, no need to do energy matching:
+
+        if (self.weight_force_eng[0] == 0.0): 
+
+            self.logger.warn("WARNNING: The weight for energy matching is 0; skip energy matching\n") 
+
+            return None 
 
         self.ref_eng_data_lst = [] 
 
@@ -388,7 +494,7 @@ class load():
 
             energy_norm = np.var(ref_energy_data)
 
-        return ref_energy_data,energy_norm    
+            return ref_energy_data,energy_norm    
 
     def compute_energy_matching_objective(self):
 
@@ -399,20 +505,40 @@ class load():
         for ref_file,predict_file in zip(self.Ref_energy_file_lst,
                                            self.predict_energy_file_lst):
 
-            predicted_eng_data = IO.reader.loadtxt(predict_file,
-                              self.ref_eng_lines[i]+1,
-                              skiprows=1,
-                              return_numpy=True)
+            if (self.weight_force_eng[0] != 0.0): 
 
-            #self.energy_objective_lst.append( self.compute_scaled_energy(predicted_eng_data,self.ref_eng_data_lst[i],self.ref_eng_norm_lst[i] )) 
-    
-            self.energy_objective_lst.append(np.average(( predicted_eng_data - self.ref_eng_data_lst[i] )**2/self.ref_eng_norm_lst[i])) 
+                predicted_eng_data = IO.reader.loadtxt(predict_file,
+                                  self.ref_eng_lines[i]+1,
+                                  skiprows=1,
+                                  return_numpy=True)
 
-            i += 1 
-             
+                if (self.eng_keyword == "var"):
+               
+                    self.energy_objective_lst.append( self.compute_scaled_var_energy(predicted_eng_data,
+                                                                                 self.ref_eng_data_lst[i],
+                                                                                 self.ref_eng_norm_lst[i])) 
+
+                elif (self.eng_keyword =="abs"):  
+
+                    self.energy_objective_lst.append(self.compute_scaled_abs_energy(predicted_eng_data,
+                                                                                    self.ref_eng_data_lst[i],
+                                                                                    self.ref_eng_norm_lst[i]))
+
+
+                else:  
+
+                    self.logger.info("The energy matching keyword not recognized: Choose 'var' or 'abs'")
+                    sys.exit("Check errors in the log file !")
+
+                i += 1 
+                
+            else: 
+            
+                self.energy_objective_lst.append(0) 
+
         return None  
 
-    def compute_scaled_energy(self,predicted_eng, ref_energy,eng_norm): 
+    def compute_scaled_var_energy(self,predicted_eng, ref_energy,eng_norm): 
 
         diff = predicted_eng - ref_energy 
 
@@ -421,6 +547,16 @@ class load():
         relative_eng = ( diff -ave_diff )**2 
 
         return np.average(relative_eng/eng_norm) 
+
+    def compute_scaled_abs_energy(self,predicted_eng,ref_energy,eng_norm):
+
+        return np.average(( predicted_eng - ref_energy )**2/eng_norm)
+
+
+#----------------------------------------------------------------------------
+#                             Virial  Matching                               
+#----------------------------------------------------------------------------
+
         
 #----------------------------------------------------------------------------
 #                             Compute overall objective:                     
@@ -449,6 +585,6 @@ class load():
 
             scaled_force_objective  += force_weight*f_obj
     
-        print ( "scaled energy: ", scaled_eng_objective ,"scaled force: ", scaled_force_objective )
+        #print ( "scaled energy: ", scaled_eng_objective ,"scaled force: ", scaled_force_objective )
         return self.obj_weight*( scaled_eng_objective + scaled_force_objective )  
         
