@@ -1,4 +1,4 @@
-# units: 
+# units:  
 
 real   
 
@@ -54,7 +54,7 @@ stillinger_weber 6.589  2.0925  1.87  29.15  1.02  -0.303333333333 7.049556277  
 # format is: 
 # "optimizer name", "optimizer options", "optimizer argument" ... 
 #
-# For Nelder-Mead: N vertex and N-1 fitting parameters (the intrinsic properties of methods)  
+# For Nelder-Mead: N vertex and N-1 fitting parameters (the intrinsic properties of the method)  
 # Choose the two modes: create (perturb) or use existing vertices (restart): 
 # if perturb mode 1 is used: 'Nelder-Mead perturb random/+/- floating_number/100'  
 # each parameters will be "randomly or + or -" percentage of its original value 

@@ -16,7 +16,7 @@ def optimize_main():
     #------------------------------------------------------------------------------
     #                       Taking the input from user                             
     #------------------------------------------------------------------------------
-    # You can copy this main program to any folder you like to run it locally
+    # This is the main program 
     # Uncomment the following docstring if running the program interactively
     """
     main_logger,TOTAL_CORES,INPUT,JOBID,Ref,prep = (IO
@@ -100,6 +100,7 @@ def main():
         
         optimize_main()  
 
+    # not implemented yet 
     elif ( sys.argv[0].find("clearJobID") >= 0):
 
         clear_job_id_main() 

@@ -106,7 +106,11 @@ class prepare():
 
     def optimize(self,fftype,force_field_parameters): 
 
+        # run sampling: 
+
         self.sampling.run(fftype,force_field_parameters) 
+
+        # check sampling status: 
 
         job_successful = self.sampling.exit() 
 

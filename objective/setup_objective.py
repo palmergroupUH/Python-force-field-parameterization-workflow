@@ -17,6 +17,13 @@ class setup():
     Save all input variables into a single dicionary 
 
     """ 
+    
+    # The default folder: 
+
+    default_ref_folder = "../ReferenceData"
+
+    default_prep_folder = "../prepsystem"
+
     def __init__(self,input_file,
                      total_cores,
                      jobid,
@@ -41,7 +48,7 @@ class setup():
 
         # determine  where the Reference data folder is and 
         # where the template folder ( with input scripts for running sampling methods ) 
-
+        
         self.set_reference_prep_folder_address(Ref_folder,prep_folder) 
        
         self.set_working_directory_address(jobid) 
@@ -308,19 +315,23 @@ class setup():
        
         if ( Ref_folder is None ):
         
-            self.reference_folder_address = "../ReferenceData"
-
+            self.reference_folder_address = setup.default_ref_folder  
+            
         else:
 
             self.reference_folder_address = Ref_folder
-
+            
+            IO.check_dir.decide_folder_status(Ref_folder)  
+                
         if ( prep_folder is None ): 
 
-            self.prep_folder_address = "../prepsystem"
+            self.prep_folder_address = setup.default_prep_folder 
 
         else: 
 
             self.prep_folder_address = prep_folder 
+    
+            IO.check_dir.decide_folder_status(prep_folder) 
 
         return None 
 
@@ -382,7 +393,7 @@ class setup():
                                  matching_type,
                                  subfolder) 
 
-        IO.check_dir.decide_folder_status(prep_path) 
+        IO.check_dir.decide_folder_status(prep_path,"Job template") 
 
         predict_folder_type = os.path.join(self.predicted_folder,
                                            matching_type,
@@ -488,7 +499,7 @@ class setup():
 
             ref_address = os.path.join(self.reference_folder_address,matching_type,sub_folder) 
 
-            IO.check_dir.decide_folder_status(ref_address) 
+            IO.check_dir.decide_folder_status(ref_address,"Reference data") 
 
             predict_address = os.path.join(self.predicted_folder,matching_type,sub_folder) 
     

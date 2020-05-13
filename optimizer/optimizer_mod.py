@@ -1,18 +1,21 @@
+# Python standard library: 
 import numpy as np 
 import logging
 import sys 
 import os 
+
+# Local library: 
 import IO.input_file
 import IO.check_type
 
+# Third-party libraries: 
 
 #class parse_input(): 
 
 class set_optimizer: 
        
-    """
-    Description: This is a template class that will be inherited by 
-    all other optimizer class to do the followings: 
+    """Description: This is a parent class that will be inherited by 
+    all other optimizer classes (gradient-free or gradient) to do the followings: 
 
      1. parse a input file with a predetermined format, 
      2. method to constrain certain fitted parameters within bounds  

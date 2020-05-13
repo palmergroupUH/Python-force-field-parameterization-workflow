@@ -14,5 +14,6 @@ ifort -fPIC -shared system_mod.f90 dcd_reader_mod.f90  -o fortran_dcd_reader.so
 ifort -fPIC -shared system_mod.f90 txt_reader_mod.f90  -o fortran_txt_reader.so 
 
 # GNU fortran compilers (not compatiable with current fortran module): 
+
 #gfortran -fPIC -shared system_mod.f90 dcd_reader_mod.f90  -o fortran_dcd_reader.so 
 #gfortran -fPIC -shared system_mod.f90 txt_reader_mod.f90  -o fortran_txt_reader.so 

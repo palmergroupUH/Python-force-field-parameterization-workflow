@@ -1,9 +1,14 @@
+# Python standard library: 
 import numpy as np 
 import logging 
 import sys 
 import os 
-import optimizer.optimizer_mod
 import random 
+
+# Local library: 
+import optimizer.optimizer_mod
+
+# Third-party libraries: 
 
 # a gradient-free optimizer: Nelder-Mead simplex algorithm:  
 
