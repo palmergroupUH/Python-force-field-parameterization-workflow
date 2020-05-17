@@ -310,15 +310,17 @@ def call_read_xyz_box_in_chunk(dcdfile,start_at,num_configs,total_atoms,return_n
 #                          Fortran txt reader                             
 #-------------------------------------------------------------------------
 
-def get_number_lines(txtfile):  
+def get_lines_columns(txtfile):  
 
     txtfile,strlength = string_to_ctypes_string(txtfile)  
 
     num_lines = c_int() 
+
+    num_columns = c_int()
     
-    txt_lib.get_txt_lines(txtfile,byref(strlength),byref(num_lines)) 
+    txt_lib.get_txt_lines_columns(txtfile,byref(strlength),byref(num_lines),byref(num_columns)) 
     
-    return num_lines.value 
+    return num_lines.value, num_columns.value  
 
 def loadtxt(txtfile,num_lines,skiprows,return_numpy): 
 

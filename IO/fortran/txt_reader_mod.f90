@@ -3,12 +3,12 @@ module txt_reader
     implicit none 
     private 
 
-    public :: get_txt_lines,&
+    public :: get_txt_lines_columns,&
               & loadtxt 
 
 contains 
-    
-    subroutine get_txt_lines(txtfile,strleng,num_lines) bind(c,name="get_txt_lines") 
+
+    subroutine get_txt_lines_columns(txtfile,strleng,num_lines,num_columns) bind(c,name="get_txt_lines_columns") 
         implicit none 
 
         ! Passed: 
@@ -17,10 +17,14 @@ contains
 
         ! Local: 
         character(len=:),allocatable :: filename 
-        integer :: IOstatus, unit_number
+        integer :: i,IOstatus, unit_number
+        integer,parameter :: max_columns=10000 
+        character(len=10000) :: line 
+        real(dp),dimension(1:max_columns) :: test_array 
 
         ! Output:
         integer(c_int),intent(out) ::  num_lines 
+        integer(c_int),intent(out) :: num_columns
 
         unit_number = unit_num()
         
@@ -32,7 +36,7 @@ contains
 
             do 
         
-                read(unit_number,*,IOSTAT=IOstatus)
+                read(unit_number,'(A)',IOSTAT=IOstatus) line  
 
                 if ( IOstatus /= 0) then 
 
@@ -41,8 +45,24 @@ contains
                 end if 
 
                 num_lines = num_lines + 1 
-
+                
             end do 
+
+        !call determine_columns(filename,num_columns) 
+
+        do i = 1, max_columns 
+
+            read(line,*,iostat=IOstatus) test_array(1:i)  
+            
+            if (IOstatus == -1) then 
+
+                exit
+
+            end if 
+
+        end do 
+
+        num_columns = i -1  
 
         close(unit_number) 
 
