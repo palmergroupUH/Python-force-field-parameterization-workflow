@@ -63,6 +63,7 @@ def optimize_main():
     eval_objective = (objective
                       .compute_objective
                       .prepare(
+                        JOBID,
                         ref_dict,
                         predict_dict,
                         argument_dict,

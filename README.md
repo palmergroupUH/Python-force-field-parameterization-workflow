@@ -3,9 +3,9 @@
 <img src="workflow.png" width="1000">
 
 ## Features: 
-* Efficient adoption of parallism for invoking existing parallel simulators to perform sampling  
+* Efficient adoption of parallism to perform sampling by interfacing with a parallel simulator 
+* Diverse choices of force-field functional forms supported by the chosen simulator 
 * Flexible inclusions of distinct physical properties as reference data  
-* Diverse choices of potential functional forms implemented in the parallel simulators
 * Modular design to facilitate the exstensions with user-defined:  
     - objective functional forms 
     - sampling methods/force-field potential functional forms
@@ -13,7 +13,19 @@
 
 ## Installation: 
 
-* conda install -c conda-forge optimize (not official)
+```
+git clone https://github.com/jingxiangguo/Python-force-field-parameterization-workflow.git 
+
+pip install -e .  
+
+cd Python-force-field-parameterization-workflow 
+
+cd IO/fortran/
+
+make -f MAKEFILE
+
+``` 
+
 
 ## Software required:
 

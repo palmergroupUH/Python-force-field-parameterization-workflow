@@ -6,6 +6,7 @@ import logging
 import time 
 import os 
 import itertools 
+import shutil
 
 # local library:  
 import IO.check_file 
@@ -81,6 +82,8 @@ class load():
 
         self.ref_eng_lines = [] 
 
+        self.predicted_address_lst = [] 
+
         for ref_address,predict_address in zip(ref_address_tple,predit_address_tple): 
 
             # get Reference energy and force address: 
@@ -93,15 +96,17 @@ class load():
 
             predict_force_file = os.path.join(predict_address,self.predict_force_file)
 
+            self.predicted_address_lst.append(predict_address)  
+
             self.Pre_load_energy_data(ref_energy_file) 
 
             IO.check_file.status_is_ok(ref_energy_file)
 
             IO.check_file.status_is_ok(ref_force_file) 
 
-            num_lines_eng = IO.reader.get_number_lines(ref_energy_file) 
+            num_lines_eng,num_colums = IO.reader.get_lines_columns(ref_energy_file) 
     
-            num_lines_force = IO.reader.get_number_lines(ref_force_file) 
+            num_lines_force,num_colums = IO.reader.get_lines_columns(ref_force_file) 
 
             self.ref_eng_lines.append(num_lines_eng )
             
@@ -123,7 +128,7 @@ class load():
 
             IO.check_file.status_is_ok(predicted_data)  
 
-            predicted_num_lines = IO.reader.get_number_lines(predicted_data)
+            predicted_num_lines,column = IO.reader.get_lines_columns(predicted_data)
         
             if (predicted_num_lines == self.ref_force_lines[i]): 
             
@@ -145,7 +150,7 @@ class load():
 
         while True: 
 
-            predicted_num_lines = IO.reader.get_number_lines(predicted_data) 
+            predicted_num_lines,num_columns = IO.reader.get_lines_columns(predicted_data) 
 
             if ( predicted_num_lines !=  ref_force_lines ):
         
@@ -188,14 +193,16 @@ class load():
     # parse mandatory user-input: 
     def parse_argument_dict(self,argument):  
         # argument is a tuple
+    
+        self.sub_folder = argument[0]
         
         # convert objective weight into float 
         
-        self.obj_weight = float(argument[0]) 
+        self.obj_weight = float(argument[1]) 
 
         # convert cores for analysis into integer
 
-        self.num_cores = int(argument[2] ) 
+        self.num_cores = int(argument[3] ) 
 
         # equally assign cores for processing predicted and reference data 
         self.num_cores_ref = int(self.num_cores/2) 
@@ -544,13 +551,13 @@ class load():
 
         ave_diff = np.average( diff) 
 
-        relative_eng = ( diff -ave_diff )**2 
+        relative_eng = (diff -ave_diff)**2 
 
         return np.average(relative_eng/eng_norm) 
 
     def compute_scaled_abs_energy(self,predicted_eng,ref_energy,eng_norm):
 
-        return np.average(( predicted_eng - ref_energy )**2/eng_norm)
+        return np.average((predicted_eng - ref_energy)**2/eng_norm)
 
 
 #----------------------------------------------------------------------------
@@ -587,4 +594,76 @@ class load():
     
         #print ( "scaled energy: ", scaled_eng_objective ,"scaled force: ", scaled_force_objective )
         return self.obj_weight*( scaled_eng_objective + scaled_force_objective )  
+
+    # output of predicted force and energy data 
+
+    def rename(self,status,output_folder): 
+
+        counter = 0 
+
+        for eng_file,force_file in zip(self.predict_energy_file_lst,self.predict_force_file_lst): 
+    
+            best_predicted_force = self.sub_folder+".force"
         
+            best_predicted_eng = self.sub_folder+".eng"
+    
+            if (status =="guess"): 
+
+                initia_predicted_force = self.sub_folder+"_guess"+".force"
+    
+                initia_predicted_eng = self.sub_folder+"_guess"+".eng"
+
+                dest_eng = os.path.join(output_folder,initia_predicted_eng) 
+
+                dest_force = os.path.join(output_folder,initia_predicted_force)
+
+                shutil.move(eng_file,dest_eng)
+
+                shutil.move(force_file,dest_force)
+
+            elif (status =="old"):  
+
+                current_force_file = os.path.join(self.predicted_address_lst[counter],status+".force") 
+            
+                current_eng_file = os.path.join(self.predicted_address_lst[counter],status+".eng") 
+
+                shutil.copyfile(force_file,current_force_file) 
+
+                shutil.copyfile(eng_file,current_eng_file)
+
+                counter += 1 
+
+        return None 
+
+    def update(self,keyword,output_folder): 
+
+        counter = 0 
+
+        for eng_file,force_file in zip(self.predict_energy_file_lst,self.predict_force_file_lst): 
+
+            predicted_force = self.sub_folder + "_best" + ".force" 
+        
+            predicted_eng = self.sub_folder + "_best" + ".eng" 
+
+            dest_force = os.path.join(output_folder,predicted_force) 
+
+            dest_eng = os.path.join(output_folder,predicted_eng) 
+
+            if (keyword =="new"): 
+            
+                shutil.move(eng_file,dest_eng) 
+                       
+                shutil.move(force_file,dest_force) 
+ 
+            elif ( keyword =="old"): 
+
+                current_force_file = os.path.join(self.predicted_address_lst[counter],keyword+".force") 
+
+                current_eng_file = os.path.join(self.predicted_address_lst[counter],keyword+".eng") 
+
+                shutil.move(current_force_file,dest_force)
+
+                shutil.move(current_eng_file,dest_eng)
+    
+        return None 
+    

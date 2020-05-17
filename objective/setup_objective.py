@@ -532,10 +532,11 @@ class setup():
             self.predict_address_dict[matching_type] = {sub_folder: predict_sub_folders} 
 
             self.argument_dict[matching_type] = {sub_folder: 
-                                                 ( weight,
-                                                   cores_for_sampling, 
-                                                   cores_for_obj,
-                                                   matching_argument)} 
+                                                 (sub_folder,
+                                                  weight,
+                                                  cores_for_sampling, 
+                                                  cores_for_obj,
+                                                  matching_argument)} 
 
         self.check_all_cores(total_cores,total_cores_by_sampling,total_cores_by_obj )
 

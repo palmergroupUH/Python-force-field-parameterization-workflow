@@ -412,7 +412,7 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
 
             vertices_mat = self.generate_simplex("orthogonal")
             
-            func_vertices = self.compute_func_vertices(vertices_mat)
+            func_vertices = self.compute_func_vertices(vertices_mat,choice="guess")
     
             self.sort_simplex(func_vertices,vertices_mat) 
             
@@ -566,12 +566,17 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
 
             self.sigma = 1.0 - 1.0/self.num_fitting 
 
-    def compute_func_vertices(self,vertices_mat): 
+    def compute_func_vertices(self,vertices_mat,choice): 
 
         num_vertices = vertices_mat[:,0].size
 
         func_vertices = np.zeros(num_vertices,dtype=np.float64) 
+
+        # get the temporary best
+        if ( choice == "shrink"):  
         
+            self.temp_best = self.best
+
         for i in range(num_vertices): 
     
             in_parameters = vertices_mat[i,:]
@@ -579,8 +584,35 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
             self.constrain(in_parameters)   
 
             in_parameters_full = self.regroup_with_fixed(in_parameters) 
-            
-            func_vertices[i] = self.f_obj.optimize(self.para_type_lst[0],in_parameters_full)
+
+            if (choice=="guess"):  
+                
+                # guess parameters:  
+                if ( i == 0):  
+
+                    func_vertices[i] = self.f_obj.optimize(self.para_type_lst[0],
+                                                           in_parameters_full,
+                                                           status="guess")
+                else: 
+
+                    func_vertices[i] = self.f_obj.optimize(self.para_type_lst[0],
+                                                           in_parameters_full,
+                                                           status="new")
+                    
+            elif (choice=="shrink"): 
+
+                current_obj = self.f_obj.optimize(self.para_type_lst[0],
+                                                  in_parameters_full,
+                                                  status="new")
+
+                self.f_obj.update(current_obj,self.temp_best,status="new")  
+
+                if ( current_obj < self.temp_best):  
+                
+                    # update the current best 
+                    self.temp_best = current_obj 
+
+                func_vertices[i] = current_obj 
         
         return func_vertices   
 
@@ -683,7 +715,7 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
                                    "is worse than the worst vertex ...\n\n" 
                                    "Perform shrinkage ... \n\n") 
 
-        func_vertices = self.compute_func_vertices(shrinked_vertices) 
+        func_vertices = self.compute_func_vertices(shrinked_vertices,choice="shrink") 
     
         self.vertices_sorted[self.best_indx+1:,:] = shrinked_vertices  
 
@@ -734,7 +766,7 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
             
             reflected_vertex = self.Reflect(centroid) 
             
-            func_reflect = self.f_obj.optimize(self.para_type_lst[0],self.regroup_with_fixed(reflected_vertex)) 
+            func_reflect = self.f_obj.optimize(self.para_type_lst[0],self.regroup_with_fixed(reflected_vertex),status="old") 
             
             if ( self.best <= func_reflect < self.lousy ): 
                 
@@ -754,9 +786,11 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
 
                 expanded_vertex = self.Expand(reflected_vertex,centroid)          
 
-                func_expand = self.f_obj.optimize(self.para_type_lst[0],self.regroup_with_fixed(expanded_vertex))
+                func_expand = self.f_obj.optimize(self.para_type_lst[0],self.regroup_with_fixed(expanded_vertex),status="new")
 
                 if ( func_expand < func_reflect ):      
+
+                    self.f_obj.update(func_expand,self.best,status="new")
 
                     self.Accept(expanded_vertex,func_expand,"Expansion" ) 
                     
@@ -770,6 +804,8 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
 
                 else:
                     
+                    self.f_obj.update(func_reflect,self.best,status="old") 
+
                     self.Accept(reflected_vertex,func_reflect,"Reflection" ) 
                    
                     self.sort_simplex(self.func_vertices_sorted,self.vertices_sorted) 
@@ -787,13 +823,15 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
             if ( func_reflect >= self.lousy ):   
 
                 if ( self.lousy <= func_reflect < self.worst ):  
-               
+              
                     outside_contract_vertex = self.Outside_Contract(centroid,reflected_vertex) 
 
-                    func_out_contract = self.f_obj.optimize(self.para_type_lst[0],self.regroup_with_fixed(outside_contract_vertex))
+                    func_out_contract = self.f_obj.optimize(self.para_type_lst[0],self.regroup_with_fixed(outside_contract_vertex),status="new")
 
-                    if ( func_out_contract <= func_reflect ): 
-            
+                    if (func_out_contract <= func_reflect): 
+           
+                        self.f_obj.update(func_out_contract,self.best,status="new") 
+ 
                         self.Accept(outside_contract_vertex,func_out_contract,"Outside contraction") 
 
                         self.sort_simplex(self.func_vertices_sorted,self.vertices_sorted) 
@@ -820,9 +858,11 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
 
                     inside_contract_vertex = self.Inside_Contract(centroid) 
     
-                    func_inside_contract = self.f_obj.optimize(self.para_type_lst[0],self.regroup_with_fixed(inside_contract_vertex))
+                    func_inside_contract = self.f_obj.optimize(self.para_type_lst[0],self.regroup_with_fixed(inside_contract_vertex),status="new")
 
                     if ( func_inside_contract < self.worst ):     
+
+                        self.f_obj.update(func_inside_contract,self.best,status="new")
                         
                         self.Accept(inside_contract_vertex,func_inside_contract,"Inside contraction") 
 

@@ -1,13 +1,19 @@
+# Python standard library: 
 import numpy as np
-import IO
+import os 
 import logging 
 import sys
-import objective
 import importlib
+# Local library: 
+import IO
+import objective
+# Third-party libraries: 
 
 class prepare(): 
 
-    def __init__(self,ref_dict,predict_dict,arg_dict,sampling_method): 
+    def __init__(self,JOBID,ref_dict,predict_dict,arg_dict,sampling_method): 
+
+        self.output_folder = os.path.join(JOBID,"Output")
 
         self.logger = logging.getLogger(__name__) 
 
@@ -104,7 +110,7 @@ class prepare():
 
         return None 
 
-    def optimize(self,fftype,force_field_parameters): 
+    def optimize(self,fftype,force_field_parameters,status): 
 
         # run sampling: 
 
@@ -125,5 +131,27 @@ class prepare():
         for job in self.load_objective_lst:  
 
             sum_objective += job.optimize() 
-       
+
+            # if the rename file attributes exist, rename the file needed
+
+            if ( hasattr(job,'rename')): 
+
+                job.rename(status,self.output_folder) 
+
         return sum_objective  
+
+    def update(self,current_obj,best_obj,status):
+
+        if (current_obj < best_obj):  
+
+            for job in self.load_objective_lst: 
+
+                if (hasattr(job,'update')): 
+
+                    job.update(status,self.output_folder) 
+
+        return None 
+
+
+
+    
