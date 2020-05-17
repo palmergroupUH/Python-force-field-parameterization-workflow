@@ -8,12 +8,13 @@ real
 # So,the corresponding python data type is: "string","string", "float","integer","integer"
 # Example: 
 
-force mW_300K_1bar_500 1 2 2 bf 5000 eng abs w 0.0 1.0 
+force mW_300K_1bar_500 1 2 2 bf 5000 eng var w 1.0 1.0 
 
 # shell command to launch sampling in each folder :  
 # Python subprocess module launch these commands in non-blocking manner in each desired folder:
 # sampling input file names will be subsistuted as: in.force, in.rdf, in.isobar ... 
 # Default sampling package is LAMMPS 
+# modify the "module load xxx" since this is an environment dependent command:
 # Example:
 
 module load intel && srun -n %d -N1 -c1 --mpi=pmi2 lmp_ml_water < in.%s
@@ -30,7 +31,7 @@ module load intel && srun -n %d -N1 -c1 --mpi=pmi2 lmp_ml_water < in.%s
 # "force-field type name", "parameter1", "parameter2","parameter2", ...  
 # Example:
 
-stillinger_weber 6.589  2.0925  1.87  29.15  1.02  -0.303333333333 7.049556277  0.6822245584  3.2  0.4 0.0  
+stillinger_weber 6.589 2.0925 1.87 29.15 1.02 -0.303333333333 7.049556277 0.6822245584 3.2 0.4 0.0  
 
 # fit (1) and fix (0) parameters: 
 # Example:
@@ -59,7 +60,9 @@ stillinger_weber 6.589  2.0925  1.87  29.15  1.02  -0.303333333333 7.049556277  
 # if perturb mode 1 is used: 'Nelder-Mead perturb random/+/- floating_number/100'  
 # each parameters will be "randomly or + or -" percentage of its original value 
 # Example: 
-Nelder-Mead perturb random 0.4  
+Nelder-Mead perturb 
+
+-0.4 -0.4 0.4 0.4 0.4 -0.4 0.4 -0.4 -0.4 
 
 # if perturb mode 2 is used: 'Nelder-Mead perturb'  
 # then the next row  must be there to provide + or - magnitude for each fitting number mannually    

@@ -1,6 +1,6 @@
 # A data-driven approach to systematically and reproduciably optimize force-field parameters 
 
-<img src="workflow.png" width="1000">
+<img src="workflow.png" width="800">
 
 ## Features: 
 * Efficient adoption of parallism to perform sampling by interfacing with a parallel simulator 
@@ -14,15 +14,17 @@
 ## Installation: 
 
 ```
-git clone https://github.com/jingxiangguo/Python-force-field-parameterization-workflow.git 
+step 1: git clone https://github.com/jingxiangguo/Python-force-field-parameterization-workflow.git 
 
-pip install -e .  
+step 2: cd Python-force-field-parameterization-workflow 
 
-cd Python-force-field-parameterization-workflow 
+step 3: pip install -e .  
 
-cd IO/fortran/
+step 4: cd IO/fortran/
 
-make -f MAKEFILE
+step 5: make -f MAKEFILE
+
+step 6: run "optimize -h" from the command line
 
 ``` 
 

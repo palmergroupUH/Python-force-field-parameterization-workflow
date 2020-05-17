@@ -22,4 +22,4 @@
 # $SLUMR_JOBID: A unique slurm job ID assigned after submitting the job 
 
 
-optimize -c $SLURM_NTASKS -j force_mathcing_$SLURM_JOBID -i sample_input_script -Ref ../../ReferenceData -prep ../../prepsystem 
+optimize -c $SLURM_NTASKS -j force_mathcing_$SLURM_JOBID -i sample_input -Ref ../../ReferenceData -prep ../../prepsystem 
