@@ -11,22 +11,33 @@
     - sampling methods/force-field potential functional forms
     - optimization algorithms  
 
+## Softwares required:
+
+* A compiled MD/MC packages exectuable (LAMMPS is already supported) 
+
+* Slurm Workload Manager (or equivalent) 
+
+* Numpy==1.18.1  
+
+* Python 3.7  
+
 ## Installation on Linux: 
 
 conda is the recommended package manager.  
 
 ```
-If 'conda' is not not found, download [anaconda] (https://www.anaconda.com/products/) individual to your home directory. 
-Then, install the package following [instructions] (https://docs.anaconda.com/anaconda/install/) 
+If 'conda' is not not found or root previliage is required.  
+You can download anaconda Python https://www.anaconda.com/products/individual. to your home directory. 
+Then, install the package following https://docs.anaconda.com/anaconda/install/.  
 
 ```
-create a conda environment with numpy==1.18.1 and python3.7 :  
+create a conda environment with specific versions of numpy and python :  
 
 ```
 conda create -n user-given-name python=3.7 numpy=1.18.1. 
 ```
 
-copy the project to your local directory:
+copy the project to the local directory of choice:
 
 ```
 git clone https://github.com/jingxiangguo/Python-force-field-parameterization-workflow.git 
@@ -56,16 +67,6 @@ Now, test the if the installation is successful:
 run "optimize -h" in the terminal  
 ``` 
 
-
-## Software required:
-
-* A compiled MD/MC packages exectuable (LAMMPS is already supported) 
-
-* Slurm Workload Manager (or equivalent) 
-
-* Numpy==1.18.1  
-
-* Python 3.7  
 
 ## References: 
 
