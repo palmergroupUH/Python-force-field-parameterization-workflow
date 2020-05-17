@@ -13,19 +13,38 @@
 
 ## Installation: 
 
+
 ```
-step 1: git clone https://github.com/jingxiangguo/Python-force-field-parameterization-workflow.git 
+If 'conda' is not not found, download https://www.anaconda.com/products/individual to your home directory. 
+Then, install the package following instructions: https://docs.anaconda.com/anaconda/install/  
+```
 
-step 2: cd Python-force-field-parameterization-workflow 
+```
+create a conda environment using "conda create -n user-given-name". 
 
-step 3: pip install -e .  
+```
+```
+git clone https://github.com/jingxiangguo/Python-force-field-parameterization-workflow.git 
+```
 
-step 4: cd IO/fortran/
+```
+cd Python-force-field-parameterization-workflow 
+```
 
-step 5: make -f MAKEFILE
+```
+pip install -e .  
+```
 
-step 6: run "optimize -h" from the command line
+``` 
+cd IO/fortran/
+``` 
 
+``` 
+make -f MAKEFILE
+``` 
+
+``` 
+run "optimize -h" from the command line
 ``` 
 
 
@@ -35,9 +54,9 @@ step 6: run "optimize -h" from the command line
 
 * Slurm Workload Manager (or equivalent) 
 
-* Numpy  
+* Numpy==1.18.1  
 
-* Python/3.7  
+* Python 3.7  
 
 ## References: 
 

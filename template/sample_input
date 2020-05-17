@@ -17,7 +17,7 @@ force mW_300K_1bar_500 1 2 2 bf 5000 eng var w 1.0 1.0
 # modify the "module load xxx" since this is an environment dependent command:
 # Example:
 
-module load intel && srun -n %d -N1 -c1 --mpi=pmi2 lmp_ml_water < in.%s
+module load intel && srun -n %d -N1 -c1 --exclusive --mpi=pmi2 lmp_ml_water < in.%s
 
 # output frequency: 
 # first column is for dumping current best parameters/obj 
