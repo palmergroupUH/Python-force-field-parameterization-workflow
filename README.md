@@ -11,18 +11,23 @@
     - sampling methods/force-field potential functional forms
     - optimization algorithms  
 
-## Installation: 
+## Installation on Linux: 
 
-
-```
-If 'conda' is not not found, download https://www.anaconda.com/products/individual to your home directory. 
-Then, install the package following instructions: https://docs.anaconda.com/anaconda/install/  
-```
+conda is the recommended package manager.  
 
 ```
-create a conda environment using "conda create -n user-given-name". 
+If 'conda' is not not found, download [anaconda] (https://www.anaconda.com/products/) individual to your home directory. 
+Then, install the package following [instructions] (https://docs.anaconda.com/anaconda/install/) 
 
 ```
+create a conda environment with numpy==1.18.1 and python3.7 :  
+
+```
+conda create -n user-given-name python=3.7 numpy=1.18.1. 
+```
+
+copy the project to your local directory:
+
 ```
 git clone https://github.com/jingxiangguo/Python-force-field-parameterization-workflow.git 
 ```
@@ -30,21 +35,25 @@ git clone https://github.com/jingxiangguo/Python-force-field-parameterization-wo
 ```
 cd Python-force-field-parameterization-workflow 
 ```
+install the package in editable mode from source: 
 
 ```
 pip install -e .  
 ```
+then, go to IO/fortran 
 
 ``` 
 cd IO/fortran/
 ``` 
+compile fortran library for I/O: 
 
 ``` 
 make -f MAKEFILE
 ``` 
+Now, test the if the installation is successful: 
 
 ``` 
-run "optimize -h" from the command line
+run "optimize -h" in the terminal  
 ``` 
 
 
