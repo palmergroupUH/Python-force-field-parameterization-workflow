@@ -1,0 +1,25 @@
+#!/bin/bash
+#SBATCH -J optimize 
+#SBATCH -o out.o%j
+#SBATCH -e out.e%j
+#SBATCH -t 5-2:57:33
+#SBATCH --mem-per-cpu=2G
+#SBATCH --cpus-per-task=1
+#SBATCH -n 2 -N 1
+
+
+# for more details regarding the "sbatch" command options: https://slurm.schedmd.com/sbatch.html   
+
+# --------------------------------- Command Line Options --------------------------------
+# -c (cores) "number of cores requested (an integer)"
+# -j (jobid) "A user-defined name for a unique job (a string)"
+# -m (Optional) (mode)  "debug" or "run" 
+# -i (input) "input file name (a string)" 
+# -Ref (Optional) "reference data address (a string)"
+# -prep (Optional) "template folder for running sampling method ( a string)" 
+
+# $SLUMR_NTASKS: Number of cores requested from 'SBATCH -n' 
+# $SLUMR_JOBID: A unique slurm job ID assigned after submitting the job 
+
+
+optimize -c $SLURM_NTASKS -j force_mathcing_$SLURM_JOBID -i sample_input -Ref ReferenceData -prep prepsystem 
