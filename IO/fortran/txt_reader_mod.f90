@@ -68,20 +68,19 @@ contains
 
         end subroutine 
 
-    subroutine loadtxt(txtfile,strleng,num_lines,skiprows,loaded_data) bind(c,name="load_txt")
+    subroutine loadtxt(txtfile,strleng,num_lines,num_col,skiprows,loaded_data) bind(c,name="load_txt")
         implicit none 
         integer(c_int),intent(in) :: strleng 
         character(kind=c_char,len=1),dimension(1:strleng),intent(in) :: txtfile
-        integer(c_int),intent(in) :: num_lines
-        integer(c_int),intent(in) :: skiprows 
+        integer(c_int),intent(in) :: num_lines,num_col,skiprows
         character(len=:),allocatable :: filename 
         integer :: i,unit_number	
-        real(c_double),intent(out),dimension(1:num_lines-skiprows) :: loaded_data
+        real(c_double),intent(out),dimension(1:num_lines-skiprows,1:num_col) :: loaded_data
 
         unit_number = unit_num()
 
         call convert_c_string_f_string(txtfile,strleng,filename) 
-
+        
         open(unit=unit_number,file=filename,action="read",form="formatted") 
 
             do i = 1,skiprows
@@ -90,12 +89,12 @@ contains
 
             end do 
 
-            do i = 1, num_lines-skiprows  
+            do i = 1, num_lines - skiprows  
 
-                read(unit_number,*) loaded_data(i) 
+                read(unit_number,*) loaded_data(i,1:num_col) 
                 
             end do 
-
+        
         close(unit_number) 
 
         end subroutine 

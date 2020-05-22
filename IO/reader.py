@@ -320,21 +320,23 @@ def get_lines_columns(txtfile):
     
     txt_lib.get_txt_lines_columns(txtfile,byref(strlength),byref(num_lines),byref(num_columns)) 
     
-    return num_lines.value, num_columns.value  
+    return num_lines.value, num_columns.value 
 
-def loadtxt(txtfile,num_lines,skiprows,return_numpy): 
+def loadtxt(txtfile,num_lines,num_cols,skiprows,return_numpy): 
 
     txtfile,strlength = string_to_ctypes_string(txtfile)
 
     num_selected = num_lines-skiprows
 
+    loaded_data = np.ctypeslib.as_ctypes(np.zeros((num_selected,num_cols),dtype=np.float64)) 
+
     num_lines = int_to_ctypes_int(num_lines)
+
+    num_cols = int_to_ctypes_int(num_cols)
 
     skiprows = int_to_ctypes_int(skiprows)
 
-    loaded_data = np.ctypeslib.as_ctypes(np.zeros(num_selected,dtype=np.float64)) 
-
-    txt_lib.load_txt(txtfile,byref(strlength),byref(num_lines),byref(skiprows),loaded_data) 
+    txt_lib.load_txt(txtfile,byref(strlength),byref(num_lines),byref(num_cols),byref(skiprows),loaded_data) 
 
     if ( return_numpy ): 
 
