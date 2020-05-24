@@ -10,7 +10,7 @@ from ctypes import CDLL, POINTER, c_int, c_double,c_char_p,c_long,c_float,byref
 
 # Local library: 
 import IO.reader 
-import pair_correlation 
+import calc_pair_correlation
 
 # Third-party library: 
 
@@ -83,7 +83,7 @@ class load():
 
             self.predict_traj_lst.append(predict_rdf_traj)
 
-            gr_calc = pair_correlation.RadialDistribution(predict_rdf_traj,
+            gr_calc = calc_pair_correlation.RadialDistribution(predict_rdf_traj,
                                                           self.cores_per_job,
                                                           self.cutoff,
                                                           self.num_bins,

@@ -312,6 +312,20 @@ class load():
 
         return None 
 
+    def parse_virial_arg(self): 
+
+        keyword_index = IO.user_provided.keyword_exists(argument_str,"virial")
+
+        if (keyword_index < 0):
+    
+            self.virial_keword = False 
+
+            return None 
+    
+     
+
+        return None 
+
     def print_objective_info(self):
 
         self.logger.info("Reference data address:  \n")
@@ -602,10 +616,6 @@ class load():
         counter = 0 
 
         for eng_file,force_file in zip(self.predict_energy_file_lst,self.predict_force_file_lst): 
-    
-            best_predicted_force = self.sub_folder+".force"
-        
-            best_predicted_eng = self.sub_folder+".eng"
     
             if (status =="guess"): 
 
