@@ -61,10 +61,10 @@ compile fortran library for I/O:
 ``` 
 make -f MAKEFILE
 ``` 
-Now, test the if the installation is successful: 
+Now, test if your installation is successful 
 
 ``` 
-run "optimize -h" in the terminal  
+optimize -h
 ``` 
 
 

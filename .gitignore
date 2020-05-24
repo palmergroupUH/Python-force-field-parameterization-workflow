@@ -34,9 +34,9 @@ objective/force_matching/__pycache__/
 
 objective/rdf_matching/__pycache__/ 
 
-tutorial/Tutorial-2---objective/ReferenceData/ 
+#tutorial/Tutorial-2---objective/ReferenceData/ 
 
-prepsystem/
+#prepsystem/
 
 *.so 
 
