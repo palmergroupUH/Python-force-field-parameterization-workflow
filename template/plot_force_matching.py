@@ -14,19 +14,24 @@ import IO.reader
 # provide eng and force file address:  
 # Energy data: 
 
-guess_file = "force_mathcing_387865/Output/mW_300K_1bar_500_guess.eng"
-ref_file = "/project/palmer/Jingxiang/ours_optimization/tutorial/force_matching_tutorial/ReferenceData/force/mW_300K_1bar_500/Ref.eng" 
-best_predict = "force_mathcing_387865/Output/mW_300K_1bar_500_best.eng"
+guess_file = "force_mathcing_388161/Output/mW_300K_1bar_500_guess.eng"
+ref_file = "ReferenceData/force/mW_300K_1bar_500/Ref.eng" 
+best_predict = "force_mathcing_388161/Output/mW_300K_1bar_500_best.eng"
 
 # Force data: 
-ref_force_data_address = "/project/palmer/Jingxiang/ours_optimization/tutorial/force_matching_tutorial/ReferenceData/force/mW_300K_1bar_500/Ref.force"
-guess_force_data_address = "force_mathcing_387865/Output/mW_300K_1bar_500_guess.force"
-best_force_data_address = "force_mathcing_387865/Output/mW_300K_1bar_500_best.force"
+ref_force_data_address = "ReferenceData/force/mW_300K_1bar_500/Ref.force"
+guess_force_data_address = "force_mathcing_388161/Output/mW_300K_1bar_500_guess.force"
+best_force_data_address = "force_mathcing_388161/Output/mW_300K_1bar_500_best.force"
 
+# objective data: 
+
+file_address  = "force_mathcing_388161/Output/best_objective.txt"
+objective_data = np.loadtxt(file_address)
 
 num_lines,num_columns = IO.reader.get_lines_columns(guess_file) 
 
 guess_eng = IO.reader.loadtxt(guess_file,num_lines,skiprows=1,return_numpy=True)
+
 
 # reference:
 
@@ -121,4 +126,11 @@ plt.ylabel("best forces: fx,fy,fz (kcal/mol)")
 plt.legend(loc="upper center")
 plt.savefig("best_force.png")
 
+
+plt.figure() 
+iteration = np.arange(objective_data.size)*5 
+plt.semilogy(iteration,objective_data) 
+plt.xlabel("iteration")
+plt.ylabel("objective function")
+plt.savefig("objective_vs_iteration.png")
 
