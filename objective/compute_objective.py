@@ -22,7 +22,7 @@ class prepare():
         self.check_sampling_method() 
 
         self.load_each_matching_module(ref_dict,predict_dict,arg_dict ) 
-
+        
         return None  
 
     def check_sampling_method(self):
@@ -52,7 +52,19 @@ class prepare():
 
                         } 
 
-        return keyword_dict[input_keyword]  
+        module_name = keyword_dict.get(input_keyword) 
+
+        if (module_name is None): 
+
+            self.logger.error("The matching type %s not found;"
+                              "Plase use: 'force', 'rdf', 'isobar'" 
+                              "or add the customized matching type"%input_keyword)
+
+            sys.exit("Check errors in the log file")
+
+        else: 
+
+            return module_name  
 
     def load_each_matching_module(self,ref_dict,predict_dict,arg_dict): 
     
@@ -113,7 +125,7 @@ class prepare():
     def optimize(self,fftype,force_field_parameters,status): 
 
         # run sampling: 
-
+        
         self.sampling.run(fftype,force_field_parameters) 
 
         # check sampling status: 

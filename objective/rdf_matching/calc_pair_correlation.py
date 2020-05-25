@@ -28,10 +28,12 @@ class RadialDistribution():
     
         self.cutoff = cutoff 
     
+        interval = cutoff/num_bins 
+
         start_at = 1 
 
         # compute rdf bins:
-        self.compute_rdf_bins()
+        self.rdf_bins = RadialDistribution.compute_rdf_bins(interval,num_bins)
 
         # create workers for multiprocessing
 
@@ -164,20 +166,15 @@ class RadialDistribution():
 
         return self.normalize_histogram(job_lst)  
 
-    def compute_rdf_bins(self):
+    @staticmethod 
+    def compute_rdf_bins(interval,num_bins):
 
-        bin_interval = self.cutoff/self.num_bins 
+        bins_pos = np.zeros(num_bins)  
 
-        self.rdf_bins = np.zeros(self.num_bins) 
-
-        for i in range(self.num_bins): 
-
-            self.rdf_bins[i] = bin_interval*i + bin_interval*0.5  
-
-        return None      
+        return 0.5*interval + np.arange(num_bins)*interval
         
     def dump_gr(self,filename):
-    
+
         with open(filename,"w") as output:
         
             np.savetxt(output,np.c_[self.rdf_bins,self.gr]) 
@@ -186,7 +183,7 @@ class RadialDistribution():
 
     def dump_r2hr(self,filename): 
 
-        r2hr = self.rdf_bins**2*(self.gr-1)
+        r2hr = rdf_bins**2*(self.gr-1)
 
         with open(filename,"w") as output: 
 

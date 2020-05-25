@@ -328,7 +328,7 @@ def loadtxt(txtfile,num_lines,num_cols,skiprows,return_numpy):
 
     num_selected = num_lines-skiprows
 
-    loaded_data = np.ctypeslib.as_ctypes(np.zeros((num_selected,num_cols),dtype=np.float64)) 
+    loaded_data = np.ctypeslib.as_ctypes(np.zeros(num_selected*num_cols,dtype=np.float64)) 
 
     num_lines = int_to_ctypes_int(num_lines)
 
@@ -337,11 +337,11 @@ def loadtxt(txtfile,num_lines,num_cols,skiprows,return_numpy):
     skiprows = int_to_ctypes_int(skiprows)
 
     txt_lib.load_txt(txtfile,byref(strlength),byref(num_lines),byref(num_cols),byref(skiprows),loaded_data) 
-
+    
     if ( return_numpy ): 
 
-        return np.ctypeslib.as_array(loaded_data)
-
+        return np.ctypeslib.as_array(loaded_data).reshape((num_cols.value,num_lines.value - skiprows.value)).T 
+        
     else: 
 
         return loaded_data  

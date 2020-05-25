@@ -124,22 +124,29 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
             self.optimizer_logger.info("%d step size is : \n"%(self.stepsize.size))  
 
             self.optimizer_logger.info(" ".join(str(step) for step in self.stepsize) ) 
+            self.optimizer_logger.info("-------------------------------------------------------------------------------------------------------\n\n") 
 
-        self.optimizer_logger.info("-------------------------------------------------------------------------------------------------------\n") 
+            self.print_Nelder_Mead_simplex() 
 
-        self.optimizer_logger.info("\n \n") 
-
+            self.optimizer_logger.info("-------------------------------------------------------------------------------------------------------\n\n") 
+        
         if ( self.optimizer_argument[1] == "restart"): 
            
-            self.optimizer_logger.info("# objective function values (from left to right => smallest to largest) : \n") 
+            self.print_Nelder_Mead_simplex() 
 
-            self.optimizer_logger.info(" ".join(str(para) for para in self.func_vertices_sorted) + "\n" ) 
+        return None 
 
-            self.optimizer_logger.info("# All Nelder-Mead vertices (from top to down => smallest to largest): \n") 
+    def print_Nelder_Mead_simplex(self): 
 
-            for i in range(self.num_vertices): 
+        self.optimizer_logger.info("# objective function values (from left to right => smallest to largest) : \n") 
 
-                self.optimizer_logger.info(" ".join(str(para) for para in self.vertices_sorted[i,:]) + "\n" )  
+        self.optimizer_logger.info(" ".join(str(para) for para in self.func_vertices_sorted) + "\n" ) 
+
+        self.optimizer_logger.info("# All Nelder-Mead vertices (from top to down => smallest to largest): \n") 
+        
+        for i in range(self.num_vertices): 
+
+            self.optimizer_logger.info(" ".join(str(para) for para in self.vertices_sorted[i,:]) + "\n" )  
 
         return None 
 
