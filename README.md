@@ -67,6 +67,7 @@ Now, test if your installation is successful
 optimize -h
 ``` 
 
+## Just a tutorial 
 
 ## References: 
 
