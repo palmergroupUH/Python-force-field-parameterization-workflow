@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # Standard python library
-import sys 
+import sys
 import IO.user_provided
 import objective.setup_objective
 import optimizer.gradient_free
@@ -13,10 +13,13 @@ import objective.compute_objective
 
 def optimize_main():
 
-    #------------------------------------------------------------------------------
-    #                       Taking the input from user                             
-    #------------------------------------------------------------------------------
-    # This is the main program 
+    # force stdin,stderr,stdout to be unbuffered
+    sys.stdout.flush()
+
+    # -------------------------------------------------------------------------
+    #                       Taking the input from user
+    # -------------------------------------------------------------------------
+    # This is the main program
     # Uncomment the following docstring if running the program interactively
     """
     main_logger,TOTAL_CORES,INPUT,JOBID,Ref,prep = (IO
@@ -35,79 +38,80 @@ def optimize_main():
     # TOTAL_CORES: Number of cores assigned by slurm scheduler
     # INPUT: a string of given input file name
     # JOBID: a combination of Slurm job id and user-provided id
+    (main_logger,
+     TOTAL_CORES,
+     INPUT,
+     JOBID,
+     Ref,
+     prep) = IO.user_provided.from_command_line().finish_reading()
 
-    main_logger, TOTAL_CORES, INPUT, JOBID,Ref,prep = (IO
-                                              .user_provided
-                                              .from_command_line()
-                                              .finish_reading())
-
-    #------------------------------------------------------------------------------
-    #                           Set up the workflow                                
-    #------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
+    #                           Set up the workflow
+    # -------------------------------------------------------------------------
     # set up working folders and sampling methods ...
-    ref_dict, predict_dict, argument_dict, LAMMPS, last_line = (objective
-                                                                .setup_objective
-                                                                .setup(
-                                                                    INPUT,
-                                                                    TOTAL_CORES,
-                                                                    JOBID,
-                                                                    overwrite=True,
-                                                                    Ref_folder=Ref,
-                                                                    prep_folder=prep)
-                                                                .finish())
 
-    #------------------------------------------------------------------------------
-    #                           Initialize objective functions                     
-    #------------------------------------------------------------------------------
+    (ref_dict,
+     predict_dict,
+     argument_dict,
+     LAMMPS,
+     last_line) = objective.setup_objective.setup(INPUT,
+                                                  TOTAL_CORES,
+                                                  JOBID,
+                                                  overwrite=True,
+                                                  Ref_folder=Ref,
+                                                  prep_folder=prep).finish()
+
+    # -------------------------------------------------------------------------
+    #                           Initialize objective functions
+    # -------------------------------------------------------------------------
     # instantiate the object of each matching type ...
-    eval_objective = (objective
-                      .compute_objective
-                      .prepare(
-                        JOBID,
-                        ref_dict,
-                        predict_dict,
-                        argument_dict,
-                        LAMMPS))
+
+    eval_objective = objective.compute_objective.prepare(
+                                                         JOBID,
+                                                         ref_dict,
+                                                         predict_dict,
+                                                         argument_dict,
+                                                         LAMMPS)
 
     # eval_objective: a Python list
     # each objective has attributes of "optimize"
     # [ objective1, objective2, objective3 ... ]
 
-    #------------------------------------------------------------------------------
-    #                           start optimization                                 
-    #------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
+    #                           start optimization
+    # -------------------------------------------------------------------------
 
     # initialize optimizer ...
-    optimize_fm = (optimizer
-                   .gradient_free
-                   .NelderMeadSimplex(
-                       INPUT,
-                       eval_objective,
-                       skipped=last_line,
-                       output=JOBID))
+    optimize_fm = optimizer.gradient_free.NelderMeadSimplex(INPUT,
+                                                            eval_objective,
+                                                            skipped=last_line,
+                                                            output=JOBID)
 
     # run optimization ...
     optimize_fm.run_optimization()
 
-    return None 
+    return None
 
-def clear_job_id_main(): 
 
-    return None 
+def clear_job_id_main():
 
-def main(): 
-    
+    return None
+
+
+def main():
+
     if (sys.argv[0].find("optimize") >= 0):
-        
-        optimize_main()  
 
-    # not implemented yet 
-    elif ( sys.argv[0].find("clearJobID") >= 0):
+        optimize_main()
 
-        clear_job_id_main() 
+    # not implemented yet
+    elif (sys.argv[0].find("clearJobID") >= 0):
 
-    return None  
+        clear_job_id_main()
 
-if ( __name__=="__main__"): 
-    
-    main() 
+    return None
+
+
+if (__name__ == "__main__"):
+
+    main()
