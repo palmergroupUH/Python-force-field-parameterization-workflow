@@ -1,16 +1,20 @@
 # ignore installation:  
 Python_optimization_workflow.egg-info/
-IO/fortran/fortran_dcd_reader.so
-IO/fortran/fortran_txt_reader.so 
 
-# ignore .pyc file 
+# ignore fortran related compiled files
+*.mod
+*.so
+
+# ignore the python related files: 
+__init__.py
 *.pyc 
+*.ipynb 
+__pycache__/
+
 # git command 
-#
-git_command_lst 
+git_command_lst
 
 # ignore .so file 
-*.so 
 *.txt
 # ignore build 
 
@@ -20,25 +24,5 @@ build/
 dist/*
 old/*
 
-IO/__pycache__/*
-
-objective/__pycache__/*
-
-sampling/__pycache__/*
-
-optimizer/__pycache__/ 
-
-main/__pycache__/
-
-objective/force_matching/__pycache__/ 
-
-#tutorial/Tutorial-2---objective/ReferenceData/ 
-
-#prepsystem/
-
-*.so 
-
-*.mod
-
-
-
+# ignore the log file
+*.log
