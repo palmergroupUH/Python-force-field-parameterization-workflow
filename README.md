@@ -3,8 +3,8 @@
 <img src="workflow.png" width="800">
 
 ## Features: 
-* Efficient adoption of parallism to perform sampling by interfacing with a parallel simulator 
-* Diverse choices of force-field functional forms supported by the chosen simulator 
+* Efficient adoption of parallism to perform sampling with a parallel simulator 
+* Diverse choices of force-field functional forms supported by the chosen simulator
 * Flexible inclusions of distinct physical properties as reference data  
 * Modular design to facilitate the exstensions with user-defined:  
     - objective functional forms 
@@ -23,16 +23,14 @@
 
 ## Installation on Linux: 
 
-conda is the recommended package manager.  
-
-If 'conda' is not not found or root previliage is required,
+conda is the recommended package manager. If 'conda' is not not found or root previliage is required,  
 you can download anaconda: https://www.anaconda.com/products/individual to your home directory. 
 Then, install the package: https://docs.anaconda.com/anaconda/install/  
 
-create a conda environment with specific versions of numpy and python :  
+create a conda environment with specific version of numpy and python:  
 
 ```
-conda create -n "env name" python=3.7 numpy=1.18.1. 
+conda create -n "env name" python=3.7 numpy=1.18.1 
 ```
 
 copy the project to the local directory of choice:
