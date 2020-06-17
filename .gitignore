@@ -1,23 +1,23 @@
 # ignore installation:  
 Python_optimization_workflow.egg-info/
 
-# ignore fortran related compiled files
+# ignore all fortran related compiled files
 *.mod
 *.so
 
-# ignore the python related files: 
+# ignore all python related files: 
 __init__.py
-*.pyc 
-*.ipynb 
+*.pyc
+*.ipynb
 __pycache__/
 
 # git command 
 git_command_lst
 
-# ignore .so file 
+# ignore the txt file 
 *.txt
-# ignore build 
 
+# ignore build folder 
 build/
 
 # ignore distribution
