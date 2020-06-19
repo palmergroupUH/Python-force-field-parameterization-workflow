@@ -1,72 +1,78 @@
-import os 
-import sys 
-import IO.check_file  
+# Python standard library:
+import os
+import sys
+import IO.check_file
 
-def parse(filename,skip_lines=None,stop_after=None,include_comment=False): 
-    
-    if ( not IO.check_file.status_is_ok(filename) ):   
+# Local library:
 
-        sys.exit("ERROR: input file does not exist or is empty ! ") 
+# Third-party libraries:
 
-    if ( skip_lines is None ): 
 
-        skip_lines = 0  
+def parse(filename, skip_lines=None, stop_after=None, comment=False):
 
-    with open(filename,"r") as content:
+    if (not IO.check_file.status_is_ok(filename)):
 
-        for line in range(skip_lines): 
-            
-            content.readline() 
+        sys.exit("ERROR: input file does not exist or is empty !")
 
-        line_number = 1 
+    if (skip_lines is None):
+
+        skip_lines = 0
+
+    with open(filename, "r") as content:
+
+        for line in range(skip_lines):
+
+            content.readline()
+
+        line_number = 1
 
         input_files = {}
 
-        stop_counter = 0 
-        
+        stop_counter = 0
+
         for line in content.read().splitlines():
-            
-            contents = line.split() 
 
-            stop_counter += 1  
+            contents = line.split()
 
-            # stop reading the file at certain lines 
+            stop_counter += 1
 
-            if ( stop_after is not None and stop_after == stop_counter ): 
+            # stop reading the file at certain lines
+
+            if (stop_after is not None and stop_after == stop_counter):
 
                 break
 
-            # skip the empty lines 
+            # skip the empty lines
 
-            if ( contents == [] ): 
-
-                line_number += 1 
-    
-                continue  
-
-            # include the comment line for restart output:  
-
-            elif (include_comment):  
-        
-                input_files[line_number] = contents 
-
-                line_number += 1 
-
-                continue 
-            # skip the line starting with "# or & " which are comments
- 
-            elif ( "#" in contents[0] or "&" in contents[0] ): 
-
-                line_number += 1 
-
-                continue 
-
-            # reading the content: 
-
-            else:
-
-                input_files[line_number] = contents 
+            if (contents == []):
 
                 line_number += 1
 
-        return input_files 
+                continue
+
+            # include the comment line for restart output:
+
+            elif (comment):
+
+                input_files[line_number] = contents
+
+                line_number += 1
+
+                continue
+            # skip the line starting with "# or & " which are comments
+
+            elif ("#" in contents[0] or "&" in contents[0]):
+
+                line_number += 1
+
+                continue
+
+            # reading the content:
+
+            else:
+
+                input_files[line_number] = contents
+
+                line_number += 1
+
+        return input_files
