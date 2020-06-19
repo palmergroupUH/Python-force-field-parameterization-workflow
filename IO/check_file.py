@@ -1,48 +1,54 @@
-import os 
+# Python standard library:
+import os
+
+# Local library:
+
+# Third-party libraries:
 
 
-KB = float(1<<10) # Kilobytes 
-MB = float(1<<20) # Megabytes  
-GB = float(1<<30) # Gigabytes
+KB = float(1 << 10)  # Kilobytes
+MB = float(1 << 20)  # Megabytes
+GB = float(1 << 30)  # Gigabytes
 
-def status_is_ok(filename): 
 
-    # file does not exist ! 
+def status_is_ok(filename):
 
-    if ( not os.path.isfile(filename)): 
-        
-        return False 
+    # file does not exist !
 
-    # file is empty !  
+    if (not os.path.isfile(filename)):
 
-    if ( os.stat(filename).st_size ==0 ): 
+        return False
 
-        return False	
+    # file is empty !
 
-    # status is ok 
+    if (os.stat(filename).st_size == 0):
 
-    return True 
+        return False
 
-def get_file_size(filename,units):   
+    # status is ok
 
-    file_size_bytes = os.path.getsize(filename)
+    return True
 
-    if ( units == "MB"):
 
-        return file_size_bytes/MB 
-
-    elif ( units == "GB"):  
-    
-        return file_size_bytes/GB 
-
-def file_size_is_too_big(filename,threshold_size,units): 
+def get_file_size(filename, units):
 
     file_size_bytes = os.path.getsize(filename)
 
-    file_size = get_file_size(filename,units) 
+    if (units == "MB"):
 
-    if ( file_size > threshold_size ):  
+        return file_size_bytes/MB
 
-        return True 
+    elif (units == "GB"):
 
- 
+        return file_size_bytes/GB
+
+
+def file_size_is_too_big(filename, threshold_size, units):
+
+    file_size_bytes = os.path.getsize(filename)
+
+    file_size = get_file_size(filename, units)
+
+    if (file_size > threshold_size):
+
+        return True
