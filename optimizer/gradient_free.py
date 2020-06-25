@@ -1,1014 +1,1132 @@
-# Python standard library: 
-import numpy as np 
-import logging 
-import sys 
-import os 
-import random 
+# Python standard library:
+import numpy as np
+import logging
+import sys
+import os
+import random
 
-# Local library: 
+# Local library:
 import optimizer.optimizer_mod
 
-# Third-party libraries: 
+# Third-party libraries:
 
-# a gradient-free optimizer: Nelder-Mead simplex algorithm:  
+# a gradient-free optimizer: Nelder-Mead simplex algorithm:
+
 
 class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
-    
+
     def __init__(self,
-                input_files,
-                f_objective,  
-                logname=None , 
-                skipped=None, 
-                output=None,
-                optimize_mode=None,
-                nm_type=None):
-    
-        # built-in restart/output filename: 
-        
-        self.log_file = "log.restart"   
+                 input_files,
+                 f_objective,
+                 logname=None,
+                 skipped=None,
+                 output=None,
+                 optimize_mode=None,
+                 nm_type=None):
+
+        # built-in restart/output filename:
+
+        self.log_file = "log.restart"
         self.current_file = "current.restart"
         self.best_obj_file = "best_objective.txt"
         self.best_parameters_file = "best_parameters.txt"
-        
-        # Inherit the following from parent class: "set_optimizer" in "optimizer_mod.py"
-        super().__init__(input_files,logname=logname,skipped=skipped)
 
-        # variables and methods Inherited from set_optimizer : 
-        
-        # 0. dump frequecny self.dump_para:    
-        # 1. self.para_type_lst ( list of string defining the type of parameters )
-        # 1. guess parameters (self.guess_parameter)   
-        # 2. parameters to be fitted or fixed ( self.fit_and_fix )  
-        # 3. index of guess parameters to be constrained ( self.constraints_fit_index ) 
-        # 4. constraints bounds (self.constraints_bounds )  
-        # 5. the type of optimizer ( self.optimizer_type ) 
-        # 5. mode of Nelder-Mead simplex: "perturb" or "restart" ( self.optimizer_argument )  
-        # 6. contents of optimizer ( self.optimizer_input ) 
-       
-        
+        # Inherit the following from parent class:
+        # "set_optimizer" in "optimizer_mod.py"
+
+        super().__init__(input_files, logname=logname, skipped=skipped)
+
+        # variables and methods Inherited from set_optimizer:
+
+        # 0. dump frequecny self.dump_para:
+        # 1. self.ptype_lst:
+        # (list of string defining the type of parameters)
+
+        # 1. guess parameters (self.guess_parameter)
+        # 2. parameters to be fitted or fixed (self.fit_and_fix)
+        # 3. index of guess parameters to be constrained
+        # (self.bounds_fit_index)
+        # 4. constraints bounds (self.bounds)
+        # 5. the type of optimizer (self.optimizer_type)
+        # 5. mode of Nelder-Mead simplex: "perturb" or "restart"
+        # (self.optimizer_argument)
+        # 6. contents of optimizer (self.optimizer_input)
+
         # Methods Inherited:
-
         # 1. self.constrain()
-        # 2. self.regroup_parameter() 
-        # 3. self.dump_restart()  
-        # 4. self.dump_best_parameters()  
-        # 5. self.dump_best_objective()  
+        # 2. self.group_fixed()
+        # 3. self.dump_restart()
+        # 4. self.dump_best_parameters()
+        # 5. self.dump_best_objective()
 
-        # computing objective function 
-        
+        # computing objective function
+
         self.f_obj = f_objective
 
-        if ( optimize_mode is None ):  
-        
-            self.optimize_mode = "minimize" 
+        if (optimize_mode is None):
 
-        else: 
+            self.optimize_mode = "minimize"
 
-            self.optimize_mode = optimize_mode 
+        else:
 
-        # Define the following Nelder-Mead variables: 
-        # self.vertices_sorted: all vertices that have been sorted  
-        # self.func_vertices_sorted: all function values sorted at vertices 
+            self.optimize_mode = optimize_mode
+
+        # Define the following Nelder-Mead variables:
+        # self.vertices_sorted: all vertices that have been sorted
+        # self.func_vertices_sorted: all function values sorted at vertices
         # self.num_vertices: number of vertices
-        # self.worst: 
-        # self.best 
-        # self.lousy 
-    
-        # set the destination folders addresses for output and restart files 
-        self.set_the_dumping_address(output) 
+        # self.worst
+        # self.best
+        # self.lousy
 
-        # check optimizer type and its mode:     
+        # set the destination folders addresses for output and restart files
+        self.set_the_dumping_address(output)
 
-        self.parse_Nelder_Mead_Input() 
+        # check optimizer type and its mode:
 
-        # initialize simplex 
+        self.parse_Nelder_Mead_Input()
+
+        # initialize simplex
 
         self.initialize_simplex()
 
-        # default: adaptive nelder-mead simplex coefficient 
+        # default: adaptive nelder-mead simplex coefficient
 
         self.TransformationCoeff("adaptive")
 
-        # print Nelder-Mead optimization initialization 
+        # print Nelder-Mead optimization initialization
 
-        self.print_Nelder_Mead_simplex_log() 
-        
-    # check the general input:  
-    
-    def set_the_dumping_address(self,output):
+        self.print_Nelder_Mead_simplex_log()
 
-        if ( output is None ):
-        
-            self.output_address = os.getcwd() 
+    # check the general input:
 
-            self.restart_address = os.getcwd()  
+    def set_the_dumping_address(self, output):
 
-        else: 
+        if (output is None):
 
-            self.output_address = os.path.join(output,"Output")
-   
-            self.restart_address = os.path.join(output,"Restart") 
-       
-        return None  
+            self.output_address = os.getcwd()
 
-    def print_Nelder_Mead_simplex_log(self):  
+            self.restart_address = os.getcwd()
 
-        # inherited from optimzier_mod: 
+        else:
 
-        self.print_optimizer_log()  
-        
+            self.output_address = os.path.join(output, "Output")
+
+            self.restart_address = os.path.join(output, "Restart")
+
+        return None
+
+    def print_Nelder_Mead_simplex_log(self):
+
+        # inherited from optimzier_mod:
+
+        self.print_optimizer_log()
+
         # Add only Nelder Mead simplex related info
 
-        if ( self.optimizer_argument[1] =="perturb"): 
+        if (self.optimizer_argument[1] == "perturb"):
 
-            self.optimizer_logger.info("%d step size is : \n"%(self.stepsize.size))  
+            self.logger.info("%d step size is : \n"
+                             % (self.stepsize.size))
 
-            self.optimizer_logger.info(" ".join(str(step) for step in self.stepsize) ) 
-            self.optimizer_logger.info("-------------------------------------------------------------------------------------------------------\n\n") 
+            self.logger.info(" ".join(str(step)
+                             for step in self.stepsize))
 
-            self.print_Nelder_Mead_simplex() 
+            self.logger.info(100*"-" + "\n\n")
 
-            self.optimizer_logger.info("-------------------------------------------------------------------------------------------------------\n\n") 
-        
-        if ( self.optimizer_argument[1] == "restart"): 
-           
-            self.print_Nelder_Mead_simplex() 
+            self.print_Nelder_Mead_simplex()
 
-        return None 
+            self.logger.info(100*"-" + "\n\n")
 
-    def print_Nelder_Mead_simplex(self): 
+        if (self.optimizer_argument[1] == "restart"):
 
-        self.optimizer_logger.info("# objective function values (from left to right => smallest to largest) : \n") 
+            self.print_Nelder_Mead_simplex()
 
-        self.optimizer_logger.info(" ".join(str(para) for para in self.func_vertices_sorted) + "\n" ) 
+        return None
 
-        self.optimizer_logger.info("# All Nelder-Mead vertices (from top to down => smallest to largest): \n") 
-        
-        for i in range(self.num_vertices): 
+    def print_Nelder_Mead_simplex(self):
 
-            self.optimizer_logger.info(" ".join(str(para) for para in self.vertices_sorted[i,:]) + "\n" )  
+        self.logger.info("Objective function values"
+                         "(sorted in ascending order"
+                         " from left to right) : \n")
 
-        return None 
+        self.logger.info(" ".join(str(para) for para in
+                         self.func_vertices_sorted) + "\n")
 
-    def Nelder_Mead_restart_output(self,itera): 
+        self.logger.info(100*"-" + "n\n")
+        self.logger.info("All Nelder-Mead vertices "
+                         "(sorted in ascending order"
+                         "from top to down): \n")
 
-        #non_optimizer_content_dict = self.non_optimizer_restart_content() 
+        for i in range(self.num_vertices):
 
-        restart_content_dict = self.optimizer_restart_content(itera,self.best_vertex) 
-        
-        keys_ary = np.array(list(restart_content_dict.keys())) 
+            self.logger.info("Vertex %d: " % (i+1) +
+                             " ".join(str(para)
+                                      for para in
+                                      self.vertices_sorted[i, :]) + "\n")
 
-        write_restart_at = keys_ary.max() + 1 
+        return None
 
-        restart_content_dict[write_restart_at] = " ".join(str(para) for para in self.func_vertices_sorted) + "\n\n" 
-        
-        for i in range(self.num_vertices): 
+    def Nelder_Mead_restart_output(self, itera):
 
-            restart_content_dict[write_restart_at + i+1] = " ".join(str(para) for para in self.vertices_sorted[i,:]) + "\n\n" 
-        
-        return restart_content_dict 
+        content_dict = self.optimizer_restart_content(itera,
+                                                      self.best_vertex)
+
+        keys_ary = np.array(list(content_dict.keys()))
+
+        start = keys_ary.max() + 1
+
+        content_dict[start] = " ".join(str(para) for para in
+                                       self.func_vertices_sorted) + "\n\n"
+
+        for i in range(self.num_vertices):
+
+            content_dict[start + i+1] = " ".join(str(para) for para in
+                                                 self.vertices_sorted[i, :]) +\
+                                                 " \n\n"
+
+        return content_dict
 
     def parse_Nelder_Mead_Input(self):
 
-        if ( self.optimizer_type == "Nelder-Mead"):  
+        if (self.optimizer_type == "Nelder-Mead"):
 
-            # at least 1 argument needed for Nelder-Mead: either restart or perturb
+            # at least 1 argument needed for Nelder-Mead:
+            # either restart or perturb
 
-            if (len(self.optimizer_argument) == 1 ): 
+            if (len(self.optimizer_argument) == 1):
 
-                self.optimizer_logger.error("ERROR: Missing a mode argument: 'Peturb' or 'restart'")
-    
-                sys.exit("Check errors in log file !") 
+                self.logger.error("ERROR: Missing a mode argument:"
+                                  "'Peturb' or 'restart'")
 
-            self.optimizer_mode = self.optimizer_argument[1]   
-            
-        else: 
-            
-            self.optimizer_logger.error("Optimizer: %s not recognized ! Please choose optimizer: 'Nelder-Mead'  "%self.optimizer_type )
+                sys.exit("Check errors in log file !")
+
+            self.optimizer_mode = self.optimizer_argument[1]
+
+        else:
+
+            self.logger.error("Optimizer: %s not recognized ! "
+                              "Please choose optimizer: "
+                              "'Nelder-Mead' " % self.optimizer_type)
 
             sys.exit("Check errors in log file !")
 
-    def check_Nelder_Mead_mode(self): 
+    def check_Nelder_Mead_mode(self):
 
-        # Check each Nelder-Mead mode: 
+        # Check each Nelder-Mead mode:
 
-        if ( self.optimizer_argument[1] != "perturb"
-         and self.optimizer_argument[1] != "restart"):   
+        if (self.optimizer_argument[1] != "perturb" and
+                self.optimizer_argument[1] != "restart"):
 
-            self.optimizer_logger.error("ERROR: only two modes allowed in Nelder-Mead Simplex: perturb or restart")
-            
-            sys.exit("Check errors in log file !") 
+            self.logger.error("ERROR: only two modes allowed in "
+                              "Nelder-Mead Simplex: "
+                              "perturb or restart")
 
-        # Extract perturb argument:  
+            sys.exit("Check errors in log file !")
 
-        # if perturb used and at least two arguments are provided: 
+        # Extract perturb argument:
 
-        if ( self.optimizer_argument[1] == "perturb" 
+        # if perturb used and at least two arguments are provided:
 
-            and len(self.optimizer_argument) == 4 ): 
+        if (self.optimizer_argument[1] == "perturb" and
+                len(self.optimizer_argument) == 4):
 
-            optimizer_mode_arg = self.optimizer_argument[2:] 
+            optimizer_mode_arg = self.optimizer_argument[2:]
 
             self.check_Nelder_Mead_perturb_mode(optimizer_mode_arg)
 
-        elif ( self.optimizer_argument[1] == "perturb" 
+        elif (self.optimizer_argument[1] == "perturb" and
+                len(self.optimizer_argument) == 2):
 
-            and len(self.optimizer_argument) == 2 ): 
+            self.check_provided_perturb_stepsize()
 
-            self.check_provided_perturb_stepsize()  
-           
-        # Extract restart argument 
+        # Extract restart argument
 
-        if ( self.optimizer_argument[1] == "restart" ):  
+        if (self.optimizer_argument[1] == "restart"):
 
-            self.check_restart_argument() 
+            self.check_restart_argument()
 
-        return None  
+        return None
 
-    def check_Nelder_Mead_perturb_mode(self,optimizer_mode_arg):     
+    def check_Nelder_Mead_perturb_mode(self, optimizer_mode_arg):
 
-        # check 1st argument: 
+        # check 1st argument:
 
-        if ( optimizer_mode_arg[0] != "random"
-             and optimizer_mode_arg[0] != "+"
-             and optimizer_mode_arg[0] != "-"  ): 
+        if (optimizer_mode_arg[0] != "random" and
+                optimizer_mode_arg[0] != "+" and
+                optimizer_mode_arg[0] != "-"):
 
-            self.optimizer_logger.error("ERROR: If the 'perturb' mode is used, its argument can only be: 'random', '+', '-'\n"
-                                         "The mode arugment: %s found in the input file"%optimizer_mode_arg[0] )
-            
-            sys.exit("Check errors in log file !") 
+            self.logger.error("ERROR: If the 'perturb' mode is used,"
+                              "its argument can only be: 'random', '+', '-'\n"
+                              "The mode arugment: %s found in the "
+                              "input file" % optimizer_mode_arg[0])
+
+            sys.exit("Check errors in log file !")
 
         else:
 
             self.NM_perturb_mode = optimizer_mode_arg[0]
-        
-        # check 2nd argument: 
+
+        # check 2nd argument:
 
         try:
 
-            self.NM_perturb_stepsize = float(optimizer_mode_arg[1])  
+            self.NM_perturb_stepsize = float(optimizer_mode_arg[1])
 
-        except ( ValueError, TypeError ): 
+        except (ValueError, TypeError):
 
-            self.optimizer_logger.error("ERROR: When Nelder-Mead 'perturb' mode is used"
-                                        ",and arguments are provided "
-                                        "; The second argument should be float ( percentage)")
-             
+            self.logger.error("ERROR: When Nelder-Mead 'perturb' "
+                              "mode is used, and arguments are "
+                              "provided; The second argument "
+                              "should be float ( percentage)")
+
             sys.exit("Check errors in log file !")
 
-        return None 
+        return None
 
     def check_provided_perturb_stepsize(self):
 
-        if ( len(self.optimizer_input)  !=  1 ):   
+        if (len(self.optimizer_input) != 1):
 
-            self.optimizer_logger.error("ERROR: If Nelder-Mead 'perturb' mode is used,and no perturb arguments provided,\n" 
-                                        "then,1 row of stepsize ( 0.1, -0.2, 0.8 -0.3 ... ) should be provided by user\n"
-                                        "%d rows found in the input file"%len(self.optimizer_input))     
-                                        
+            self.logger.error("ERROR: If Nelder-Mead 'perturb' mode "
+                              "is used,and no perturb arguments "
+                              "provided,\n then,1 row of stepsize "
+                              "( 0.1, -0.2, 0.8 -0.3 ... ) should "
+                              "be provided by user\n"
+                              "%d rows found in the input file"
+                              % len(self.optimizer_input))
 
             sys.exit("Check errors in log file !")
 
-        try: 
+        try:
 
-            self.stepsize = np.array(self.optimizer_input[0]).astype(np.float64) 
+            self.stepsize = (np.array(self.optimizer_input[0])
+                               .astype(np.float64))
 
-        except  ( ValueError, TypeError ): 
+        except (ValueError, TypeError):
 
-            self.optimizer_logger.error(
-                       "ERROR: Invalide perturbed stepsize encountered"
-                       " when using Nelder-Mead 'perturb' mode\n")  
-       
-            sys.exit("Check errors in log file !") 
-        
-        return None 
+            self.logger.error("ERROR: Invalide perturbed stepsize encountered"
+                              " when using Nelder-Mead 'perturb' mode\n")
 
-    def generate_simplex_stepsize(self): 
-        
-        if ( hasattr(self,"NM_perturb_mode") 
-         and hasattr(self,"NM_perturb_stepsize")): 
-          
-            num_fitted = np.sum(self.fit_and_fix==1)  
+            sys.exit("Check errors in log file !")
 
-            self.stepsize = np.zeros(num_fitted) 
+        return None
 
-            for i in range(num_fitted):  
-               
-                self.stepsize[i] = self.NM_perturb_stepsize*self.generate_perturb_sign(self.NM_perturb_mode) 
+    def generate_simplex_stepsize(self):
 
-        else:  
-    
-            self.stepsize = np.array(self.optimizer_input[0]).astype(np.float64) 
+        if (hasattr(self, "NM_perturb_mode") and
+                hasattr(self, "NM_perturb_stepsize")):
 
-            # the number of perturbed vertices must be equal to the number of fitted parameters 
+            num_fitted = np.sum(self.fit_and_fix == 1)
 
-            if ( self.stepsize.size != np.sum(self.fit_and_fix==1) ): 
+            self.stepsize = np.zeros(num_fitted)
 
-                self.optimizer_logger.error(
-                            "ERROR: When Nelder-Mead 'perturb' mode is used;" 
-                            "The nubmer of perturbed stepsize" 
-                            "must be equal to" 
-                            "the nubmer of fitted parameters ( = 1 )")
+            for i in range(num_fitted):
 
-                sys.exit("Check errors in log file !") 
+                self.stepsize[i] = self.NM_perturb_stepsize *\
+                                   self.perturb_sign(self.NM_perturb_mode)
 
-        return None 
+        else:
 
-    def generate_perturb_sign(self,mode):
+            self.stepsize = (np.array(self.optimizer_input[0])
+                               .astype(np.float64))
 
-        if ( mode == "random"): 
+            # the number of perturbed vertices must be equal to the number
+            # of fitted parameters
 
-            if ( random.uniform(0,1) < 0.5 ):   
+            if (self.stepsize.size != np.sum(self.fit_and_fix == 1)):
 
-                return 1 
-            
+                self.logger.error("ERROR: When Nelder-Mead 'perturb'"
+                                  " mode is used; The nubmer of "
+                                  "perturbed stepsize must be equal "
+                                  " to the nubmer of fitted "
+                                  "parameters ( = 1 )")
+
+                sys.exit("Check errors in log file !")
+
+        return None
+
+    def perturb_sign(self, mode):
+
+        if (mode == "random"):
+
+            if (random.uniform(0, 1) < 0.5):
+
+                return 1
+
             else:
-    
-                return -1 
 
-        elif ( mode == "+" ):
-    
-            return 1  
+                return -1
 
-        elif ( mode =="-"): 
+        elif (mode == "+"):
 
-            return -1 
-             
-        else: 
+            return 1
 
-            self.optimizer_logger.error("perturb sign mode not recgonized "
-                                       "! Please choose '+','-', or 'random'")
-        
+        elif (mode == "-"):
+
+            return -1
+
+        else:
+
+            self.logger.error("perturb sign mode not recgonized "
+                              "! Please choose '+','-', or 'random'")
+
             sys.exit("Check errors in log file !")
 
-    def check_restart_argument(self): 
+    def check_restart_argument(self):
 
-        if ( len(self.optimizer_input)  < 3 ): 
+        if (len(self.optimizer_input) < 3):
 
-            self.optimizer_logger.error("ERROR: When Nelder-Mead restart mode is used \n"
-                                        "At least 3 rows of arguments: \n" 
-                                        "( 1st row: objective functions, 2nd row: first vertex, 3rd row: second vertex ... \n"
-                                        "%d rows found in the input file"%len(self.optimizer_input) ) 
-       
-            sys.exit("Check errors in log file !")  
+            self.logger.error("ERROR: When Nelder-Mead restart mode "
+                              "is used \n At least "
+                              "3 rows of arguments:"
+                              "\n ( 1st row: objective functions, "
+                              "2nd row: first vertex, "
+                              "3rd row: second vertex ... \n"
+                              "%d rows found in the input file"
+                              % len(self.optimizer_input))
 
-        # check size of objective functions and vertices provided : 
+            sys.exit("Check errors in log file !")
 
-        number_vertices = len(self.optimizer_input[0]) 
-         
-        if ( len(self.optimizer_input[1:]) != number_vertices ) : 
+        # check size of objective functions and vertices provided:
 
-            self.optimizer_logger.error("ERROR: When Nelder-Mead restart mode is used: \n" 
-                                        "Number of vertices should be equal to number of vertex parameter") 
-            
-            sys.exit("Check errors in log file !") 
+        number_vertices = len(self.optimizer_input[0])
+
+        if (len(self.optimizer_input[1:]) != number_vertices):
+
+            self.logger.error("ERROR: When Nelder-Mead restart mode "
+                              "is used: \n "
+                              "Number of vertices should be equal "
+                              "to number of vertex parameter")
+
+            sys.exit("Check errors in log file !")
 
         # check consistency of parameters with number of vertices
 
-        for i in range(len(self.optimizer_input[1:])):         
-            
-            if ( len(self.optimizer_input[i+1]) != number_vertices - 1 ):  
-               
-               self.optimizer_logger.error("ERROR: When Nelder-Mead restart mode is used: \n" 
-                                           "Number parameters should be ( number_vertices - 1 )") 
+        for i in range(len(self.optimizer_input[1:])):
 
-               sys.exit("Check errors in log file !")
-        
-        return None 
+            if (len(self.optimizer_input[i+1]) != number_vertices - 1):
 
-    def parse_existing_simplex(self): 
-        
-        try: 
+                self.logger.error("ERROR: When Nelder-Mead restart "
+                                  "mode is used: \n"
+                                  "Number parameters should be "
+                                  "( number_vertices - 1 )")
 
-            func_vertices = np.array(self.optimizer_input[0] ).astype(np.float64) 
+                sys.exit("Check errors in log file !")
 
-            self.num_vertices = func_vertices.size 
+        return None
 
-            self.num_fitting = self.num_vertices - 1  
+    def parse_existing_simplex(self):
 
-            vertices_mat = np.zeros((self.num_vertices,self.num_fitting),dtype=np.float64) 
-            
+        try:
+
+            f_vertices = np.array(self.optimizer_input[0]).astype(np.float64)
+
+            self.num_vertices = f_vertices.size
+
+            self.num_fitting = self.num_vertices - 1
+
+            vertices_mat = np.zeros((self.num_vertices,
+                                    self.num_fitting),
+                                    dtype=np.float64)
+
             for i in range(len(self.optimizer_input[1:])):
-              
-                vertices_mat[i,:] = np.array(self.optimizer_input[i+1] ).astype(np.float64)
-           
-            self.sort_simplex(func_vertices,vertices_mat) 
 
-        except ( ValueError, TypeError ): 
+                vertices_mat[i, :] = (np.array(self.optimizer_input[i+1])
+                                        .astype(np.float64))
 
-            self.optimizer_logger.error("ERROR: When Nelder-Mead restart mode is used: "                              
-                                        "ValueError or TypeError encountered in reading the restart simplex") 
+            self.sort_simplex(f_vertices, vertices_mat)
+
+        except (ValueError, TypeError):
+
+            self.logger.error("ERROR: When Nelder-Mead restart mode "
+                              "is used: ValueError or TypeError"
+                              "encountered in reading the "
+                              "restart simplex")
 
             sys.exit("Check errors in log file !")
 
-        return None 
+        return None
 
-    def initialize_simplex(self):     
+    def initialize_simplex(self):
 
-        # choose the two modes: 
+        # choose the two modes:
 
-        self.check_Nelder_Mead_mode()  
+        self.check_Nelder_Mead_mode()
 
-        # "perturb" create the new simplex  
+        # "perturb" create the new simplex
 
-        if ( self.optimizer_mode == "perturb"): 
-        
-            # either read or create step size based on the input 
+        if (self.optimizer_mode == "perturb"):
+
+            # either read or create step size based on the input
 
             self.generate_simplex_stepsize()
 
             vertices_mat = self.generate_simplex("orthogonal")
-            
-            func_vertices = self.compute_func_vertices(vertices_mat,choice="guess")
-    
-            self.sort_simplex(func_vertices,vertices_mat) 
-            
+
+            func_vertices = self.compute_func_vertices(vertices_mat,
+                                                       choice="guess")
+
+            self.sort_simplex(func_vertices, vertices_mat)
+
         # "restart" uses the existing simplex
 
-        elif ( self.optimizer_mode == "restart"):  
-                
-            self.parse_existing_simplex()     
+        elif (self.optimizer_mode == "restart"):
 
-            #self.sort_simplex(self.func_vertices_sorted,self.vertices_sorted) 
+            self.parse_existing_simplex()
 
-        return None 
+        return None
 
-    def generate_simplex(self,simplex_type): 
-            
-        # "1" is the fitted variable               
+    def generate_simplex(self, simplex_type):
 
-        self.gussed_fitting_para = self.guess_parameter[self.fit_and_fix==1]
+        # "1" is the fitted variable
+
+        self.gussed_fitting_para = self.guess_parameter[self.fit_and_fix == 1]
 
         self.num_fitting = self.gussed_fitting_para.size
 
-        # "0" is the fixed variable  
+        # "0" is the fixed variable
 
-        self.fix_variable = self.guess_parameter[self.fit_and_fix==0] 
-    
+        self.fix_variable = self.guess_parameter[self.fit_and_fix == 0]
+
         self.num_fixed = self.fix_variable.size
 
-        # Number of vertices: n + 1 ( n is the number of fitting parameters ) 
+        # Number of vertices: n + 1 (n is the number of fitting parameters)
 
-        self.num_vertices = self.num_fitting + 1 
+        self.num_vertices = self.num_fitting + 1
 
-        # generate orthogonal simplex  
-        
-        if ( simplex_type == "orthogonal"):
+        # generate orthogonal simplex
 
-            vertices_mat = self.use_orthogonal_simplex()       
- 
-        return vertices_mat 
+        if (simplex_type == "orthogonal"):
+
+            vertices_mat = self.use_orthogonal_simplex()
+
+        return vertices_mat
 
     def use_orthogonal_simplex(self):
 
-        # initialize an array: "vertices_mat" to save all vertices 
-        # matrix Format: 
+        # initialize an array: "vertices_mat" to save all vertices
+        # matrix Format:
         # vertex 1: [ para1, para2 ... para n ]
         # vertex 2: [ para1, para2 ... para n  ]
         # ...
         # vertex n+1: [ para1, para2 ... para n  ]
-        # So vertices_mat has dimension of ( n+1, n )  
+        # So vertices_mat has dimension of ( n+1, n )
 
-        vertices_mat = np.zeros((self.num_vertices,self.num_fitting)) 
-             
-        # first vertex is the guess parameter     
+        vertices_mat = np.zeros((self.num_vertices, self.num_fitting))
 
-        vertices_mat[0,:] = self.gussed_fitting_para 
- 
+        # first vertex is the guess parameter
+
+        vertices_mat[0, :] = self.gussed_fitting_para
+
         # orthogonal perturbation of vertices
 
-        shift_vector = np.eye(self.num_fitting) 
+        shift_vector = np.eye(self.num_fitting)
 
-        # loop over vertex except first one which is the guess parameter  
+        # loop over vertex except first one which is the guess parameter
 
-        for i in range(1,self.num_fitting+1):
+        for i in range(1, self.num_fitting+1):
 
-            if ( self.gussed_fitting_para[i-1] == 0 ): 
+            # if the parameter its self is 0, then add 0.005 to it
 
-                new_vertices = self.gussed_fitting_para + self.stepsize[i-1]*shift_vector[i-1,:]*0.05 
+            if (self.gussed_fitting_para[i-1] == 0):
 
-            else: 
+                new_vertices = self.gussed_fitting_para + \
+                               self.stepsize[i-1] * \
+                               shift_vector[i-1, :]*0.005
 
-                new_vertices = self.gussed_fitting_para + self.stepsize[i-1]*shift_vector[i-1,:]*self.gussed_fitting_para[i-1]
+            else:
+
+                new_vertices = self.gussed_fitting_para + \
+                               self.stepsize[i-1]*shift_vector[i-1, :] * \
+                               self.gussed_fitting_para[i-1]
 
             self.constrain(new_vertices)
 
-            vertices_mat[i,:] = new_vertices 
+            vertices_mat[i, :] = new_vertices
 
-        return vertices_mat   
+        return vertices_mat
 
-    def sort_simplex(self,func_vertices,vertices_mat):
+    def sort_simplex(self, func_vertices, vertices_mat):
 
-        # For minimization problems: 
-        # sort the objective function from small to large 
-        # So, best_objective function is the minima of all objective function 
+        # For minimization problems:
+        # sort the objective function from small to large
+        # So, best_objective function is the minima of all objective function
 
-        if ( self.optimize_mode == "minimize"):  
+        if (self.optimize_mode == "minimize"):
 
-            self.best_indx = 0 
+            self.best_indx = 0
 
-            self.worst_indx = -1  
+            self.worst_indx = -1
 
-            self.lousy_indx = -2 
-    
-        elif ( self.optimize_mode == "maximize"): 
+            self.lousy_indx = -2
 
-            self.best_indx = -1              
-    
-            self.lousy_indx = 1 
+        elif (self.optimize_mode == "maximize"):
 
-            self.worst_indx = 0  
+            self.best_indx = -1
 
-        else: 
+            self.lousy_indx = 1
 
-            self.optimizer_logger.error("ERROR: optimize mode can only be either 'minimize' or 'maximize'")
-    
+            self.worst_indx = 0
+
+        else:
+
+            self.logger.error("ERROR: optimize mode can only "
+                              "be either 'minimize' or 'maximize'")
+
             sys.exit("Check errors in log file !")
 
-        # argsort default sort order is the asscending order 
+        # argsort default sort order is the asscending order
 
-        ascending =  np.argsort(func_vertices) 
-        
-        self.vertices_sorted  = vertices_mat[ascending,:] 
+        ascending = np.argsort(func_vertices)
 
-        self.func_vertices_sorted = func_vertices[ascending] 
+        self.vertices_sorted = vertices_mat[ascending, :]
 
-        # best,worst and lousy objective function values 
+        self.func_vertices_sorted = func_vertices[ascending]
 
-        self.best = self.func_vertices_sorted[self.best_indx] 
+        # best,worst and lousy objective function values
 
-        self.worst = self.func_vertices_sorted[self.worst_indx] 
+        self.best = self.func_vertices_sorted[self.best_indx]
 
-        self.lousy = self.func_vertices_sorted[self.lousy_indx] 
+        self.worst = self.func_vertices_sorted[self.worst_indx]
 
-        # best,worst and lousy vertex  
+        self.lousy = self.func_vertices_sorted[self.lousy_indx]
 
-        self.best_vertex = self.vertices_sorted[self.best_indx,:]
+        # best,worst and lousy vertex
 
-        self.worst_vertex = self.vertices_sorted[self.worst_indx,:]
+        self.best_vertex = self.vertices_sorted[self.best_indx, :]
 
-        self.lousy_vertex = self.vertices_sorted[self.lousy_indx,:]
-        
-        return None  
+        self.worst_vertex = self.vertices_sorted[self.worst_indx, :]
 
-    def TransformationCoeff(self,keyword):  
+        self.lousy_vertex = self.vertices_sorted[self.lousy_indx, :]
 
-        if ( keyword == "standard" ): 
+        return None
 
-            self.alpha = 1.0 
-        
-            self.kai =  2.0 
+    def TransformationCoeff(self, keyword):
 
-            self.gamma = 0.5 
+        if (keyword == "standard"):
 
-            self.sigma = 0.5 
+            self.alpha = 1.0
 
-        elif ( keyword == "adaptive" ): 
+            self.kai = 2.0
 
-            self.alpha = 1.0 
+            self.gamma = 0.5
 
-            self.kai =  1 + 2.0/self.num_fitting  
-    
-            self.gamma = 0.75 - 1.0/(2*self.num_fitting)  
+            self.sigma = 0.5
 
-            self.sigma = 1.0 - 1.0/self.num_fitting 
+        elif (keyword == "adaptive"):
 
-    def compute_func_vertices(self,vertices_mat,choice): 
+            self.alpha = 1.0
 
-        num_vertices = vertices_mat[:,0].size
+            self.kai = 1 + 2.0/self.num_fitting
 
-        func_vertices = np.zeros(num_vertices,dtype=np.float64) 
+            self.gamma = 0.75 - 1.0/(2*self.num_fitting)
+
+            self.sigma = 1.0 - 1.0/self.num_fitting
+
+    def compute_func_vertices(self, vertices_mat, choice):
+
+        num_vertices = vertices_mat[:, 0].size
+
+        f_vertices = np.zeros(num_vertices, dtype=np.float64)
 
         # get the temporary best
-        if ( choice == "shrink"):  
-        
+        if (choice == "shrink"):
+
             self.temp_best = self.best
 
-        for i in range(num_vertices): 
-    
-            in_parameters = vertices_mat[i,:]
-        
-            self.constrain(in_parameters)   
+        for i in range(num_vertices):
 
-            in_parameters_full = self.regroup_with_fixed(in_parameters) 
+            in_parameters = vertices_mat[i, :]
 
-            if (choice=="guess"):  
-                
-                # guess parameters:  
-                if ( i == 0):  
+            self.constrain(in_parameters)
 
-                    func_vertices[i] = self.f_obj.optimize(self.para_type_lst[0],
-                                                           in_parameters_full,
-                                                           status="guess")
-                else: 
+            in_parameters_full = self.group_fixed(in_parameters)
 
-                    func_vertices[i] = self.f_obj.optimize(self.para_type_lst[0],
-                                                           in_parameters_full,
-                                                           status="new")
-                    
-            elif (choice=="shrink"): 
+            if (choice == "guess"):
 
-                current_obj = self.f_obj.optimize(self.para_type_lst[0],
+                # guess parameters:
+                if (i == 0):
+
+                    f_vertices[i] = self.f_obj.optimize(self.ptype_lst[0],
+                                                        in_parameters_full,
+                                                        status="guess")
+                else:
+
+                    f_vertices[i] = self.f_obj.optimize(self.ptype_lst[0],
+                                                        in_parameters_full,
+                                                        status="new")
+
+            elif (choice == "shrink"):
+
+                current_obj = self.f_obj.optimize(self.ptype_lst[0],
                                                   in_parameters_full,
                                                   status="new")
 
-                self.f_obj.update(current_obj,self.temp_best,status="new")  
+                self.f_obj.update(current_obj, self.temp_best, status="new")
 
-                if ( current_obj < self.temp_best):  
-                
-                    # update the current best 
-                    self.temp_best = current_obj 
+                if (current_obj < self.temp_best):
 
-                func_vertices[i] = current_obj 
-        
-        return func_vertices   
+                    # update the current best
+                    self.temp_best = current_obj
 
-    def check_convergence_status(self,n_iteration): 
+                f_vertices[i] = current_obj
 
-        self.optimizer_logger.info("Current iteration: %d finishes \n\n" %n_iteration ) 
-        self.optimizer_logger.info(30*"-"+ "Optimization status: "+ 30*"-"+"\n")
-        self.optimizer_logger.info("Current Best objective: %.10f\n\n" %self.best ) 
-        self.optimizer_logger.info("Current Best parameters: " + " ".join(str(para) for para in self.vertices_sorted[self.best_indx,:])+ "\n\n") 
-        self.optimizer_logger.info("Current Worst objective: %.10f\n\n" %self.worst ) 
-        self.optimizer_logger.info("Current Worst parameters: " + " ".join(str(para) for para in self.vertices_sorted[self.worst_indx,:])+ "\n") 
-        self.optimizer_logger.info(70*"-"+"\n")
-        
-        converged = self.termination_criterion_is_met(n_iteration) 
+        return f_vertices
 
-        if ( not converged ):  
+    def check_convergence_status(self, n_iteration):
 
-            self.optimizer_logger.info("Then, start next iteration ... \n") 
-            
-        return converged  
+        self.logger.info("Current iteration: %d "
+                         "finishes \n\n" % n_iteration)
 
-    def Centroid(self):  
-    
-        # select all vertices except the worst vertex 
+        self.logger.info(30*"-" + "Optimization status: " +
+                         30*"-" + "\n")
 
-        except_worst = self.vertices_sorted[:self.worst_indx,:]  
+        self.logger.info("Current Best objective: "
+                         "%.10f\n\n" % self.best)
 
-        self.optimizer_logger.info("Compute the centroid  ...\n") 
+        self.logger.info("Current Best parameters: " +
+                         " ".join(str(para) for para in
+                                  self.vertices_sorted[self.best_indx, :]) +
+                         "\n\n")
 
-        # compute the geometric center 
+        self.logger.info("Current Worst objective: "
+                         "%.10f\n\n" % self.worst)
 
-        return np.mean(except_worst,axis=0)
-            
-    def Reflect(self,centroid): 
-        
-        reflected_vetertex = centroid + self.alpha*(centroid - self.worst_vertex) 
-       
-        self.constrain(reflected_vetertex) 
+        self.logger.info("Current Worst parameters: " +
+                         " ".join(str(para) for para in
+                                  self.vertices_sorted[self.worst_indx, :]) +
+                         "\n")
 
-        self.optimizer_logger.info("Perform reflection ... \n") 
+        self.logger.info(70*"-" + "\n")
 
-        return reflected_vetertex 
- 
-    def Accept(self,vertex,func_vertex,transform_keyword):  
+        converged = self.termination_criterion_is_met(n_iteration)
 
-        # subsitude worst vertex 
-        
-        self.vertices_sorted[self.worst_indx,:] = vertex  
+        if (not converged):
 
-        self.func_vertices_sorted[self.worst_indx] = func_vertex 
+            self.logger.info("Then, start next iteration ... \n")
 
-        self.optimizer_logger.info("%s is accepted ... \n"%transform_keyword) 
+        return converged
 
-    def Expand(self,reflected,centroid):  
+    def Centroid(self):
 
-        expanded_vertex = centroid + self.kai*(reflected - centroid ) 
+        # select all vertices except the worst vertex
+
+        except_worst = self.vertices_sorted[:self.worst_indx, :]
+
+        self.logger.info("Compute the centroid  ...\n")
+
+        # compute the geometric center
+
+        return np.mean(except_worst, axis=0)
+
+    def Reflect(self, centroid):
+
+        reflected_vetertex = centroid + self.alpha*(centroid -
+                                                    self.worst_vertex)
+
+        self.constrain(reflected_vetertex)
+
+        self.logger.info("Perform reflection ... \n")
+
+        return reflected_vetertex
+
+    def Accept(self, vertex, func_vertex, transform_keyword):
+
+        # subsitude worst vertex
+
+        self.vertices_sorted[self.worst_indx, :] = vertex
+
+        self.func_vertices_sorted[self.worst_indx] = func_vertex
+
+        self.logger.info("%s is accepted ... \n" % transform_keyword)
+
+    def Expand(self, reflected, centroid):
+
+        expanded_vertex = centroid + self.kai*(reflected - centroid)
 
         self.constrain(expanded_vertex)
 
-        self.optimizer_logger.info("Perform expansion to further explore the reflected direction ... \n") 
+        self.logger.info("Perform expansion to further explore "
+                         "the reflected direction ... \n")
 
-        return expanded_vertex  
+        return expanded_vertex
 
-    def Outside_Contract(self,centroid,reflected_vertex):  
+    def Outside_Contract(self, centroid, reflected_vertex):
 
-        outside_vertex = centroid + self.gamma*(reflected_vertex - centroid) 
+        outside_vertex = centroid + self.gamma*(reflected_vertex - centroid)
 
-        self.constrain(outside_vertex) 
+        self.constrain(outside_vertex)
 
-        self.optimizer_logger.info("Reflected vertex is in between " 
-                                   "second-worst vertex and worst vertex ... \n"
-                                   "Perform outside contraction ... \n\n") 
+        self.logger.info("Reflected vertex is in between "
+                         "second-worst vertex and worst vertex ...\n"
+                         "Perform outside contraction ... \n\n")
 
-        return outside_vertex  
-        
-    def Inside_Contract(self,centroid):    
+        return outside_vertex
 
-        inside_vertex = centroid + self.gamma*( self.worst_vertex - centroid) 
+    def Inside_Contract(self, centroid):
 
-        self.constrain(inside_vertex) 
+        inside_vertex = centroid + self.gamma*(self.worst_vertex - centroid)
 
-        self.optimizer_logger.info("Reflected vertex is worst than that of the worst vertex ...\n\n" 
-                                   "Perform inside contraction ... \n\n") 
+        self.constrain(inside_vertex)
 
-        return inside_vertex   
-    
-    def Shrink(self):   
+        self.logger.info("Reflected vertex is worst than that "
+                         "of the worst vertex ...\n\n"
+                         "Perform inside contraction ... \n\n")
 
-        shrinked_vertices = np.zeros(( self.num_vertices-1, self.num_vertices-1),dtype=np.float64)
+        return inside_vertex
 
-        for i in range(self.num_vertices -1): 
-    
-            shrinked_vertex = self.best_vertex + self.sigma*(self.vertices_sorted[i+1,:]- self.best_vertex)   
+    def Shrink(self):
 
-            self.constrain(shrinked_vertex) 
+        shrinked_vertices = np.zeros((self.num_vertices-1,
+                                     self.num_vertices-1),
+                                     dtype=np.float64)
 
-            shrinked_vertices[i,:] = shrinked_vertex 
+        for i in range(self.num_vertices - 1):
 
-        self.optimizer_logger.info("The contracted vertex ( outisde/insdie )" 
-                                   "is worse than the worst vertex ...\n\n" 
-                                   "Perform shrinkage ... \n\n") 
+            shrinked_vertex = (self.best_vertex +
+                               self.sigma *
+                               (self.vertices_sorted[i+1, :] -
+                                self.best_vertex))
 
-        func_vertices = self.compute_func_vertices(shrinked_vertices,choice="shrink") 
-    
-        self.vertices_sorted[self.best_indx+1:,:] = shrinked_vertices  
+            self.constrain(shrinked_vertex)
 
-        self.func_vertices_sorted[self.best_indx+1:] = func_vertices 
+            shrinked_vertices[i, :] = shrinked_vertex
 
-        self.sort_simplex(self.func_vertices_sorted,self.vertices_sorted)  
+        self.logger.info("The contracted vertex ( outisde/insdie )"
+                         "is worse than the worst vertex ...\n\n"
+                         "Perform shrinkage ... \n\n")
 
-        return 
+        func_vertices = self.compute_func_vertices(shrinked_vertices,
+                                                   choice="shrink")
 
-    def print_vertices(self,itera,every):
+        self.vertices_sorted[self.best_indx+1:, :] = shrinked_vertices
 
-        if ( itera%every == 0 ): 
+        self.func_vertices_sorted[self.best_indx+1:] = func_vertices
 
-            with open("vertices_%d.txt"%itera,"w") as f: 
+        self.sort_simplex(self.func_vertices_sorted, self.vertices_sorted)
 
-                np.savetxt(f,np.c_[ [each_vertex for each_vertex in self.vertices_sorted]]) 
-                np.savetxt(f,np.c_[ [ self.vertices_sorted[0,:] ]] ) 
-      
-#===========================================================================================
-#                            Nelder Mead Simplex Algorithm                                  
-#===========================================================================================
+        return None
 
-    def run_optimization(self):  
+# =============================================================================
+#                            Nelder Mead Simplex Algorithm
+# =============================================================================
+
+    def run_optimization(self):
 
         # set converged status False to start iteration:
-    
+
         self.converged = False
 
-        # Nelder Mead simplex algorithm:  
-        
-        for itera in range(self.max_iteration):  
-       
-            # terminate the optimization if "self.check_convergence_status" returns True : 
+        # Nelder Mead simplex algorithm:
 
-            if ( self.converged ): 
+        for itera in range(self.max_iteration):
 
-                break 
+            # terminate the optimization if
+            # "self.check_convergence_status" returns True:
 
-            self.optimizer_logger.info(17*"===="+"\n") 
+            if (self.converged):
 
-            self.optimizer_logger.info("Current iteration: %d starts \n\n" %itera) 
+                break
 
-            # Centroid 
+            self.logger.info(17*"===="+"\n")
 
-            centroid = self.Centroid() 
-            
-            # Reflection 
-            
-            reflected_vertex = self.Reflect(centroid) 
-            
-            func_reflect = self.f_obj.optimize(self.para_type_lst[0],self.regroup_with_fixed(reflected_vertex),status="old") 
-            
-            if ( self.best <= func_reflect < self.lousy ): 
-                
-                self.Accept(reflected_vertex,func_reflect,"Reflection")   
-                
-                self.sort_simplex(self.func_vertices_sorted,self.vertices_sorted) 
+            self.logger.info("Current iteration: %d starts \n\n" % itera)
 
-                self.converged = self.check_convergence_status(itera) 
+            # Centroid
 
-                self.optimization_output(itera) 
-                
-                continue 
-            
+            centroid = self.Centroid()
+
+            # Reflection
+
+            r_vertex = self.Reflect(centroid)
+
+            f_r_vertex = self.f_obj.optimize(self.ptype_lst[0],
+                                             self.group_fixed(r_vertex),
+                                             status="old")
+
+            if (self.best <= f_r_vertex < self.lousy):
+
+                self.Accept(r_vertex, f_r_vertex, "Reflection")
+
+                self.sort_simplex(self.func_vertices_sorted,
+                                  self.vertices_sorted)
+
+                self.converged = self.check_convergence_status(itera)
+
+                self.optimization_output(itera)
+
+                continue
+
             # Expansion
-            
-            if ( func_reflect < self.best ): 
 
-                expanded_vertex = self.Expand(reflected_vertex,centroid)          
+            if (f_r_vertex < self.best):
 
-                func_expand = self.f_obj.optimize(self.para_type_lst[0],self.regroup_with_fixed(expanded_vertex),status="new")
+                e_vertex = self.Expand(r_vertex, centroid)
 
-                if ( func_expand < func_reflect ):      
+                func_expand = self.f_obj.optimize(self.ptype_lst[0],
+                                                  self.group_fixed(e_vertex),
+                                                  status="new")
 
-                    self.f_obj.update(func_expand,self.best,status="new")
+                if (func_expand < f_r_vertex):
 
-                    self.Accept(expanded_vertex,func_expand,"Expansion" ) 
-                    
-                    self.sort_simplex(self.func_vertices_sorted,self.vertices_sorted) 
+                    self.f_obj.update(func_expand, self.best, status="new")
 
-                    self.converged = self.check_convergence_status(itera) 
+                    self.Accept(e_vertex,
+                                func_expand,
+                                "Expansion")
 
-                    self.optimization_output(itera) 
+                    self.sort_simplex(self.func_vertices_sorted,
+                                      self.vertices_sorted)
 
-                    continue 
+                    self.converged = self.check_convergence_status(itera)
+
+                    self.optimization_output(itera)
+
+                    continue
 
                 else:
-                    
-                    self.f_obj.update(func_reflect,self.best,status="old") 
 
-                    self.Accept(reflected_vertex,func_reflect,"Reflection" ) 
-                   
-                    self.sort_simplex(self.func_vertices_sorted,self.vertices_sorted) 
+                    self.f_obj.update(f_r_vertex,
+                                      self.best,
+                                      status="old")
 
-                    self.converged = self.check_convergence_status(itera) 
+                    self.Accept(r_vertex,
+                                f_r_vertex,
+                                "Reflection")
 
-                    self.optimization_output(itera) 
+                    self.sort_simplex(self.func_vertices_sorted,
+                                      self.vertices_sorted)
 
-                    continue 
-            
-            # Contraction   
+                    self.converged = self.check_convergence_status(itera)
 
-            # outside contraction:  
-            
-            if ( func_reflect >= self.lousy ):   
+                    self.optimization_output(itera)
 
-                if ( self.lousy <= func_reflect < self.worst ):  
-              
-                    outside_contract_vertex = self.Outside_Contract(centroid,reflected_vertex) 
+                    continue
 
-                    func_out_contract = self.f_obj.optimize(self.para_type_lst[0],self.regroup_with_fixed(outside_contract_vertex),status="new")
+            # Contraction
 
-                    if (func_out_contract <= func_reflect): 
-           
-                        self.f_obj.update(func_out_contract,self.best,status="new") 
- 
-                        self.Accept(outside_contract_vertex,func_out_contract,"Outside contraction") 
+            # outside contraction:
 
-                        self.sort_simplex(self.func_vertices_sorted,self.vertices_sorted) 
+            if (f_r_vertex >= self.lousy):
 
-                        self.converged = self.check_convergence_status(itera)  
+                if (self.lousy <= f_r_vertex < self.worst):
 
-                        self.optimization_output(itera) 
+                    o_vertex = self.Outside_Contract(centroid, r_vertex)
 
-                        continue 
+                    f_o_vertex = self.f_obj.optimize(self.ptype_lst[0],
+                                                     self.group_fixed(o_vertex),
+                                                     status="new")
+
+                    if (f_o_vertex <= f_r_vertex):
+
+                        self.f_obj.update(f_o_vertex,
+                                          self.best,
+                                          status="new")
+
+                        self.Accept(o_vertex,
+                                    f_o_vertex,
+                                    "Outside contraction")
+
+                        self.sort_simplex(self.func_vertices_sorted,
+                                          self.vertices_sorted)
+
+                        self.converged = self.check_convergence_status(itera)
+
+                        self.optimization_output(itera)
+
+                        continue
 
                     else:
 
-                        self.Shrink() 
-    
-                        self.converged = self.check_convergence_status(itera)         
-                    
-                        self.optimization_output(itera) 
+                        self.Shrink()
 
-                        continue 
+                        self.converged = self.check_convergence_status(itera)
+
+                        self.optimization_output(itera)
+
+                        continue
 
                 # inside contraction:
 
-                if ( func_reflect >= self.worst ): 
+                if (f_r_vertex >= self.worst):
 
-                    inside_contract_vertex = self.Inside_Contract(centroid) 
-    
-                    func_inside_contract = self.f_obj.optimize(self.para_type_lst[0],self.regroup_with_fixed(inside_contract_vertex),status="new")
+                    i_vertex = self.Inside_Contract(centroid)
 
-                    if ( func_inside_contract < self.worst ):     
+                    f_i_vertex = self.f_obj.optimize(self.ptype_lst[0],
+                                                     self.group_fixed(i_vertex),
+                                                     status="new")
 
-                        self.f_obj.update(func_inside_contract,self.best,status="new")
-                        
-                        self.Accept(inside_contract_vertex,func_inside_contract,"Inside contraction") 
+                    if (f_i_vertex < self.worst):
 
-                        self.sort_simplex(self.func_vertices_sorted,self.vertices_sorted) 
-        
-                        self.converged = self.check_convergence_status(itera) 
+                        self.f_obj.update(f_i_vertex,
+                                          self.best,
+                                          status="new")
 
-                        self.optimization_output(itera) 
+                        self.Accept(i_vertex,
+                                    f_i_vertex,
+                                    "Inside contraction")
 
-                        continue 
-                
-                    else:               
-                        
+                        self.sort_simplex(self.func_vertices_sorted,
+                                          self.vertices_sorted)
+
+                        self.converged = self.check_convergence_status(itera)
+
+                        self.optimization_output(itera)
+
+                        continue
+
+                    else:
+
                         self.Shrink()
 
-                        self.converged = self.check_convergence_status(itera)  
-                
-                        self.optimization_output(itera) 
+                        self.converged = self.check_convergence_status(itera)
 
-                        continue    
-            
-#===========================================================================================
-#                             Termination criterion                                         
-#===========================================================================================
+                        self.optimization_output(itera)
 
-    def termination_criterion_is_met(self,n_itera): 
+                        continue
 
-        self.optimizer_logger.debug("Class NelderMeadSimplex:terminate function entered successfully !")
-    
-        if ( np.amin(self.func_vertices_sorted) == 0 ):  
+# =============================================================================
+#                             Termination criterion
+# =============================================================================
 
-            self.optimizer_logger.info("Convergence criterion 1 is met: minimum of objective function is equal to 0")
-     
-            self.optimizer_logger.info( "Optimization converges and program exits ! \n") 
+    def termination_criterion_is_met(self, n_itera):
 
-            return True 
+        self.logger.debug("Class NelderMeadSimplex:terminate "
+                          "function entered successfully !")
 
-        if ( ( np.amax(self.func_vertices_sorted)/np.amin(self.func_vertices_sorted)-1 ) < self.obj_tol ):
-            
-            sci_obj = "{0:.1e}".format(self.obj_tol) 
-            
-            self.optimizer_logger.info("Convergence criterion 2 is met: Ratio of obj_max/obj_min -1  < %s !\n"%sci_obj) 
-        
-            self.optimizer_logger.info( "Optimization converges and program exits ! \n") 
+        if (np.amin(self.func_vertices_sorted) == 0):
 
-            #optimization_output(best_para,self.func_vertices_sorted[0])             
+            self.logger.info("Convergence criterion 1 is met: "
+                             "minimum of objective function "
+                             "is equal to 0")
 
-            return True  
-        
-        unique_obj,repeat = np.unique(self.func_vertices_sorted,return_counts=True) 
+            self.logger.info("Optimization converges "
+                             "and program exits ! \n")
 
-        if ( unique_obj.size < self.func_vertices_sorted.size ):
-            
-            self.optimizer_logger.info("Convergence criterion 3 is met: some objective functions of different vertex begin to converge" )
+            return True
 
-            self.optimizer_logger.info(" ".join(str(obj) for obj in self.vertices_sorted) )
+        if ((np.amax(self.func_vertices_sorted) /
+                np.amin(self.func_vertices_sorted)-1) <
+                self.obj_tol):
 
-            self.optimizer_logger.info("The objective function values for all vertex are: \n ")
-            
-            self.optimizer_logger.info(" ".join(str(obj) for obj in self.func_vertices_sorted) )
-            
-            self.optimizer_logger.info( "Optimization converges and program exits ! \n")
+            sci_obj = "{0:.1e}".format(self.obj_tol)
 
-            #optimization_output(best_para,self.func_vertices_sorted[0])
+            self.logger.info("Convergence criterion 2 is met: "
+                             "Ratio of obj_max/obj_min -1  "
+                             "< %s !\n" % sci_obj)
 
-            return True  
+            self.logger.info("Optimization converges "
+                             "and program exits ! \n")
 
-        if ( np.all(np.std(self.func_vertices_sorted) < self.para_tol ) ):
-           
+            return True
+
+        unique_obj, repeat = np.unique(self.func_vertices_sorted,
+                                       return_counts=True)
+
+        if (unique_obj.size < self.func_vertices_sorted.size):
+
+            self.logger.info("Convergence criterion 3 is met: "
+                             "some objective functions of "
+                             "different vertex begin to converge")
+
+            self.logger.info(" ".join(str(obj) for obj
+                                      in self.vertices_sorted))
+
+            self.logger.info("The objective function values "
+                             "for all vertex are: \n ")
+
+            self.logger.info(" ".join(str(obj) for obj
+                                      in self.func_vertices_sorted))
+
+            self.logger.info("Optimization converges and "
+                             "program exits ! \n")
+
+            return True
+
+        if (np.all(np.std(self.func_vertices_sorted) < self.para_tol)):
+
             sci_para = "{0:.1e}".format(self.para_tol)
 
-            self.optimizer_logger.info("Convergence criterion 4 is met: the standard deviation of force-field paramteters across all vertices is %s  !\n"%sci_para)
+            self.logger.info("Convergence criterion 4 is met: the "
+                             "standard deviation of force-field "
+                             "paramteters across all vertices "
+                             "is %s  !\n" % sci_para)
 
-            self.optimizer_logger.info( "Optimization converges and program exits ... \n")
+            self.logger.info("Optimization converges and "
+                             "program exits ... \n")
 
-            #optimization_output(best_para,self.func_vertices_sorted[0])
+            return True
 
-            return True  
+        if (n_itera+1 == self.max_iteration):
 
-        if ( n_itera+1  == self.max_iteration ): 
+            self.logger.info("Convergence criterion 5 is met: "
+                             "Maximum number of iteration "
+                             "is reached !\n")
 
-            self.optimizer_logger.info("Convergence criterion 5 is met: Maximum number of iteration is reached !\n") 
+            self.logger.info("Maximum iteration %d is reached and "
+                             "Program exit !" % self.max_iteration)
 
-            #optimization_output(best_para,self.func_vertices_sorted[0]) 
+            return True
 
-            self.optimizer_logger.info( "Maximum iteration %d is reached and Program exit !"%self.max_iteration)
+        self.logger.debug("Class NelderMeadSimplex:"
+                          "terminate function exit successfully !")
 
-            return True 
+        return None
 
-        self.optimizer_logger.debug("Class NelderMeadSimplex:terminate function exit successfully !")
+# =============================================================================
+#                                      Output
+# =============================================================================
 
-        return None 
-
-#===========================================================================================
-#                                      Output                                               
-#===========================================================================================
-    
     # dictionary based output format:
-    #   --keys: line number 
-    #   --values: content ( string ) 
+    #   --keys: line number
+    #   --values: content ( string )
 
-    def optimization_output(self,itera): 
+    def optimization_output(self, itera):
 
-        # Add output functions here 
+        # Add output functions here
 
-        restart_content_dict = self.Nelder_Mead_restart_output(itera)
+        content_dict = self.Nelder_Mead_restart_output(itera)
 
-        # inherited from optimizer_mod 
-        self.dump_restart(itera,[self.log_file,self.current_file],self.restart_address,restart_content_dict)  
+        # inherited from optimizer_mod
+        self.dump_restart(itera, [self.log_file,
+                                  self.current_file],
+                          self.restart_address,
+                          content_dict)
 
-        # inherited from optimizer_mod 
-        self.dump_best_objective(itera,self.best_obj_file,self.output_address,self.best)
+        # inherited from optimizer_mod
+        self.dump_best_objective(itera,
+                                 self.best_obj_file,
+                                 self.output_address,
+                                 self.best)
 
-        #self.dump_current_simplex(itera)
+        # inherited from optimizer_mod
+        self.dump_best_parameters(itera,
+                                  self.best_parameters_file,
+                                  self.output_address,
+                                  self.best_vertex)
 
-        # inherited from optimizer_mod 
-        self.dump_best_parameters(itera,self.best_parameters_file,self.output_address,self.best_vertex) 
-       
-        return None  
+        return None
 
-    def dump_current_simplex(self,itera): 
+    def dump_current_simplex(self, itera):
 
-        current_simplex = {} 
+        simplex = {}
 
-        for ivertice in range(self.num_vertices): 
+        for iv in range(self.num_vertices):
 
-            current_simplex[ivertice] = " ".join(str(para) for para in self.vertices_sorted[ivertice,:]) +"\n"
+            simplex[iv] = " ".join(str(para) for para in
+                                   self.vertices_sorted[iv, :]) + "\n"
 
-        current_simplex[self.num_vertices] = " ".join(str(para) for para in self.vertices_sorted[0,:]) +"\n"  
+        simplex[self.num_vertices] = " ".join(str(para) for para in
+                                              self.vertices_sorted[0, :]) + "\n"
 
-        simplex_file = "simplex_%d.txt"%itera 
+        simplex_file = "simplex_%d.txt" % itera
 
         self.write_optimizer_output(self.output_freq,
                                     itera,
-                                    self.output_address, 
-                                    simplex_file,  
-                                    "w", 
-                                    current_simplex)     
+                                    self.output_address,
+                                    simplex_file,
+                                    "w",
+                                    simplex)
 
-        return None 
-
-
+        return None
