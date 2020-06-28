@@ -64,7 +64,7 @@ class from_command_line():
         # if None of total_cores ,jobID ,
         # input_file assigned, then use the command line options
 
-        if (np.all(all_options is None)):
+        if (np.all(all_options == None)):
 
             cls.Take_Command_Line_Args()
 
@@ -106,7 +106,7 @@ class from_command_line():
 
         if (not hasattr(cls, attribute)):
 
-            sys.exit('global variable: "%s" not found in either'
+            sys.exit('global variable: "%s" not found in either '
                      'command line or passed argument' % attribute)
 
         return None
@@ -213,9 +213,9 @@ class from_command_line():
     def Select_Formatter(cls, arg):
 
         mode = {
-                "debug": ("% (asctime)s - % (name)s -
-                          % (levelname)s - % (message)s"),
-                "run": "% (message)s"
+                "debug": "%(asctime)s - %(name)s - \
+                         %(levelname)s - %(message)s",
+                "run": "%(message)s"
                }
 
         return mode[arg]
