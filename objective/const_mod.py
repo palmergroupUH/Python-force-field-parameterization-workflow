@@ -1,106 +1,102 @@
-import sys 
-import logging 
+# Python standard library:
+import sys
+import logging
 
-# Gas Constants ( J/mol K ): 
+# Gas Constants ( J/mol K ):
 
-R = 8.314462618 
+R = 8.314462618
 
-# Avogadro constant:  
+# Avogadro constant:
 
-NA = 6.02214179*10**(23) 
+NA = 6.02214179*10**(23)
 
-# Boltzman Constants (J/K) : 
+# Boltzman Constants (J/K):
 
-kb = 1.38064852*10**(-23) 
+kb = 1.38064852*10**(-23)
 
 # Water's Molar mass:
 
-water_mol_mass = 18.01528  
+water_mol_mass = 18.01528
 
-# Convert LAMMPS types of units into SI  
-
-class Units(): 
+# Convert LAMMPS types of units into SI
 
 
-    def __init__(self,keyword):  
+class Units():
 
-        self.units_logger = logging.getLogger(__name__)  
+    def __init__(self, keyword):
 
-        units_list = { 
+        self.units_logger = logging.getLogger(__name__)
 
-        "real": "RealToSI",  
-        "metal": "MetaToSI"
+        units_list = {
+                      "real": "RealToSI",
+                      "metal": "MetaToSI"
+                     }
 
-        } 
-    
-        existence = units_list.get(keyword) 
-        
-        if ( not existence): 
-        
-            self.units_logger.error( "Units: %s not defined in const_mod.py"%keyword  ) 
+        existence = units_list.get(keyword)
+
+        if (not existence):
+
+            self.units_logger.error("Units: %s not defined in "
+                                    "const_mod.py" % keyword)
 
             sys.exit()
 
         else:
-                
-            getunits = units_list[keyword]  
-        
-            unitsname = getattr(self,getunits) 
 
-            unitsname()  
+            getunits = units_list[keyword]
 
-    def RealToSI(self):  
+            unitsname = getattr(self, getunits)
 
-        # Distance ( 1 Angstroms = 10^-10 m ): 
+            unitsname()
 
-        self.dist_scale = 10**(-10)  
+    def RealToSI(self):
 
-        # Volume (  1 A^3 = 10^(-30) m^3 )  
+        # Distance ( 1 Angstroms = 10^-10 m ):
 
-        self.vol_scale = 10**(-30)  
+        self.dist_scale = 10**(-10)
 
-        # Pressure ( 1 atmosphere = 101325 Pascal )  
+        # Volume (  1 A^3 = 10^(-30) m^3 )
 
-        self.p_scale = 101325  
-            
-        # Energy ( 1 Kcal/mole = 4184 J/mole): 
-        
-        self.e_scale = 4184 
+        self.vol_scale = 10**(-30)
 
-        # Time ( 1 femtoseconds = 10^-15 s ) 
+        # Pressure ( 1 atmosphere = 101325 Pascal)
 
-        self.t_scale = 10**(-15) 
-    
-        # Force ( Kcal/mol-Angstrom) 
+        self.p_scale = 101325
+
+        # Energy ( 1 Kcal/mole = 4184 J/mole):
+
+        self.e_scale = 4184
+
+        # Time ( 1 femtoseconds = 10^-15 s )
+
+        self.t_scale = 10**(-15)
+
+        # Force ( Kcal/mol-Angstrom)
 
         self.f_scale = self.e_scale/(NA*self.dist_scale)
 
+    def MetalToSI(self):
 
-    def MetalToSI(self): 
+        # Distance (1 Angstroms = 10^-10 m):
 
-        # Distance ( 1 Angstroms = 10^-10 m ): 
+        self.dist_scale = 10**(-10)
 
-        self.dist_scale = 10**(-10)  
+        # Volume (1 A^3 = 10^(-30) m^3)
 
-        # Volume (  1 A^3 = 10^(-30) m^3 )  
+        self.vol_scale = 10**(-30)
 
-        self.vol_scale = 10**(-30)  
+        # Pressure (1 bar = 100,000 Pascal)
 
-        # Pressure ( 1 bar = 100,000 Pascal )  
+        self.p_scale = 100000
 
-        self.p_scale = 100000  
-            
-        # Energy ( 1 ev = 96485 J/mole): 
-        
-        self.e_scale = 96485 
+        # Energy ( 1 ev = 96485 J/mole):
 
-        # Time ( 1 picosecond = 10^-12 s ) 
+        self.e_scale = 96485
 
-        self.t_scale = 10**(-12) 
+        # Time (1 picosecond = 10^-12 s)
 
-        # Force ( 1ev/Angstroms = J/m  ) 
+        self.t_scale = 10**(-12)
 
-        self.f_scale =  self.e_scale/(NA*self.dist_scale) 
+        # Force (1ev/Angstroms = J/m)
 
-
-
+        self.f_scale = self.e_scale/(NA*self.dist_scale)
