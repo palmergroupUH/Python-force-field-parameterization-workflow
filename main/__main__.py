@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 # Standard python library
 import sys
+
+# Local library:
 import IO.user_provided
 import objective.setup_objective
 import optimizer.gradient_free
 import objective.compute_objective
-
-# Local library:
 
 # Third party library:
 
