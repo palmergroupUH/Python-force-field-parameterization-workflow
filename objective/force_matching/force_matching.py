@@ -22,6 +22,88 @@ from objective.helpful_to_user import useful_tools
 
 class load(useful_tools):
 
+    """Implmentation of Force matching method   
+
+    Inherited methods and attributes  
+
+    ----------
+
+    A_n : np.ndarray, float
+
+        A_n[n] is nth value of timeseries A.  Length is deduced from vector.
+
+    B_n : np.ndarray, float, optional, default=None
+
+        B_n[n] is nth value of timeseries B.  Length is deduced from vector.
+
+        If supplied, the cross-correlation of timeseries A and B will be estimated instead of the
+
+        autocorrelation of timeseries A.  
+
+    fast : bool, optional, default=False
+
+        f True, will use faster (but less accurate) method to estimate correlation
+
+        time, described in Ref. [1] (default: False).  This is ignored
+
+        when B_n=None and fft=True.
+
+    mintime : int, optional, default=3
+
+        minimum amount of correlation function to compute (default: 3)
+
+        The algorithm terminates after computing the correlation time out to mintime when the
+
+        correlation function first goes negative.  Note that this time may need to be increased
+
+        if there is a strong initial negative peak in the correlation function.
+
+    fft : bool, optional, default=False
+
+        If fft=True and B_n=None, then use the fft based approach, as
+
+        implemented in statisticalInefficiency_fft().
+
+
+
+    Returns
+
+    -------
+
+    g : np.ndarray,
+
+        g is the estimated statistical inefficiency (equal to 1 + 2 tau, where tau is the correlation time).
+
+        We enforce g >= 1.0.
+
+
+
+    Notes
+
+    -----
+
+    The same timeseries can be used for both A_n and B_n to get the autocorrelation statistical inefficiency.
+
+    The fast method described in Ref [1] is used to compute g.
+
+
+
+    References
+
+    ----------
+
+    [1] Ercolessi, F., & Adams, J. B. (1994). 
+        Interatomic Potentials from First-Principles Calculations: 
+        The Force-Matching Method. Europhysics Letters ({EPL}), 
+        26(8), 583–588. https://doi.org/10.1209/0295-5075/26/8/005 
+
+    [2] 
+       
+
+    Examples
+
+    --------
+    """
     count_jobs = 0
 
     # MB

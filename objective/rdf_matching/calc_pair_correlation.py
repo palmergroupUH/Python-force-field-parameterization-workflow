@@ -6,13 +6,14 @@ import multiprocessing as mp
 
 # Local library:
 import IO.reader
-import objective.rdf_matching
+import fortranAPI.pair_correlation
 
 # Third-party libraries:
 
-fortranlib_address = os.path.join(os.path.dirname(objective.rdf_matching.__file__), "fortran")
+fortranlib_address = os.path.join(os.path.dirname(fortranAPI.pair_correlation.__file__),
+                                  "lib")
 
-rdf_lib = CDLL(os.path.join(fortranlib_address, "fortran_compute_rdf.so"))
+rdf_lib = CDLL(os.path.join(fortranlib_address, "libpair_correlation.so"))
 
 
 class RadialDistribution:

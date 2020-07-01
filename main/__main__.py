@@ -1,3 +1,24 @@
+##############################################################################
+
+# Python-force-field-parameterization-workflow: 
+# A Python Library for performing force-field optimization
+
+#
+
+# Authors: Jingxiang Guo, Jeremy Palmer
+
+#
+
+# Python-force-field-parameterization-workflow is free software: 
+# you can redistribute it and/or modify
+
+# it under the terms of the MIT License as
+
+# You should have received a copy of the MIT License along with the package.
+
+##############################################################################
+
+
 #!/usr/bin/env python3
 # Standard python library
 import sys
@@ -93,13 +114,16 @@ def optimize_main():
     return None
 
 
+# not implemented yet
 def clear_job_id_main():
 
     return None
 
 
+# main programs to be executed from the command-line interface
 def main():
 
+    # currently implemented
     if (sys.argv[0].find("optimize") >= 0):
 
         optimize_main()
@@ -113,5 +137,7 @@ def main():
 
 
 if (__name__ == "__main__"):
+
+    # execute the program from the command-line interface
 
     main()

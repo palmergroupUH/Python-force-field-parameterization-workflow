@@ -16,6 +16,11 @@ import IO.user_provided
 
 
 class useful_tools:
+    
+    """
+
+
+    """
 
     max_total_wait_time = 300
 
@@ -238,8 +243,8 @@ class useful_tools:
 
             while True:
 
-                (total_frames,
-                 total_atoms) = IO.reader.call_read_dcd_header(traj_address)
+                (total_atoms,
+                 total_frames) = IO.reader.call_read_dcd_header(traj_address)
 
                 if (total_frames == ter_cond):
 
