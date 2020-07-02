@@ -47,15 +47,14 @@ install the package in editable mode from source:
 ```
 pip install -e .  
 ```
-then, go to IO/fortran 
+A Fortran library "fortranAPI" cames with the package. 
+The fortran source code has been modified to be c-interoperable
+and can be interfaced with Python through ctypes modules.
+This library can be compiled through the following command.
 
 ``` 
-cd IO/fortran/
-``` 
-compile fortran library for I/O: 
+make
 
-``` 
-make -f MAKEFILE
 ``` 
 Now, test if your installation is successful 
 
