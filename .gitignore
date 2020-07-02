@@ -4,8 +4,7 @@ Python_optimization_workflow.egg-info/
 # ignore all fortran related compiled files and folders
 *.mod
 *.so
-lib/
-include/
+*.a
 test/
 
 # ignore all python related files and folders:
