@@ -7,7 +7,7 @@ FFLAGS_D = -fPIC -shared
 
 FFLAGS_S = -c -fPIC
 
-INC_DIR = .include/
+INC_DIR = include/
 
 LIB_DIR = lib/
 
@@ -15,13 +15,19 @@ all: $(LIB_DIR)libforsys.a
 
 system_mod.o: src/system_mod.f90 
 
+	@ mkdir -p $(INC_DIR)
+
 	$(FC) $(FFLAGS_S) src/system_mod.f90  -module include/
 
 constants_mod.o: src/constants_mod.f90
 
+	@ mkdir -p $(INC_DIR)
+
 	$(FC) $(FFLAGS_S) src/constants_mod.f90  -module include/
 
 $(LIB_DIR)libforsys.a: system_mod.o constants_mod.o  
+
+	@ mkdir -p $(LIB_DIR)
 
 	ar -cvq $(LIB_DIR)libforsys.a system_mod.o constants_mod.o 
 

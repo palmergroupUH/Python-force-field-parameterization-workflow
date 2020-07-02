@@ -7,7 +7,7 @@ FFLAGS_D = -fPIC -shared
 
 FFLAGS_S = -c 
 
-INC_DIR = .include/
+INC_DIR = include/
 
 LIB_DIR = lib/
 
@@ -29,4 +29,8 @@ all: lib/libpair_correlation.so
 #
 $(LIB_DIR)libpair_correlation.so: src/compute_rdf_mod.f90
 
+	@ mkdir -p $(LIB_DIR)
+	@ mkdir -p $(INC_DIR)
+
 	$(FC) $(FFLAGS_D) $(system_file) $(constants_file) src/compute_rdf_mod.f90  -o $(LIB_DIR)libpair_correlation.so -module include/ 
+
