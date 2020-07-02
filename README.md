@@ -21,9 +21,9 @@
 
 * Python 3.7  
 
-* Intel Fortran compiler (> version 18.0.3)
-  gfortran (4.8.5) also compile successfully,
-  but the exectuable may not work with long absolute file path.
+* Intel Fortran compiler (> version 18.0.3).
+  gfortran (4.8.5) also compiles successfully,
+  but the program may not work with a long absolute file path.
 
 ## Installation on Linux: 
 
@@ -37,7 +37,7 @@ create a conda environment with specific version of numpy and python:
 conda create -n "env name" python=3.7 numpy=1.18.1 
 ```
 
-copy the project to the local directory of choice:
+copy the project to your local directory:
 
 ```
 git clone https://github.com/jingxiangguo/Python-force-field-parameterization-workflow.git 
