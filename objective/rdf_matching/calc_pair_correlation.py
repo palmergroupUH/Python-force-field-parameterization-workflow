@@ -28,8 +28,8 @@ class RadialDistribution:
 
         if (fixed_atoms is True):
 
-            (self.total_frames,
-             self.total_atoms) = IO.reader.call_read_dcd_header(dcdfile)
+            (self.total_atoms,
+             self.total_frames) = IO.reader.call_read_dcd_header(dcdfile)
 
         self.dcdfile = dcdfile
 
@@ -87,13 +87,13 @@ class RadialDistribution:
                                     cutoff,
                                     num_bins,
                                     return_numpy=False):
-
-        xyz, box = IO.reader.call_read_xyz_box_in_chunk(dcdfile,
-                                                        start_at,
-                                                        num_configs,
-                                                        total_atoms,
-                                                        return_numpy=False)
-
+        
+        xyz, box = IO.reader.call_read_dcd_xyz_box_in_chunk(dcdfile,
+                                                            start_at,
+                                                            num_configs,
+                                                            total_atoms,
+                                                            return_numpy=False)
+        
         rdf_histogram = np.ctypeslib.as_ctypes(np.zeros(num_bins,
                                                         dtype=np.float64))
 

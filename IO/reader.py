@@ -1,3 +1,41 @@
+##############################################################################
+
+# Python-force-field-parameterization-workflow: 
+# A Python Library for reading trajectory from MD or MC simulations of
+# various file formats: dcd, xyz, and txt
+
+#
+
+# Authors: Jingxiang Guo, Jeremy Palmer
+
+#
+
+# Python-force-field-parameterization-workflow is free software:
+# you can redistribute it and/or modify it under the terms of the
+# MIT License
+
+# You should have received a copy of the MIT License along with the package.
+
+##############################################################################
+
+
+
+"""
+A module for reading a trajectory from a MD or MC simulation.
+
+Many trajectory file formats are supported including: dcd, xyz, and txt.
+The module allows a user to extract box and coordinates information from
+a trajectory in parallel by using the multiprocessing library
+
+The module also allows a user to read chunks of trajectory satisfying the
+limit set by buffer size. This can efficient if appropriate buffer size is
+set.
+
+Finally, the specific file extension can be used to identify either xyz or dcd
+trajectory and invoke its corresponding reader to parse a arbitrary trajectory 
+
+
+"""
 # Python standard library
 import numpy as np
 import multiprocessing as mp
@@ -15,13 +53,17 @@ from IO.type_conversion import string_to_ctypes_string,\
 
 # Third-party library:
 
+# get the dynamic library path from the fortranAPI IO module:
 fortranlib_address = os.path.join(os.path.dirname(fortranAPI.IO.__file__),
                                   "lib")
 
+# Load the dynamic library of dcd trajectory reader:
 dcd_lib = CDLL(os.path.join(fortranlib_address, "libdcd_reader.so"))
 
+# Load the dynamic library of txt file reader:
 txt_lib = CDLL(os.path.join(fortranlib_address, "libtxt_reader.so"))
 
+# Load the dynamic library of xyz trajectory reader:
 xyz_lib = CDLL(os.path.join(fortranlib_address, "libxyz_reader.so"))
 
 # -------------------------------------------------------------------------
@@ -30,6 +72,52 @@ xyz_lib = CDLL(os.path.join(fortranlib_address, "libxyz_reader.so"))
 
 
 def job_assignment(first, last, buffer_size):
+    """Determine the workload (number of configuraitons)
+       assigned for each core
+    
+    Parameters  
+
+    ----------
+
+    first: int
+
+        which configuration to start with in a trajectory  
+
+    last: int 
+
+        which configuration to end with in a trajectory 
+   
+    buffer_size: int
+
+        how many configurations to be read into memory per core at a time  
+ 
+    Returns
+
+    ----------
+
+    pointer_ary: np.ndarray  
+
+        pointer_ary tells which core should start reading which configuration
+
+    
+    work_load_ary: np.ndarray 
+
+        Total configurations that should be read  
+
+    Notes
+
+    ----------
+
+    This is used to initialize parallel processing of a large trajectory in
+    xyz, dcd, and txt file format
+
+    
+    Examples
+
+    ----------
+
+
+    """
 
     total_workload = last - first + 1
 

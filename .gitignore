@@ -1,11 +1,14 @@
 # ignore installation:  
 Python_optimization_workflow.egg-info/
 
-# ignore all fortran related compiled files
+# ignore all fortran related compiled files and folders
 *.mod
 *.so
+lib/
+include/
+test/
 
-# ignore all python related files: 
+# ignore all python related files and folders:
 __init__.py
 *.pyc
 *.ipynb
@@ -26,3 +29,7 @@ old/*
 
 # ignore the log file
 *.log
+
+# ignore all slurm generated files
+out.e*
+out.o*

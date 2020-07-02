@@ -36,7 +36,7 @@ class load(useful_tools):
 
         self.loaded_filename()
 
-        super().__init__(load.objective_type
+        super().__init__(load.objective_type,
                          self.matching_type_lst,
                          self.properties_file_lst,
                          predit_address_tple,

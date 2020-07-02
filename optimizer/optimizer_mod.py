@@ -1,3 +1,43 @@
+##############################################################################
+
+# Python-force-field-parameterization-workflow:
+# A Python Library for performing force-field optimization
+
+#
+
+# Authors: Jingxiang Guo, Jeremy Palmer
+
+#
+
+# Python-force-field-parameterization-workflow is free software:
+# you can redistribute it and/or modify it under the terms of the
+# MIT License
+
+# You should have received a copy of the MIT License along with the package.
+
+##############################################################################
+
+
+"""
+This module contains a parent class "set_optimizer" that will be inherited
+by other optimizer modules: e.g. gradient_free.py or gradient.py, which may 
+contains classes of optimization algorithm.
+
+The purposes of this module are two fold:
+
+1. provide a general interface for parsing a input file for optimization
+setting. Initialize, and check the user-provided parameters
+from the input file and pass them to other classes through inheritance.
+
+2. provide some utility functions for the output of the restart information,
+optimized parameters, and objective functions. These methods will also be
+inherited by other classes.
+
+3. provide some utility functions for a optimizer to perform operation like 
+bounds, constraints, grouping of optimized parameters.
+
+"""
+
 # Python standard library:
 import numpy as np
 import logging
@@ -13,77 +53,69 @@ import IO.check_type
 
 class set_optimizer:
 
-    """Description: This is a template class that will be inherited by
-       all other optimizer classes (gradient-free or gradient)
-       to do followings:
+    """A Parent class inherited by other optimization classes to have
+       a unified interface of parsing input file and perform some general
+       operations like outputing and parameters manipulations
+ 
+    Available Parameters 
+    --------------------
 
-    1. parse a input file with a predetermined format
-
-    2. constrain certain fitted parameters within bounds
-
-    3. recombine fixed and fitted parameters before
-       passing them to objective function
-
-    4. method to write optimizer output
-
-    5. dump the optimizer parameters and objective function
-
-    Inherited variables descriptions:
-
-    self.dump_para ( arraym integer ):
-        an array of integer that specify how frequent to dump the restart file
-        and best parameters.
-
-    self.logger (object):
-         an logger object that dump all output into a log file.
-
-    self.ptype_lst ( str list ):
+    self.dump_para : np.ndarray, np.int
+        an array of integer that specify how frequent to dump
+        the restart file and best parameters.
+    self.ptype_lst : list 
         a string defining the type of guess parameters
-
-    self.guess_parameters (array,np.float64):
-         an array of guessed floating point value given by users
-
-    self.fit_and_fix ( array, integer ):
-         an array with value either 1 or 0
-         to determine which parameters to be fixed or fitted
-
-    self.bounds_index ( array, integer ):
-         an array of index value determine which guess parameters
-         to be constrained:
-
-         e.g. 1 means 1st guess parameters, 10 means 10th guess parameters
-
-    self.bounds_range ( array, np.float64):
-         an array of values size 2 with lower and upper
-
-    self.bounds_fit_index ( array, integer ):
-         an array of index value determine which guess parameters
-         to be constrained ( index may be adjusted depending on which
-         arameters are fitted and which are fixed ):
-
-    self.optimizer_type ( a string ):
-        The optimizer name: Nelder-Mead simplex, Levenberg–Marquardt ...
-
-    self.optimizer_argument ( a string ):
-        The optimizer argument associated with spcecific optimizer
-
-    self.optimizer_input (a input argument):
+    self.guess_parameters : np.ndarray, np.float64
+        an array of floating point value provided by a user as it is
+    self.fit_and_fix : np.ndarray, np.int
+        an array determining which parameters to be fixed or fitted
+        1: fitted; 0: fixed
+    self.bounds_index : np.ndarray, np.int
+        an array of index value determine which guess parameters
+        to be constrained.
+        e.g. 1 means 1st guess parameters, 10 means 10th guess parameters
+    self.bounds_fit_index : np.ndarray, np.int
+        an array of index value determine which guess parameters
+        to be constrained taking into account the fitted parameters
+        The fixed parameters can not be constrained. So, the index 
+    self.bounds_range : np.ndarray, np.float64
+        an array of values size 2 with lower and upper 
+    self.optimizer_type : str
+        what optimizer selected by the user; currently only
+        Nelder-Mead simplex is supported.
+    self.optimizer_argument : str 
+        The argument associated with the selected optimizer
+    self.optimizer_input :
         The optimizer input: input values used by optimizers (optional)
 
-    Inherited method descriptions:
+    Available Methods 
+    -----------------
 
-    self.group_fixed():
+    self.group_fixed()
         recombine the fitted parameters with the fixed parameters into
-        an array of full parameters.
-
-    self.constrain():
-        perform constrain operations on some fitted parameters
-
-    self.write_optimizer_output():
-
+        an array of full parameters.return: full_parameters
+        (same length as initial guess)
+    self.constrain()
+        perform constrain operations on selected fitted parameters within
+        the specified bounds
+    self.write_optimizer_output()
+        a general method to output parameters information to certain
+        provided path. Different modes can be used as well
     self.print_optimizer_log():
+        print the parsed information from the input file and dump them
+        to a log file.
+    self.optimizer_restart_content()
+        a general method to create a dictionary which contains the
+        optimization settings so that the restart file can be used 
+     
 
-    self.optimizer_restart_content():
+    Notes
+    -----
+
+    This class is best used by other classes through inheritance
+    Thus, make sure no conflicts of file or method name in
+    the child class
+
     """
 
     def __init__(self,
