@@ -47,14 +47,14 @@ install the package in editable mode from source:
 ```
 pip install -e .  
 ```
-A Fortran library "fortranAPI" cames with the package. 
-The fortran source code has been modified to be c-interoperable
-and can be interfaced with Python through ctypes modules.
-This library can be compiled through the following command.
+A Fortran library "fortranAPI" cames with the package. This library
+is used to compute pair correlation function and reading trajectories of different formats.
+The inside Fortran routines are c-interoperable, and thus can be
+callable through Python using ctypes modules.
+This library is compiled by invoking GNU "make" command.
 
 ``` 
 make
-
 ``` 
 Now, test if your installation is successful 
 
