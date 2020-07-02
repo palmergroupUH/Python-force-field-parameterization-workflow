@@ -21,6 +21,10 @@
 
 * Python 3.7  
 
+* Intel Fortran compiler (> version 18.0.3)
+  gfortran (4.8.5) also compile successfully,
+  but the exectuable may not work with long absolute file path.
+
 ## Installation on Linux: 
 
 conda is the recommended package manager. If 'conda' is not not found or root previliage is required,  

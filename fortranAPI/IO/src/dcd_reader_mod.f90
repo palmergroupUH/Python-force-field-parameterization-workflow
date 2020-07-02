@@ -1,7 +1,10 @@
-!----------------------------------------------- Program Descriptions ----------------------------------------------- 
+!----------------------------------------------- Program Descriptions --------------------------------------------- 
+
 ! This modules provide subroutines to read a dcd file  
-! Date composed by Jingxiang Guo : 04/15/2020 
+
 ! The subroutine/function names with "call_xxx" can be called from Python or C 
+
+! Date composed by Jingxiang Guo : 04/15/2020 
 
 module DCD_reader_mod
 	use system
@@ -9,18 +12,13 @@ module DCD_reader_mod
 	! all variables and subroutines/functions are private  
 	private 
 
-	! Export these subroutines/functions as public ( other subroutines/functions are still private) : 	
+	! Export these subroutines/functions as public ( other subroutines/functions are still private):
 	public :: readdcdheader, & 
              & call_read_dcd_header,& 
              & call_read_dcd_traj,& 
              & call_read_dcd_traj_in_chunk,& 
 			 & read_xyz_box,& 
-			 & read_xyz_box_in_chunk,& 
-			 & read_unwrap_xyz_box, & 
-             & wrap_coord,& 
-             & compute_com_pos,&         
-			 & correct_pos_for_com, & 
-			 & correct_pos_for_com_in_chunk
+			 & read_xyz_box_in_chunk
 
 	! Global varialbes: 
 	
@@ -222,98 +220,5 @@ contains
 		close(unitnum) 	
 
 		end subroutine   
-
-
-	subroutine compute_com_pos(masses,xyz,xyz_com)
-		implicit none 
-		real(dp),intent(in),dimension(:) :: masses 	
-		real(sp),intent(in),dimension(:,:) :: xyz
-		real(sp),intent(out),dimension(:) :: xyz_com
-
-		xyz_com = real(matmul(xyz,masses)/sum(masses),sp) 
-
-		end subroutine 
-
-	subroutine correct_pos_for_com(masses,xyz)
-		implicit none 
-		real(dp),intent(in),dimension(:) :: masses 
-		real(sp),intent(inout),dimension(:,:) :: xyz 
-		real(sp),dimension(1:3) :: xyz_com
-		integer :: i 	
-
-		call compute_com_pos(masses,xyz,xyz_com) 
-
-		do i = 1,size(xyz,dim=2) 	
-		
-			xyz(:,i) = xyz(:,i) - xyz_com 	
-				
-		end do 	
-
-		end subroutine 
-
-	subroutine correct_pos_for_com_in_chunk(num_configs,masses,xyz)
-		implicit none 
-		integer,intent(in) :: num_configs 
-		real(dp),intent(in),dimension(:) :: masses 
-		real(sp),intent(inout),dimension(:,:,:) :: xyz 
-		real(sp),dimension(1:3) :: xyz_com
-		integer :: iatom,iconfig	
-
-		do iconfig = 1,num_configs
-
-			call compute_com_pos(masses,xyz(:,:,iconfig),xyz_com) 
-
-			do iatom = 1,size(xyz,dim=2) 	
-		
-				xyz(:,iatom,iconfig) = xyz(:,iatom,iconfig) - xyz_com 	
-
-			end do 
-				
-		end do 	
-
-		end subroutine 
-
-	subroutine wrap_coord(xyz_old,xyz_new,box)
-		implicit none 
-		real(dp),intent(in),dimension(:) :: box 
-		real(sp),intent(in),dimension(:,:) :: xyz_old 
-		real(sp),intent(inout),dimension(:,:) :: xyz_new 
-		integer :: i 
-
-		xyz_new = xyz_new - xyz_old 
-		
-		do i = 1,size(xyz_old,dim=2) 
-
-			xyz_new(:,i) = xyz_new(:,i) - aint(xyz_new(:,i)/box)*box 
-
-		end do 
-	
-		xyz_new = xyz_new + xyz_old 
-
-		end subroutine 
-
-	subroutine read_unwrap_xyz_box(dcdfile,total_atoms,current_frame,xyz_new,box)  
-		implicit none 
-		character(len=150),intent(in)  :: dcdfile 
-		integer,intent(in) :: current_frame,total_atoms
-		integer ::i,iframe,imol,counter,unitnum 
-		real(sp),dimension(1:3,total_atoms) :: xyz_old  
-		real(dp),dimension(6) :: XTLABC 
-		real(dp),intent(out),dimension(1:3) :: box 
-		real(sp),intent(out),dimension(1:3,total_atoms) :: xyz_new 
-
-		call read_xyz_box(dcdfile,total_atoms,1,xyz_old,box)
-	
-		do i = 2,current_frame 	
-
-			call read_xyz_box(dcdfile,total_atoms,i,xyz_new,box) 
-
-			call wrap_coord(xyz_old,xyz_new,box)
-
-			xyz_old = xyz_new 
-
-		end do 
-
-		end subroutine 
 
 end module 

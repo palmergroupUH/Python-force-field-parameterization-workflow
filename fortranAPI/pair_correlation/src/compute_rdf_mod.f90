@@ -1,3 +1,9 @@
+!--------------------------------- Program Descriptions -----------------------------
+
+! This module contains routines to perform radial distribution function calculations
+
+! Date composed by Jingxiang Guo : 7/2/2020 
+
 module RDF
     use system
     use constants, only: pi
@@ -150,7 +156,13 @@ contains
         
         end subroutine 
 
-    subroutine normalize_histogram(rdf_histogram,num_bins,cutoff,natoms,num_configs,bulk_density,gr) bind(c,name="call_normalize_histogram")
+    subroutine normalize_histogram(rdf_histogram, &
+                                 & num_bins,&
+                                 & cutoff,&
+                                 & natoms,&
+                                 & num_configs,&
+                                 & bulk_density,&
+                                 & gr) bind(c,name="call_normalize_histogram")
         implicit none  
 
         ! Passed 

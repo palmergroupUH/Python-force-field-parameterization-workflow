@@ -1,3 +1,11 @@
+!----------------------------------------------- Program Descriptions --------------------------------------------- 
+
+! This modules provide subroutines to read a ASCII txt file
+
+! The subroutine/function names with "call_xxx" can be called from Python or C 
+
+! Date composed by Jingxiang Guo : 04/15/2020 
+
 module txt_reader
     use system
     implicit none 

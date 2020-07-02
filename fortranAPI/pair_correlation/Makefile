@@ -1,7 +1,7 @@
 SHELL = /bin/sh
 
 # fortran compiler 
-FC = ifort #
+FC = gfortran #
 
 FFLAGS_D = -fPIC -shared
 
@@ -32,5 +32,6 @@ $(LIB_DIR)libpair_correlation.so: src/compute_rdf_mod.f90
 	@ mkdir -p $(LIB_DIR)
 	@ mkdir -p $(INC_DIR)
 
-	$(FC) $(FFLAGS_D) $(system_file) $(constants_file) src/compute_rdf_mod.f90  -o $(LIB_DIR)libpair_correlation.so -module include/ 
+	$(FC) $(FFLAGS_D) $(system_file) $(constants_file) src/compute_rdf_mod.f90  -o $(LIB_DIR)libpair_correlation.so -I include/ 
 
+	@ mv *.mod $(INC_DIR) 

@@ -1,4 +1,4 @@
-!----------------------------------------------- Program Descriptions ----------------------------------------------- 
+!--------------------------------- Program Descriptions -----------------------------
 
 ! This program contains programming environment information used by current compiler 
 
