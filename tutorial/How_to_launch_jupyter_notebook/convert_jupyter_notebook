@@ -1,0 +1,3 @@
+#!/bin/bash 
+
+jupytext --to notebook How_to.py  
