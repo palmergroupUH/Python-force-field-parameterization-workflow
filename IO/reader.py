@@ -519,6 +519,12 @@ def np_loadtxt(txtfile, skiprows=0):
 
     num_lines, num_cols = get_lines_columns(txtfile)
 
+    if (skiprows >= num_lines): 
+
+        sys.exit("Errors in reading the file: '%s' !. The rows skipped is %d, "
+                 "which is more than or equal to the %d rows available in "
+                 "this file " % (txtfile, skiprows, num_lines)) 
+
     return loadtxt(txtfile, num_lines, num_cols, skiprows, return_numpy=True)
 
 # -------------------------------------------------------------------------
