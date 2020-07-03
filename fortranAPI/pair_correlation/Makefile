@@ -1,7 +1,7 @@
 SHELL = /bin/sh
 
 # fortran compiler 
-FC = gfortran #
+FC = ifort #
 
 FFLAGS_D = -fPIC -shared
 
