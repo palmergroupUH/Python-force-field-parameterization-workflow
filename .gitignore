@@ -10,7 +10,6 @@ test/
 # ignore all python related files and folders:
 __init__.py
 *.pyc
-*.ipynb
 __pycache__/
 
 # git command 
