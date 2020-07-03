@@ -1,3 +1,3 @@
 #!/bin/bash 
 
-jupytext --to notebook test_reader.py  
+jupytext --to notebook Tutorial_02_IO_module.py 
