@@ -122,7 +122,8 @@ class set_optimizer:
                  input_file,
                  logname=None,
                  skipped=None,
-                 stop_after=None):
+                 stop_after=None,
+                 optimize_mode="min"):
 
         # create logger for the optimization jobs
 
@@ -167,6 +168,8 @@ class set_optimizer:
 
         self.check_input_parameters()
 
+        self.select_optimize_mode(optimize_mode)
+
     def add_logger(self, logname):
 
         if (logname is not None):
@@ -189,8 +192,27 @@ class set_optimizer:
 
         return None
 
-    # dumping the current best parameters, restart simplex,
+    def select_optimize_mode(self, optimize_mode):
 
+        if (optimize_mode == "min"):
+
+            self.optimize_mode = 1
+
+        elif (optimize_mode == "max"):
+
+            self.optimize_mode = -1 
+        
+        else:
+
+            self.logger.error("ERROR: optimize mode can only "
+                              "be either 'min': minimize "
+                              "or 'max': maximize")
+
+            sys.exit("Check errors in log file !")
+
+        return None 
+
+    # dumping the current best parameters, restart simplex,
     def write_optimizer_output(self,
                                freq,
                                n_iteration,
