@@ -1,0 +1,24 @@
+# output frequency: current best parameters/obj, restart simplex  
+
+2 2 
+
+# guess parameters of Himmelblau function  
+
+Himmelblau 2.3 2   
+
+# fit (1) and fix (0) parameters: 
+
+1 1 
+
+# constraints (index lower upper)  ... ): 
+
+None
+
+# set termination criterion: max number of iteration, tolerance for parameters,tolerance for objective 
+
+4000 1e-6 1e-6 
+
+# create (Perturb) or use existing vertices (Restart): 
+
+Nelder-Mead perturb random 1.0 
+

@@ -210,7 +210,7 @@ class set_optimizer:
                 # os.makedirs(output_address)
 
                 outputfile = os.path.join(output_address, filename)
-
+            
             self.write_output_to_file(n_iteration,
                                       outputfile,
                                       mode,
