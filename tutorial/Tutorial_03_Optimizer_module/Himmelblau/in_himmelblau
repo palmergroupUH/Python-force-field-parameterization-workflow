@@ -4,7 +4,8 @@
 
 # guess parameters of Himmelblau function  
 
-Himmelblau 2.3 2   
+#Himmelblau -0.270845 -0.923039 
+Himmelblau -0.5 1.0 
 
 # fit (1) and fix (0) parameters: 
 
@@ -16,7 +17,7 @@ None
 
 # set termination criterion: max number of iteration, tolerance for parameters,tolerance for objective 
 
-4000 1e-6 1e-6 
+4000 1e-10 1e-10 
 
 # create (Perturb) or use existing vertices (Restart): 
 
