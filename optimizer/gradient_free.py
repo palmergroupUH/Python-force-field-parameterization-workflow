@@ -58,7 +58,7 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
                  logname=None,
                  skipped=None,
                  output=None,
-                 optimize_mode=None,
+                 optimize_mode="min",
                  nm_type=None):
 
         # built-in restart/output filename:
@@ -71,7 +71,10 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
         # Inherit the following from parent class:
         # "set_optimizer" in "optimizer_mod.py"
 
-        super().__init__(input_files, logname=logname, skipped=skipped)
+        super().__init__(input_files,
+                         logname=logname,
+                         skipped=skipped,
+                         optimize_mode=optimize_mode)
 
         # variables and methods Inherited from set_optimizer:
 
@@ -99,14 +102,6 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
         # computing objective function
 
         self.f_obj = f_objective
-
-        if (optimize_mode is None):
-
-            self.optimize_mode = "minimize"
-
-        else:
-
-            self.optimize_mode = optimize_mode
 
         # Define the following Nelder-Mead variables:
         # self.vertices_sorted: all vertices that have been sorted
@@ -491,6 +486,15 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
 
         self.check_Nelder_Mead_mode()
 
+        # Define the index of best, lousy and worst obj
+        self.best_indx = 0
+
+        self.worst_indx = -1
+
+        self.lousy_indx = -2
+
+        # argsort default sort order is the asscending order
+
         # "perturb" create the new simplex
 
         if (self.optimizer_mode == "perturb"):
@@ -590,31 +594,11 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
         # sort the objective function from small to large
         # So, best_objective function is the minima of all objective function
 
-        if (self.optimize_mode == "minimize"):
-
-            self.best_indx = 0
-
-            self.worst_indx = -1
-
-            self.lousy_indx = -2
-
-        elif (self.optimize_mode == "maximize"):
-
-            self.best_indx = -1
-
-            self.lousy_indx = 1
-
-            self.worst_indx = 0
-
-        else:
-
-            self.logger.error("ERROR: optimize mode can only "
-                              "be either 'minimize' or 'maximize'")
-
-            sys.exit("Check errors in log file !")
-
         # argsort default sort order is the asscending order
 
+        # self.optimize_mode = "1" for minimization
+        # and = "-1" for maximization
+        
         ascending = np.argsort(func_vertices)
 
         self.vertices_sorted = vertices_mat[ascending, :]
@@ -685,20 +669,23 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
                 # guess parameters:
                 if (i == 0):
 
-                    f_vertices[i] = self.f_obj.optimize(self.ptype_lst[0],
-                                                        in_parameters_full,
-                                                        status="guess")
+                    f_vertices[i] = (self.optimize_mode *
+                                     self.f_obj.optimize(self.ptype_lst[0],
+                                                         in_parameters_full,
+                                                         status="guess"))
                 else:
 
-                    f_vertices[i] = self.f_obj.optimize(self.ptype_lst[0],
-                                                        in_parameters_full,
-                                                        status="new")
+                    f_vertices[i] = (self.optimize_mode *
+                                     self.f_obj.optimize(self.ptype_lst[0],
+                                                         in_parameters_full,
+                                                         status="new"))
 
             elif (choice == "shrink"):
 
-                current_obj = self.f_obj.optimize(self.ptype_lst[0],
-                                                  in_parameters_full,
-                                                  status="new")
+                current_obj = (self.optimize_mode *
+                               self.f_obj.optimize(self.ptype_lst[0],
+                                                   in_parameters_full,
+                                                   status="new"))
 
                 self.f_obj.update(current_obj, self.temp_best, status="new")
 
@@ -878,9 +865,10 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
 
             r_vertex = self.Reflect(centroid)
 
-            f_r_vertex = self.f_obj.optimize(self.ptype_lst[0],
-                                             self.group_fixed(r_vertex),
-                                             status="old")
+            f_r_vertex = (self.optimize_mode *
+                          self.f_obj.optimize(self.ptype_lst[0],
+                                              self.group_fixed(r_vertex),
+                                              status="old"))
 
             if (self.best <= f_r_vertex < self.lousy):
 
@@ -901,9 +889,10 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
 
                 e_vertex = self.Expand(r_vertex, centroid)
 
-                func_expand = self.f_obj.optimize(self.ptype_lst[0],
-                                                  self.group_fixed(e_vertex),
-                                                  status="new")
+                func_expand = (self.optimize_mode *
+                               self.f_obj.optimize(self.ptype_lst[0],
+                                                   self.group_fixed(e_vertex),
+                                                   status="new"))
 
                 if (func_expand < f_r_vertex):
 
@@ -951,9 +940,10 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
 
                     o_vertex = self.Outside_Contract(centroid, r_vertex)
 
-                    f_o_vertex = self.f_obj.optimize(self.ptype_lst[0],
-                                                     self.group_fixed(o_vertex),
-                                                     status="new")
+                    f_o_vertex = (self.optimize_mode *
+                                  self.f_obj.optimize(self.ptype_lst[0],
+                                                      self.group_fixed(o_vertex),
+                                                      status="new"))
 
                     if (f_o_vertex <= f_r_vertex):
 
@@ -990,9 +980,10 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
 
                     i_vertex = self.Inside_Contract(centroid)
 
-                    f_i_vertex = self.f_obj.optimize(self.ptype_lst[0],
+                    f_i_vertex = (self.optimize_mode *
+                                  self.f_obj.optimize(self.ptype_lst[0],
                                                      self.group_fixed(i_vertex),
-                                                     status="new")
+                                                     status="new"))
 
                     if (f_i_vertex < self.worst):
 
@@ -1040,10 +1031,10 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
 
             self.logger.info("Optimization converges "
                              "and program exits ! \n")
-
+            
             return True
 
-        if ((np.amax(self.func_vertices_sorted) /
+        if (abs(np.amax(self.func_vertices_sorted) /
                 np.amin(self.func_vertices_sorted)-1) <
                 self.obj_tol):
 
