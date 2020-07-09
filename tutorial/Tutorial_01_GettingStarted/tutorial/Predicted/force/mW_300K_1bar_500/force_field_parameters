@@ -1,0 +1,3 @@
+#pair style: stillinger_weber is used 
+pair_style   sw
+pair_coeff * * mW.sw WT
