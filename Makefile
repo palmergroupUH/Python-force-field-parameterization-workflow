@@ -8,5 +8,5 @@ all:
 	
 	cd fortranAPI/general; $(MAKE) clean  
 	cd fortranAPI/IO; $(MAKE) clean  
-	cd fortranAPI/pair_correlation; $(MAKE) clean  
+	cd fortranAPI/pair_correlation
 

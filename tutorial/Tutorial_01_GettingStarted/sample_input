@@ -3,7 +3,7 @@
 real   
 
 # objective function defined: 
-# format is:  
+# The format is:  
 # 'matching type', 'sub_folder name',"weight of current objective functions", "cores for running sampling","cores for evaluating objective functions"
 # So,the corresponding python data type is: "string","string", "float","integer","integer"
 # Example: 
