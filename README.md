@@ -13,7 +13,7 @@
 
 ## Softwares required:
 
-* A compiled MD/MC packages exectuable (LAMMPS is already supported) 
+* A compiled MD/MC packages exectuable (LAMMPS is already supported)
 
 * Slurm Workload Manager (or equivalent) 
 
@@ -25,10 +25,10 @@
   gfortran (4.8.5) also compiles successfully,
   but the program may not work with a long absolute file path.
 
-## Installation on Linux: 
+## Installation on Linux:
 
-conda is the recommended package manager. If 'conda' is not not found or root previliage is required,  
-you can download anaconda: https://www.anaconda.com/products/individual to your home directory. 
+conda is the recommended package manager. If 'conda' is not not found or root previliage is required,
+you can download anaconda: https://www.anaconda.com/products/individual to your home directory.
 Then, install the package: https://docs.anaconda.com/anaconda/install/  
 
 create a conda environment with specific version of numpy and python:  
@@ -45,8 +45,13 @@ git clone https://github.com/jingxiangguo/Python-force-field-parameterization-wo
 
 ```
 cd Python-force-field-parameterization-workflow 
+``` 
+install the package locally
+
 ```
-install the package in editable mode from source: 
+pip install .   
+```
+or you can install the package in editable mode (For customization):
 
 ```
 pip install -e .  
@@ -66,6 +71,7 @@ Now, test if your installation is successful
 optimize -h
 ``` 
 
+## Examples:
 
 ## References: 
 
