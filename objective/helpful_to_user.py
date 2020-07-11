@@ -62,22 +62,14 @@ class useful_tools:
     max_total_wait_time = 300
 
     def __init__(self,
-                 objective_type,
-                 ext_type_lst,
-                 properties_file_lst,
                  predit_address_tple,
                  argument_tple,
                  output_folder):
 
-        self.predicted_and_output_data(objective_type,
-                                       ext_type_lst,
-                                       properties_file_lst,
-                                       predit_address_tple,
-                                       output_folder)
-
         self.parse_argument_dict(argument_tple)
 
-        self.check_cores(self.num_cores_predict, len(predit_address_tple))
+        self.check_cores(self.num_cores_predict,
+                         len(predit_address_tple))
 
         self.logger = logging.getLogger(__name__)
 
@@ -133,13 +125,13 @@ class useful_tools:
 
         return best_file, guess_file, old_file
 
-    def predicted_and_output_data(self,
-                                  objective_type,
-                                  ext_type_lst,
-                                  properties_file_lst,
-                                  predit_address_tple,
-                                  output_folder):
-
+    def track_and_update(self,
+                         objective_type,
+                         ext_type_lst,
+                         properties_file_lst,
+                         predit_address_tple,
+                         output_folder):
+        
         self.predict_file_lst = []
 
         self.guess_file_lst = []
@@ -163,9 +155,9 @@ class useful_tools:
                 guess_path = os.path.join(output_folder, guess_file)
 
                 old_path = os.path.join(predict_traj, old_file)
-
+                
                 predict_path = os.path.join(predict_traj, filename)
-
+                
                 best_path = os.path.join(output_folder, best_file)
 
                 self.best_file_lst.append(best_path)
