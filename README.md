@@ -17,9 +17,7 @@
 
 * Slurm Workload Manager (or equivalent) 
 
-* Numpy==1.18.1  
-
-* Python 3.7  
+* Python 3.7 (Numpy 1.18.1) 
 
 * Intel Fortran compiler (> version 18.0.3).
   gfortran (4.8.5) also compiles successfully,
@@ -56,11 +54,11 @@ or you can install the package in editable mode (For customization):
 ```
 pip install -e .  
 ```
-A Fortran library "fortranAPI" cames with the package. This library
+A Fortran library "fortranAPI" come with the package. This library
 is used to compute pair correlation function and reading trajectories of different formats.
-The inside Fortran routines are c-interoperable, and thus can be
+The inside Fortran routines are C-interoperable, and thus can be
 callable through Python using ctypes modules.
-This library is compiled by invoking GNU "make" command.
+To compile it, run GNU "make" command.
 
 ``` 
 make
