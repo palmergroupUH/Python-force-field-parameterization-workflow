@@ -2,14 +2,14 @@
 
 <img src="workflow.png" width="800">
 
-## Features: 
-* Efficient adoption of parallism to perform sampling with a parallel simulator 
+## Features:
+* Efficient adoption of parallism to perform sampling with a parallel simulator
 * Diverse choices of force-field functional forms supported by the chosen simulator
-* Flexible inclusions of distinct physical properties as reference data  
-* Modular design to facilitate the exstensions with user-defined:  
-    - objective functional forms 
+* Flexible inclusions of distinct physical properties as reference data
+* Modular design to facilitate the exstensions with user-defined:
+    - objective functional forms
     - sampling methods/force-field potential functional forms
-    - optimization algorithms  
+    - optimization algorithms
 
 ## Softwares required:
 
@@ -68,6 +68,14 @@ Now, test if your installation is successful
 ``` 
 optimize -h
 ``` 
+if you see a list of command line argument options, then you have installed it successfully.
+
+Now, Run some unit-testings to check further check the program 
+
+```
+pytest optimizer/
+pytest fortranAPI/
+```
 
 ## Examples:
 
