@@ -17,9 +17,9 @@
 
 * Slurm Workload Manager (or equivalent) 
 
-* Python 3.7 (Numpy 1.18.1) 
+* Python 3.7
 
-* pytest 5.4.2
+* library/packages: pytest==5.4.2, numpy==1.18.1
 
 * Intel Fortran compiler (> version 18.0.3).
   gfortran (4.8.5) also compiles successfully,
