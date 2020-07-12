@@ -6,3 +6,4 @@ dependencies:
   - numpy=1.18.*
   - matplotlib=3.2.1 
   - jupyter 
+  - pytest=5.4.2

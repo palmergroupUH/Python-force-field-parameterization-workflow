@@ -19,6 +19,8 @@
 
 * Python 3.7 (Numpy 1.18.1) 
 
+* pytest 5.4.2
+
 * Intel Fortran compiler (> version 18.0.3).
   gfortran (4.8.5) also compiles successfully,
   but the program may not work with a long absolute file path.
@@ -49,18 +51,18 @@ cd Python-force-field-parameterization-workflow
 ```
 pip install .
 ```
-* or you can install the package in editable mode (For furture development):
+* or you can install the package in an editable mode (For furture development):
 
 ```
 pip install -e .  
 ```
 * A Fortran library "fortranAPI" come with the package.
-The inside Fortran routines are C-interoperable, and thus can be
+Inside Fortran routines are C-interoperable, and thus can be
 callable through Python using ctypes modules.
 
 * Note that this Fortran library is independent. 
 It provides some trajectory readers 
-and pair correlation function calculations routines. 
+and radial distribution function calculations routines.
 
 To compile it, run GNU "make" command. 
 
