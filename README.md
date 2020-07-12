@@ -29,51 +29,56 @@ conda is the recommended package manager. If 'conda' is not not found or root pr
 you can download anaconda: https://www.anaconda.com/products/individual to your home directory.
 Then, install the package: https://docs.anaconda.com/anaconda/install/  
 
-create a conda environment with specific version of numpy and python:  
+* create a conda environment with specific version of numpy and python:  
 
 ```
 conda create -n "env name" python=3.7 numpy=1.18.1 
 ```
 
-copy the project to your local directory:
+* copy this GitHub repo to your local directory:
 
 ```
 git clone https://github.com/jingxiangguo/Python-force-field-parameterization-workflow.git 
 ```
 
 ```
-cd Python-force-field-parameterization-workflow 
+cd Python-force-field-parameterization-workflow
 ``` 
-install the package locally
+* install the package to your conda environment (Two options)
 
 ```
-pip install .   
+pip install .
 ```
-or you can install the package in editable mode (For customization):
+* or you can install the package in editable mode (For furture development):
 
 ```
 pip install -e .  
 ```
-A Fortran library "fortranAPI" come with the package. This library
-is used to compute pair correlation function and reading trajectories of different formats.
+* A Fortran library "fortranAPI" come with the package.
 The inside Fortran routines are C-interoperable, and thus can be
 callable through Python using ctypes modules.
-To compile it, run GNU "make" command.
+
+* Note that this Fortran library is independent. 
+It provides some trajectory readers 
+and pair correlation function calculations routines. 
+
+To compile it, run GNU "make" command. 
 
 ``` 
 make
 ``` 
-Now, test if your installation is successful 
+Test your installation.
 
 ``` 
 optimize -h
 ``` 
-if you see a list of command line argument options, then you have installed it successfully.
+if you see a list of command line argument options, then your installation is successful.
 
-Now, Run some unit-testings to check further check the program 
+Now, run some unit-testings to further check the installation
 
 ```
 pytest optimizer/
+
 pytest fortranAPI/
 ```
 
