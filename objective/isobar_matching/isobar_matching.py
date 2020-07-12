@@ -36,10 +36,11 @@ class load(useful_tools):
 
         self.loaded_filename()
 
-        super().__init__(load.objective_type,
-                         self.matching_type_lst,
-                         self.properties_file_lst,
-                         predit_address_tple,
+        # initialize inherited class: helpful tools
+        # this class is used to
+        # 1. Check the status of the file
+        # 2. track and update the properties
+        super().__init__(predit_address_tple,
                          argument_tple,
                          output_folder)
 
@@ -56,6 +57,13 @@ class load(useful_tools):
 
         self.output_file_tags = self.T_ary
 
+        # use the inherited track_and_update routine to update
+        # best predicted properties
+        self.track_and_update(load.objective_type,
+                              self.ext_type_lst,
+                              self.properties_file_lst,
+                              predit_address_tple,
+                              output_folder)
         return None
 
     def loaded_filename(self):

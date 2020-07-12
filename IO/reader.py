@@ -22,6 +22,10 @@
 
 """
 A module for reading a trajectory from a MD or MC simulation.
+Supported trajectory file format: 
+1. *.txt 
+2. *.dcd
+3. *.lammpstraj
 
 Many trajectory file formats are supported including: dcd, xyz, and txt.
 The module allows a user to extract box and coordinates information from
@@ -50,6 +54,8 @@ import fortranAPI.IO
 from IO.type_conversion import string_to_ctypes_string,\
                                int_to_ctypes_int,\
                                np_to_ctypes_array
+
+import IO.check_file
 
 # Third-party library:
 
@@ -349,6 +355,11 @@ def read_LAMMPS_traj_in_parallel(file_address,
 
 def call_read_dcd_header(dcdfile):
 
+    if (not IO.check_file.status_is_ok(dcdfile)):
+
+        sys.exit("Errors in reading file: %s; The file " 
+                 "does not exist or is empty " % dcdfile)
+
     # declare c types varibles:
 
     dcdfile, strlength = string_to_ctypes_string(dcdfile)
@@ -467,6 +478,11 @@ def call_read_dcd_xyz_box_in_chunk(dcdfile,
 
 def get_lines_columns(txtfile):
 
+    if (not IO.check_file.status_is_ok(txtfile)):
+
+        sys.exit("Errors in reading file: %s; The file " 
+                 "does not exist or is empty " % txtfile)
+
     txtfile, strlength = string_to_ctypes_string(txtfile)
 
     num_lines = c_int()
@@ -480,7 +496,7 @@ def get_lines_columns(txtfile):
 
     return num_lines.value, num_columns.value
 
-
+# used together with "get_lines_columns" to get num_lines, num_cols
 def loadtxt(txtfile, num_lines, num_cols, skiprows, return_numpy):
 
     txtfile, strlength = string_to_ctypes_string(txtfile)
@@ -533,6 +549,11 @@ def np_loadtxt(txtfile, skiprows=0):
 
 
 def call_read_xyz_header(xyzfile):
+
+    if (not IO.check_file.status_is_ok(xyzfile)):
+
+        sys.exit("Errors in reading file: %s; The file " 
+                 "does not exist or is empty " % xyzfile)
 
     xyzfile, strlength = string_to_ctypes_string(xyzfile)
 
