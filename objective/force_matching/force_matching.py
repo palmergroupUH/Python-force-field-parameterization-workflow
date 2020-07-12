@@ -12,6 +12,8 @@ import IO.reader
 import IO.user_provided
 from IO.reader import read_LAMMPS_traj_in_parallel as read_LAMMPS
 from objective.helpful_to_user import useful_tools
+# import constants module: units class, Avogadro number, Boltzman constants
+from objective.const_mod import Units, NA, kb
 
 # Third-party library:
 
@@ -124,10 +126,11 @@ class load(useful_tools):
         # load pre-determined file name
         self.loaded_filename()
 
-        super().__init__(load.objective_type,
-                         self.ext_type_lst,
-                         self.properties_file_lst,
-                         predit_address_tple,
+        # initialize inherited class: helpful tools
+        # this class is used to
+        # 1. Check the status of the file
+        # 2. track and update the properties
+        super().__init__(predit_address_tple,
                          argument_tple,
                          output_folder)
 
@@ -138,29 +141,53 @@ class load(useful_tools):
 
         self.parse_user_defined(argument_tple)
 
+        self.Initialize_energy_matching()
+
         self.Initialize_force_matching()
 
-        self.Initialize_energy_matching()
+        self.Initialize_virial_matching(ref_address_tple,
+                                        predit_address_tple)
+    
+        # use the inherited track_and_update routine to update
+        # best predicted properties
+        self.track_and_update(load.objective_type,
+                              self.ext_type_lst,
+                              self.properties_file_lst,
+                              predit_address_tple,
+                              output_folder)
 
         return None
 
     def loaded_filename(self):
 
+        # Define all loaded files name for objective function
         # modify the following file names if needed
 
         self.Ref_energy_file = "Ref.eng"
 
         self.Ref_force_file = "Ref.force"
 
+        self.Ref_virial_file = "Ref.virial"
+
+        self.Ref_temp_file = "Ref.temp"
+    
+        self.Ref_volume_file = "Ref.volume"
+
         self.predict_energy_file = "predict.eng"
 
         self.predict_force_file = "predict.force"
+            
+        self.predict_virial_file = "predict.virial"
 
-        self.ext_type_lst = ["eng", "force"]
+        self.ext_type_lst = []
 
-        self.properties_file_lst = [self.predict_energy_file,
-                                    self.predict_force_file]
+        self.properties_file_lst = []
 
+        return None
+
+    def determine_properties_used(self):
+
+    
         return None
 
     def set_file_address_and_check_status(self,
@@ -201,10 +228,6 @@ class load(useful_tools):
             self.predicted_address_lst.append(predict_address)
 
             self.Pre_load_energy_data(ref_energy_file)
-
-            IO.check_file.status_is_ok(ref_energy_file)
-
-            IO.check_file.status_is_ok(ref_force_file)
 
             (num_lines_eng,
              num_colums_eng) = IO.reader.get_lines_columns(ref_energy_file)
@@ -253,7 +276,7 @@ class load(useful_tools):
     def parse_user_defined(self, argument):
 
         # --------------- user defined argument ----------------------
-        # user defined: "w 1.0 1.0 bf 5000 eng abs virial"
+        # user defined: "w 1.0 1.0 0.0 bf 5000 eng abs virial"
         # get the weight between energy and force
 
         argument_str = argument[-1].split()
@@ -263,6 +286,8 @@ class load(useful_tools):
         self.parse_buffersize_arg(argument_str)
 
         self.parse_eng_arg(argument_str)
+
+        self.parse_virial_arg(argument_str)
 
         return None
 
@@ -277,7 +302,7 @@ class load(useful_tools):
                              "If none, force and energy is assumed "
                              "to be equally weighted")
 
-            self.weight_force_eng = np.array([1.0, 1.0], dtype=np.float64)
+            self.weight_force_eng = np.array([1.0, 1.0, 0.0], dtype=np.float64)
 
             return None
 
@@ -285,13 +310,14 @@ class load(useful_tools):
 
             self.weight_force_eng = np.array([
                                              float(argument_str[key_indx+1]),
-                                             float(argument_str[key_indx+2])])
+                                             float(argument_str[key_indx+2]),
+                                             float(argument_str[key_indx+3])])
 
         except (ValueError, TypeError):
 
             self.logger.error("ERROR: type or value errors in choosing "
-                              "weight between force and energy; "
-                              "The format should be 'w float float' ")
+                              "weight between force,  energy, and virial; "
+                              "The format should be 'w float float float' ")
 
             sys.exit("Check errors in the log file")
 
@@ -352,7 +378,7 @@ class load(useful_tools):
 
             self.eng_keyword = argument_str[key_indx+1]
 
-        except (ValueError, TypeError):
+        except(ValueError, TypeError):
 
             self.logger.error("ERROR: energy keyword type error; The "
                               "keyword is a string;'eng abs' or "
@@ -362,15 +388,31 @@ class load(useful_tools):
 
         return None
 
-    def parse_virial_arg(self):
+    def parse_virial_arg(self, argument_str):
 
         key_indx = IO.user_provided.keyword_exists(argument_str, "virial")
-
-        if (key_indx < 0):
-
-            self.virial_keword = False
+        # No virial keyword argument and virial matching weight is 0
+        if (key_indx < 0 and self.weight_force_eng[2] ==0):
 
             return None
+
+        elif (key_indx < 0 and self.weight_force_eng[2] !=0):
+
+           sys.exit("ERROR: virial matching has nonzero weight, "
+                    "However, no 'virial' keyword given") 
+        
+        try:     
+
+            self.ref_dof = float(argument_str[key_indx+1]) 
+
+            self.predict_dof = float(argument_str[key_indx+2])
+
+        except(ValueError, TypeError):
+
+            self.logger.error("ERROR: virial keyword type error; " 
+                              "the keyword format 'Ref Dof, predict DoF'")
+
+            sys.exit("Check errors in the log file")
 
         return None
 
@@ -400,6 +442,10 @@ class load(useful_tools):
                              "is 0; skip the force matching\n")
 
             return None
+
+        self.ext_type_lst.extend(["force"]) 
+
+        self.properties_file_lst.extend([self.predict_force_file])
 
         self.num_congigs_lst = []
 
@@ -542,6 +588,119 @@ class load(useful_tools):
         return None
 
 # ----------------------------------------------------------------------------
+#                             Virial Matching:
+# ----------------------------------------------------------------------------
+
+    def Initialize_virial_matching(self, ref_address_tple, predit_address_tple):
+
+        # if the weight of virial matching is 0
+        # skip the virial matching
+        # a list of default virial objective function is 0
+        if (self.weight_force_eng[2] == 0.0):
+
+            self.virial_obj_lst = []
+            
+            for ref_address, predict_address in zip(ref_address_tple,
+                                                    predit_address_tple):
+
+                self.virial_obj_lst.append(0)
+
+            return None
+
+        self.ext_type_lst.extend(["virial"])
+
+        self.properties_file_lst.extend([self.predict_virial_file])
+
+        self.ref_virial_path_lst = []
+    
+        self.ref_volume_path_lst = []
+
+        self.predict_virial_path_lst = []
+
+        self.ref_virial_norm_lst = []
+    
+        self.ke_loss_lst = []
+
+        units = Units("real")
+
+        self.virial_factor = units.p_scale * units.vol_scale * NA
+       
+        for ref_address, predict_address in zip(ref_address_tple,
+                                                predit_address_tple):
+   
+            # create *.virial, *.temp files paths 
+            ref_virial_path = os.path.join(ref_address, self.Ref_virial_file)
+
+            ref_temp_path = os.path.join(ref_address, self.Ref_temp_file)
+
+            ref_volume_path = os.path.join(ref_address, self.Ref_volume_file)
+
+            predict_virial_path = os.path.join(predict_address,
+                                               self.predict_virial_file)
+
+            self.predict_virial_path_lst.append(predict_virial_path)
+    
+            self.ref_virial_path_lst.append(ref_virial_path)
+
+            # ---------- load data ---------
+
+            ref_virial_data = IO.reader.np_loadtxt(ref_virial_path, skiprows=1)
+
+            T_data = IO.reader.np_loadtxt(ref_temp_path, skiprows=1)
+
+            self.ref_virial_norm_lst.append(np.var(ref_virial_data))
+
+            self.ref_volume_path_lst.append(ref_volume_path)
+
+            ke_loss = self.compute_kinetic_loss(T_data,
+                                                self.ref_dof,
+                                                self.predict_dof)
+
+            self.ke_loss_lst.append(ke_loss)
+
+        return None
+
+    def compute_kinetic_loss(self, Temp, ref_dof, predict_dof):
+
+        two_ke_delta = (ref_dof - predict_dof) * Temp * kb * NA
+
+        return two_ke_delta  
+
+    def compute_virial_matching_objective(self):
+
+        # if the weight of virial matching is 0
+        # skip the virial matching
+        if (self.weight_force_eng[2] == 0.0):
+
+            return None 
+
+        self.virial_obj_lst = []
+
+        for (ref_path,
+             predict_path,
+             vol_path,
+             ke_loss,
+             norm) in zip(self.ref_virial_path_lst,
+                          self.predict_virial_path_lst,
+                          self.ref_volume_path_lst,
+                          self.ke_loss_lst,
+                          self.ref_virial_norm_lst):
+    
+            ref_virial = IO.reader.np_loadtxt(ref_path, skiprows=1)
+
+            predict_virial = IO.reader.np_loadtxt(predict_path, skiprows=1)
+
+            volume = IO.reader.np_loadtxt(vol_path, skiprows=1)
+
+            w_ref = ref_virial* self.virial_factor * volume # units of J/mol
+             
+            w_predict = predict_virial * self.virial_factor * volume
+            
+            self.virial_obj_lst.append(np.mean((((w_ref - w_predict) + ke_loss)**2)/norm))
+
+        return None 
+    
+# ----------------------------------------------------------------------------
 #                             Energy Matching:
 # ----------------------------------------------------------------------------
 
@@ -555,6 +714,12 @@ class load(useful_tools):
                              "is 0; skip energy matching\n")
 
             return None
+
+        # set the properties extension *.eng
+        self.ext_type_lst.extend(["eng"]) 
+
+        # track the properties file and updated it as best predicted
+        self.properties_file_lst.extend([self.predict_energy_file])
 
         self.ref_eng_data_lst = []
 
@@ -645,36 +810,37 @@ class load(useful_tools):
 
 
 # ----------------------------------------------------------------------------
-#                             Virial  Matching
-# ----------------------------------------------------------------------------
-
-
-# ----------------------------------------------------------------------------
 #                             Compute overall objective:
 # ----------------------------------------------------------------------------
 
     def optimize(self):
 
-        # before evaluating objective functions
+        # inherited function: before evaluating objective functions
         self.check_predicted_data_status(self.ref_force_lines,
                                          self.predict_force_file_lst)
-
-        eng_weight = self.weight_force_eng[0]
-
-        force_weight = self.weight_force_eng[1]
 
         scaled_eng_objective = 0
 
         scaled_force_objective = 0
+    
+        scaled_virial_objective = 0
 
         self.compute_force_matching_objective()
 
         self.compute_energy_matching_objective()
 
-        for e_obj, f_obj in zip(self.eng_obj_lst, self.fm_objective_lst):
+        self.compute_virial_matching_objective()
 
-            scaled_eng_objective += eng_weight * e_obj
+        for e_obj, f_obj, v_obj in zip(self.eng_obj_lst,
+                                       self.fm_objective_lst,
+                                       self.virial_obj_lst):
 
-            scaled_force_objective += force_weight * f_obj
+            scaled_eng_objective += self.weight_force_eng[0] * e_obj
 
-        return self.obj_weight*(scaled_eng_objective + scaled_force_objective)
+            scaled_force_objective += self.weight_force_eng[1] * f_obj
+
+            scaled_virial_objective += self.weight_force_eng[2] * v_obj
+
+        return self.obj_weight*(scaled_eng_objective +
+                                scaled_force_objective +
+                                scaled_virial_objective)
