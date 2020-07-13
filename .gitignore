@@ -15,7 +15,7 @@ __pycache__/
 # git command 
 git_command_lst
 
-# ignore the txt file 
+# ignore txt file
 *.txt
 
 # ignore build folder 

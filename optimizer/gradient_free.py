@@ -19,21 +19,29 @@
 
 
 """
-This module contains the main function "optimize_main" to run the force-field
-optimization.
+This module contains an implementation of Nelder-Mead simplex algorithm
 
-The executable "optimize" is invoked from the command-line interface. It
-will call "main()", which then call the function "optimize_main".
-Some other command-line programs related to this package can be developed,
-and invoked in an anaglous fashion.
+Example
+-------
 
+>>> nm_simplex = NelderMeadSimplex(x,x,x)
+>>> nm_simplex.run_optimization 
 
-The "optimize_main" is composed of several instances from different modules,
-whic are laid out in procedure-oriented fashion so that the user can
-easily understand the whole workflow. This should make the customization
-more transparant.
+The "NelderMeadSimplex" class will inherit another class "set_optimizer".
+from "optimizer_mod" module. Parsing the input files and dumping the output
+are handled through the inherited class.
+
+References
+----------
+[1]:  
+
+[2]: Gao, F., & Han, L. (2012). Implementing the
+Nelder-Mead simplex algorithm with adaptive parameters.
+Computational Optimization and Applications, 51(1),
+259–277. https://doi.org/10.1007/s10589-010-9329-3
 
 """
+
 
 # Python standard library:
 import numpy as np
@@ -59,7 +67,7 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
                  skipped=None,
                  output=None,
                  optimize_mode="min",
-                 nm_type=None):
+                 nm_type="adaptive"):
 
         # built-in restart/output filename:
 
@@ -124,7 +132,7 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
 
         # default: adaptive nelder-mead simplex coefficient
 
-        self.TransformationCoeff("adaptive")
+        self.TransformationCoeff(nm_type)
 
         # print Nelder-Mead optimization initialization
 
@@ -644,6 +652,14 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
             self.gamma = 0.75 - 1.0/(2*self.num_fitting)
 
             self.sigma = 1.0 - 1.0/self.num_fitting
+
+        else:
+
+            self.logger.error("The Nelder-Mead simplex "
+                              "algorithm tyep not recognized! ")
+
+            sys.exit("Please Choose: 'standard' or 'adaptive'")
+            
 
     def compute_func_vertices(self, vertices_mat, choice):
 

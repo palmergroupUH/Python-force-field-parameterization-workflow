@@ -53,10 +53,6 @@ class load(useful_tools):
 
         self.initialize()
 
-        self.output_file_type = "density"
-
-        self.output_file_tags = self.T_ary
-
         # use the inherited track_and_update routine to update
         # best predicted properties
         self.track_and_update(load.objective_type,
@@ -78,7 +74,7 @@ class load(useful_tools):
 
         self.predict_density = "predict.density"
 
-        self.matching_type_lst = ["isobar"]
+        self.ext_type_lst = ["isobar"]
 
         self.properties_file_lst = [self.predict_density]
 
@@ -206,6 +202,7 @@ class load(useful_tools):
     def initialize(self):
 
         # compute penalty parameters
+
         self.num_T = len(self.ref_data_lst)
 
         self.ref_density_ary = np.array(self.ref_data_lst)
