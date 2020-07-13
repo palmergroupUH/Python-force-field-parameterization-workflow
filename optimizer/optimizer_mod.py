@@ -20,7 +20,7 @@
 
 """
 This module contains a parent class "set_optimizer" that will be inherited
-by other optimizer modules: e.g. gradient_free.py or gradient.py, which may 
+by other optimizer modules: e.g. gradient_free.py, gradient.py, etc, which may 
 contains classes of optimization algorithm.
 
 The purposes of this module are two fold:
@@ -85,10 +85,10 @@ class set_optimizer:
         Nelder-Mead simplex is supported.
     self.optimizer_argument : str 
         The argument associated with the selected optimizer
-    self.optimizer_input :
+    self.optimizer_input : str
         The optimizer input: input values used by optimizers (optional)
 
-    Available Methods 
+    Available Methods
     -----------------
 
     self.group_fixed()
@@ -106,7 +106,10 @@ class set_optimizer:
         to a log file.
     self.optimizer_restart_content()
         a general method to create a dictionary which contains the
-        optimization settings so that the restart file can be used 
+        optimization settings so that the restart file can be used
+    self.select_optimize_mode()
+        a method to select if the optimizer perform minimizatoin or
+        maximization. e.g. min(f(x)) or min(-f(x)) = max(f(x))
      
 
     Notes
