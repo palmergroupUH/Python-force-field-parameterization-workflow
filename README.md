@@ -19,7 +19,7 @@
 
 * Python 3.7
 
-* library/packages: pytest==5.4.2, numpy==1.18.1
+* Other Python libraries: pytest==5.4.2, numpy==1.18.1
 
 * Intel Fortran compiler (> version 18.0.3).
   gfortran (4.8.5) also compiles successfully,
@@ -46,7 +46,7 @@ git clone https://github.com/jingxiangguo/Python-force-field-parameterization-wo
 ```
 cd Python-force-field-parameterization-workflow
 ``` 
-* install the package to your conda environment (Two options)
+* install the package to your conda environment
 
 ```
 pip install .
@@ -64,19 +64,19 @@ callable through Python using ctypes modules.
 It provides some trajectory readers 
 and radial distribution function calculations routines.
 
-To compile it, run GNU "make" command. 
+* To compile it, run GNU "make" command. 
 
 ``` 
 make
 ``` 
-Test your installation.
+* Test your installation.
 
 ``` 
 optimize -h
 ``` 
-if you see a list of command line argument options, then your installation is successful.
+* if you see a list of command line argument options, then your installation is successful.
 
-Now, run some unit-testings to further check the installation
+* Run some unit-testings to further check the installation
 
 ```
 pytest optimizer/
