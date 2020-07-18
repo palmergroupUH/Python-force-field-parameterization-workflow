@@ -10,7 +10,7 @@
 #
 
 # Python-force-field-parameterization-workflow is free software:
-# you can redistribute it and/or modify it under the terms of the 
+# you can redistribute it and/or modify it under the terms of the
 # MIT License
 
 # You should have received a copy of the MIT License along with the package.
@@ -19,19 +19,20 @@
 
 
 """
-This module contains the main function "optimize_main" to run the force-field
-optimization.
+This module contains the main function "optimize_main" to perform
+the force-field optimization.
 
 The executable "optimize" is invoked from the command-line interface. It
-will call "main()", which then call the function "optimize_main".
+will first call "main()", which then call the function "optimize_main".
 Some other command-line programs related to this package can be developed,
-and invoked in an anaglous fashion.
+and invoked in an anaglous fashion. The example "clearJobID" is defined, and
+used just like "optimize"
 
 
-The "optimize_main" is composed of several instances from different modules,
-whic are laid out in procedure-oriented fashion so that the user can
-easily understand the whole workflow. This should make the customization
-more transparant.
+The "optimize_main" is composed of several instatiation of classes imported
+from different modules, which are laid out in procedure-oriented fashion
+so that the user can easily understand the whole workflow.
+This should make the subsequent customization more transparant.
 
 """
 
@@ -110,8 +111,9 @@ def optimize_main():
                                                          argument_dict,
                                                          LAMMPS)
 
-    # eval_objective: a Python list
-    # each objective has attributes of "optimize"
+    # eval_objective: a Python list containing an instance of the objective
+    # function class: "load" 
+    # each instance has an attribute of "optimize"
     # [ objective1, objective2, objective3 ... ]
 
     # -------------------------------------------------------------------------
