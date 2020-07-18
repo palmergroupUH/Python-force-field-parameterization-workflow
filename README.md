@@ -74,7 +74,14 @@ make
 ``` 
 optimize -h
 ``` 
-* if you see a list of command line argument options, then your installation is successful.
+```
+usage: optimize [-h] -c CORES -i INPUT -j JOB [-m MODE] [-Ref REFERENCEDATA]
+                [-prep PREPSYSTEM]
+
+This is a Python software package implementing a force-field parameters
+optimization workflow
+
+```
 
 * Run some unit-testings to further check the installation
 
@@ -82,6 +89,7 @@ optimize -h
 pytest optimizer/
 
 pytest fortranAPI/
+
 ```
 
 ## Examples:

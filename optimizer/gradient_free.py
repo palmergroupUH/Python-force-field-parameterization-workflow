@@ -20,6 +20,7 @@
 
 """
 This module contains an implementation of Nelder-Mead simplex algorithm
+Check the method "run_optimization" for implementation details
 
 Example
 -------
@@ -33,9 +34,8 @@ are handled through the inherited class.
 
 References
 ----------
-[1]:  
 
-[2]: Gao, F., & Han, L. (2012). Implementing the
+[1]: Gao, F., & Han, L. (2012). Implementing the
 Nelder-Mead simplex algorithm with adaptive parameters.
 Computational Optimization and Applications, 51(1),
 259–277. https://doi.org/10.1007/s10589-010-9329-3
