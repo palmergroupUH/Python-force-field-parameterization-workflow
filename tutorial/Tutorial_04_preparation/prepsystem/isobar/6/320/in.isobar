@@ -1,0 +1,82 @@
+# Energy,Force, Virial matching  
+
+units		real
+variable seed equal 13239 
+variable T equal 320.0000 
+variable P equal 2467.308 
+variable nsample equal 200 
+variable neq equal 200000 # 1 ns  
+variable nprod equal 800000 # 4 ns  
+variable nconfigs equal ${nprod}/${nsample}+1
+
+boundary p p p 
+
+atom_style	atomic
+#atom_modify map array sort 0 0
+
+#region mybox block 0 19.1 0 19.1 0 19.1 
+
+#create_box  1 mybox 
+
+#mass 1 18.0153  
+
+#create_atoms 1 random 216 2349852 NULL units box
+read_data data.in
+
+thermo       1000
+thermo_style    custom  time temp press pe ke lx ly lz vol density
+thermo_modify line multi norm yes flush yes format float %.6f
+
+#change_box all x final 0 19.11 y final 0 19.11  z final 0 19.11 units box 
+
+# Potential style
+
+#pair_style tersoff
+
+#pair_coeff * * WT_ML-BOP.tersoff W 
+include force_field_parameters
+
+# Neighbor list  
+
+# Neighbor 
+neighbor 2.0 nsq
+
+neigh_modify delay 0 every 1 check yes
+
+# 5 fs   # Fix timestep here
+
+timestep 5 
+
+# ----- Log file output -----
+
+thermo       20000
+
+variable        volume equal vol
+variable 		dens equal density
+
+# ----- equilibrution (NPT) -----   
+
+#velocity all create ${T} ${seed} 
+
+fix 1 all npt temp ${T} ${T} 100 iso ${P} ${P} 1000.0  
+
+run ${neq} # 5 ns
+
+reset_timestep 0
+
+unfix 1  # Remove the fix (important!)
+
+# ----- Production (NVT)  -----
+#
+fix 1 all npt temp ${T} ${T} 100 iso ${P} ${P} 1000.0  
+
+dump            1 all dcd ${nsample} traj.dcd
+
+fix             thermodata all print ${nsample} "${volume}" file "dump.volume" screen no  
+
+run ${nprod} # 5 ns  
+
+write_data data.final 
+
+#clear 
+

@@ -1,0 +1,29 @@
+#!/bin/bash
+
+
+# folder name
+folder=mW_300K_1bar
+
+mkdir $folder
+
+cd $folder 
+
+#subfolder name:
+
+Temp=(230 240 250 260 270 280) 
+
+for T in "${Temp[@]}"
+do 
+
+	mkdir $T	
+
+	cd $T 
+	
+	cp ../../run/* . 	
+
+	sed -i "5c variable T equal ${T}.0000 " in.isobar 
+	
+	cd ../
+		
+done 
+

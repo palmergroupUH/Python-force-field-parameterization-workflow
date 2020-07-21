@@ -1,0 +1,446 @@
+LAMMPS (4 Jan 2019)
+# Energy,Force, Virial matching
+
+units		real
+variable seed equal 13239
+variable T equal 280.0000
+variable P equal 0.986923 # 1 bar
+variable nsample equal 500
+variable neq equal 400000 # 2 ns
+variable nprod equal 1000000 # 5 ns
+variable nconfigs equal ${nprod}/${nsample}+1
+variable nconfigs equal 1000000/${nsample}+1
+variable nconfigs equal 1000000/500+1
+
+boundary p p p
+atom_style	full
+atom_modify map array sort 0 0
+
+read_data mW.lmp
+  orthogonal box = (0 0 0) to (24.834 24.834 24.834)
+  1 by 1 by 2 MPI processor grid
+  reading atoms ...
+  512 atoms
+  0 = max # of 1-2 neighbors
+  0 = max # of 1-3 neighbors
+  0 = max # of 1-4 neighbors
+  1 = max # of special neighbors
+
+thermo       1000
+thermo_style    custom  time temp press pe ke lx ly lz vol density
+thermo_modify line multi norm yes flush yes format float %.6f
+
+#change_box all x final 0 19.11 y final 0 19.11  z final 0 19.11 units box
+
+# Potential style
+
+#pair_style tersoff
+
+#pair_coeff * * WT_ML-BOP.tersoff W
+include force_field_parameters
+#pair style: stillinger_weber is used
+pair_style   sw
+pair_coeff * * mW.sw WT
+
+# Neighbor list
+
+# Neighbor
+neighbor 2.0 nsq
+
+neigh_modify delay 0 every 1 check yes
+
+# 5 fs   # Fix timestep here
+
+timestep 5
+
+# ----- Log file output -----
+
+thermo       20000
+
+variable        volume equal vol
+variable 		dens equal density
+
+# ----- equilibrution (NPT) -----
+
+fix 1 all npt temp ${T} ${T} 100 iso ${P} ${P} 1000.0
+fix 1 all npt temp 280 ${T} 100 iso ${P} ${P} 1000.0
+fix 1 all npt temp 280 280 100 iso ${P} ${P} 1000.0
+fix 1 all npt temp 280 280 100 iso 0.986923 ${P} 1000.0
+fix 1 all npt temp 280 280 100 iso 0.986923 0.986923 1000.0
+
+run ${neq} # 5 ns
+run 400000 
+Neighbor list info ...
+  update every 1 steps, delay 0 steps, check yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 6.29144
+  ghost atom cutoff = 6.29144
+  1 neighbor lists, perpetual/occasional/extra = 1 0 0
+  (1) pair sw, perpetual
+      attributes: full, newton on
+      pair build: full/nsq
+      stencil: none
+      bin: none
+Per MPI rank memory allocation (min/avg/max) = 5.667 | 5.667 | 5.667 Mbytes
+---------------- Step        0 ----- CPU =      0.0000 (sec) ----------------
+Time     = 0.000000 Temp     = 0.000000 Press    = 89748.594691 
+PotEng   = 2.251446 KinEng   = 0.000000 Lx       = 24.834001 
+Ly       = 24.834001 Lz       = 24.834001 Volume   = 15315.813976 
+Density  = 1.000047 
+---------------- Step    20000 ----- CPU =     34.8686 (sec) ----------------
+Time     = 100000.000000 Temp     = 284.066451 Press    = 679.423175 
+PotEng   = -9.671107 KinEng   = 0.845094 Lx       = 24.757529 
+Ly       = 24.757529 Lz       = 24.757529 Volume   = 15174.762803 
+Density  = 1.009343 
+---------------- Step    40000 ----- CPU =     70.0489 (sec) ----------------
+Time     = 200000.000000 Temp     = 274.184846 Press    = -332.547400 
+PotEng   = -9.562117 KinEng   = 0.815697 Lx       = 24.901986 
+Ly       = 24.901986 Lz       = 24.901986 Volume   = 15441.942549 
+Density  = 0.991879 
+---------------- Step    60000 ----- CPU =    105.2336 (sec) ----------------
+Time     = 300000.000000 Temp     = 281.862162 Press    = -465.163438 
+PotEng   = -9.615646 KinEng   = 0.838537 Lx       = 24.874583 
+Ly       = 24.874583 Lz       = 24.874583 Volume   = 15391.020332 
+Density  = 0.995160 
+---------------- Step    80000 ----- CPU =    140.2396 (sec) ----------------
+Time     = 400000.000000 Temp     = 260.817375 Press    = 1213.300592 
+PotEng   = -9.622584 KinEng   = 0.775929 Lx       = 24.788191 
+Ly       = 24.788191 Lz       = 24.788191 Volume   = 15231.213832 
+Density  = 1.005602 
+---------------- Step   100000 ----- CPU =    175.3070 (sec) ----------------
+Time     = 500000.000000 Temp     = 267.182440 Press    = 501.842700 
+PotEng   = -9.602559 KinEng   = 0.794865 Lx       = 24.850487 
+Ly       = 24.850487 Lz       = 24.850487 Volume   = 15346.335931 
+Density  = 0.998058 
+---------------- Step   120000 ----- CPU =    210.4697 (sec) ----------------
+Time     = 600000.000000 Temp     = 250.770594 Press    = -815.014679 
+PotEng   = -9.587036 KinEng   = 0.746040 Lx       = 24.822168 
+Ly       = 24.822168 Lz       = 24.822168 Volume   = 15293.930823 
+Density  = 1.001478 
+---------------- Step   140000 ----- CPU =    245.5820 (sec) ----------------
+Time     = 700000.000000 Temp     = 271.697877 Press    = 425.287307 
+PotEng   = -9.657354 KinEng   = 0.808298 Lx       = 24.730834 
+Ly       = 24.730834 Lz       = 24.730834 Volume   = 15125.728248 
+Density  = 1.012615 
+---------------- Step   160000 ----- CPU =    280.7376 (sec) ----------------
+Time     = 800000.000000 Temp     = 274.270357 Press    = -1050.286942 
+PotEng   = -9.644930 KinEng   = 0.815951 Lx       = 24.783394 
+Ly       = 24.783394 Lz       = 24.783394 Volume   = 15222.372881 
+Density  = 1.006186 
+---------------- Step   180000 ----- CPU =    315.8123 (sec) ----------------
+Time     = 900000.000000 Temp     = 288.961306 Press    = 544.223277 
+PotEng   = -9.669471 KinEng   = 0.859656 Lx       = 24.789311 
+Ly       = 24.789311 Lz       = 24.789311 Volume   = 15233.277816 
+Density  = 1.005465 
+---------------- Step   200000 ----- CPU =    350.7645 (sec) ----------------
+Time     = 1000000.000000 Temp     = 270.828798 Press    = 40.746463 
+PotEng   = -9.636320 KinEng   = 0.805712 Lx       = 24.894473 
+Ly       = 24.894473 Lz       = 24.894473 Volume   = 15427.970143 
+Density  = 0.992777 
+---------------- Step   220000 ----- CPU =    385.6922 (sec) ----------------
+Time     = 1100000.000000 Temp     = 273.740998 Press    = 294.226399 
+PotEng   = -9.635834 KinEng   = 0.814376 Lx       = 24.829777 
+Ly       = 24.829777 Lz       = 24.829777 Volume   = 15308.000961 
+Density  = 1.000557 
+---------------- Step   240000 ----- CPU =    420.8230 (sec) ----------------
+Time     = 1200000.000000 Temp     = 281.767251 Press    = -637.213810 
+PotEng   = -9.670643 KinEng   = 0.838254 Lx       = 24.888272 
+Ly       = 24.888272 Lz       = 24.888272 Volume   = 15416.444278 
+Density  = 0.993519 
+---------------- Step   260000 ----- CPU =    455.9399 (sec) ----------------
+Time     = 1300000.000000 Temp     = 272.983770 Press    = -535.522515 
+PotEng   = -9.675370 KinEng   = 0.812123 Lx       = 24.870132 
+Ly       = 24.870132 Lz       = 24.870132 Volume   = 15382.760330 
+Density  = 0.995695 
+---------------- Step   280000 ----- CPU =    490.9088 (sec) ----------------
+Time     = 1400000.000000 Temp     = 304.521407 Press    = 757.368166 
+PotEng   = -9.613152 KinEng   = 0.905948 Lx       = 24.824458 
+Ly       = 24.824458 Lz       = 24.824458 Volume   = 15298.164597 
+Density  = 1.001201 
+---------------- Step   300000 ----- CPU =    525.9410 (sec) ----------------
+Time     = 1500000.000000 Temp     = 272.837639 Press    = 1023.385573 
+PotEng   = -9.656180 KinEng   = 0.811689 Lx       = 24.751818 
+Ly       = 24.751818 Lz       = 24.751818 Volume   = 15164.263754 
+Density  = 1.010041 
+---------------- Step   320000 ----- CPU =    561.0183 (sec) ----------------
+Time     = 1600000.000000 Temp     = 282.219225 Press    = 138.456645 
+PotEng   = -9.589574 KinEng   = 0.839599 Lx       = 24.859622 
+Ly       = 24.859622 Lz       = 24.859622 Volume   = 15363.266168 
+Density  = 0.996958 
+---------------- Step   340000 ----- CPU =    596.1579 (sec) ----------------
+Time     = 1700000.000000 Temp     = 300.151536 Press    = 1129.395348 
+PotEng   = -9.618941 KinEng   = 0.892947 Lx       = 24.772591 
+Ly       = 24.772591 Lz       = 24.772591 Volume   = 15202.475491 
+Density  = 1.007503 
+---------------- Step   360000 ----- CPU =    631.2510 (sec) ----------------
+Time     = 1800000.000000 Temp     = 272.923374 Press    = -68.974051 
+PotEng   = -9.657318 KinEng   = 0.811944 Lx       = 24.890511 
+Ly       = 24.890511 Lz       = 24.890511 Volume   = 15420.606421 
+Density  = 0.993251 
+---------------- Step   380000 ----- CPU =    666.2483 (sec) ----------------
+Time     = 1900000.000000 Temp     = 266.535069 Press    = -296.946929 
+PotEng   = -9.635332 KinEng   = 0.792939 Lx       = 24.841658 
+Ly       = 24.841658 Lz       = 24.841658 Volume   = 15329.985806 
+Density  = 0.999123 
+---------------- Step   400000 ----- CPU =    701.3864 (sec) ----------------
+Time     = 2000000.000000 Temp     = 297.480717 Press    = -88.104819 
+PotEng   = -9.599993 KinEng   = 0.885002 Lx       = 24.869261 
+Ly       = 24.869261 Lz       = 24.869261 Volume   = 15381.144770 
+Density  = 0.995799 
+Loop time of 701.387 on 2 procs for 400000 steps with 512 atoms
+
+Performance: 246.369 ns/day, 0.097 hours/ns, 570.299 timesteps/s
+98.9% CPU use with 2 MPI tasks x no OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 638.08     | 639.8      | 641.52     |   6.8 | 91.22
+Bond    | 0.029319   | 0.030998   | 0.032678   |   1.0 |  0.00
+Neigh   | 30.612     | 30.701     | 30.79      |   1.6 |  4.38
+Comm    | 21.455     | 23.097     | 24.74      |  34.2 |  3.29
+Output  | 0.00070786 | 0.0026199  | 0.0045319  |   3.7 |  0.00
+Modify  | 6.5251     | 6.5274     | 6.5296     |   0.1 |  0.93
+Other   |            | 1.228      |            |       |  0.18
+
+Nlocal:    256 ave 263 max 249 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
+Nghost:    900 ave 908 max 892 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
+Neighs:    0 ave 0 max 0 min
+Histogram: 2 0 0 0 0 0 0 0 0 0
+FullNghs:  8511 ave 8875 max 8147 min
+Histogram: 1 0 0 0 0 0 0 0 0 1
+
+Total # of neighbors = 17022
+Ave neighs/atom = 33.2461
+Ave special neighs/atom = 0
+Neighbor list builds = 25408
+Dangerous builds = 0
+
+reset_timestep 0
+
+unfix 1  # Remove the fix (important!)
+
+# ----- Production (NVT)  -----
+#
+fix 1 all npt temp ${T} ${T} 100 iso ${P} ${P} 1000.0
+fix 1 all npt temp 280 ${T} 100 iso ${P} ${P} 1000.0
+fix 1 all npt temp 280 280 100 iso ${P} ${P} 1000.0
+fix 1 all npt temp 280 280 100 iso 0.986923 ${P} 1000.0
+fix 1 all npt temp 280 280 100 iso 0.986923 0.986923 1000.0
+
+dump            1 all dcd ${nsample} traj.dcd
+dump            1 all dcd 500 traj.dcd
+
+fix             thermodata all print ${nsample} "${dens}" file "predict.density" screen no
+fix             thermodata all print 500 "${dens}" file "predict.density" screen no
+
+run ${nprod} # 5 ns
+run 1000000 
+Per MPI rank memory allocation (min/avg/max) = 5.706 | 5.707 | 5.707 Mbytes
+---------------- Step        0 ----- CPU =      0.0000 (sec) ----------------
+Time     = 2000000.000000 Temp     = 297.480717 Press    = -88.104819 
+PotEng   = -9.599993 KinEng   = 0.885002 Lx       = 24.869261 
+Ly       = 24.869261 Lz       = 24.869261 Volume   = 15381.144770 
+Density  = 0.995799 
+---------------- Step    20000 ----- CPU =     35.2411 (sec) ----------------
+Time     = 2100000.000000 Temp     = 287.174442 Press    = 113.860665 
+PotEng   = -9.709294 KinEng   = 0.854341 Lx       = 24.882452 
+Ly       = 24.882452 Lz       = 24.882452 Volume   = 15405.631510 
+Density  = 0.994217 
+---------------- Step    40000 ----- CPU =     70.6700 (sec) ----------------
+Time     = 2200000.000000 Temp     = 259.274398 Press    = 439.882374 
+PotEng   = -9.635014 KinEng   = 0.771338 Lx       = 24.785004 
+Ly       = 24.785004 Lz       = 24.785004 Volume   = 15225.339071 
+Density  = 1.005990 
+---------------- Step    60000 ----- CPU =    105.7530 (sec) ----------------
+Time     = 2300000.000000 Temp     = 266.362608 Press    = 298.898786 
+PotEng   = -9.675916 KinEng   = 0.792426 Lx       = 24.850957 
+Ly       = 24.850957 Lz       = 24.850957 Volume   = 15347.207494 
+Density  = 0.998001 
+---------------- Step    80000 ----- CPU =    140.9945 (sec) ----------------
+Time     = 2400000.000000 Temp     = 273.613639 Press    = -1344.636553 
+PotEng   = -9.582869 KinEng   = 0.813997 Lx       = 24.857143 
+Ly       = 24.857143 Lz       = 24.857143 Volume   = 15358.670191 
+Density  = 0.997257 
+---------------- Step   100000 ----- CPU =    176.0358 (sec) ----------------
+Time     = 2500000.000000 Temp     = 279.749722 Press    = -276.941892 
+PotEng   = -9.595664 KinEng   = 0.832252 Lx       = 24.868256 
+Ly       = 24.868256 Lz       = 24.868256 Volume   = 15379.279040 
+Density  = 0.995920 
+---------------- Step   120000 ----- CPU =    211.3635 (sec) ----------------
+Time     = 2600000.000000 Temp     = 262.182305 Press    = -1241.297696 
+PotEng   = -9.612930 KinEng   = 0.779989 Lx       = 24.972060 
+Ly       = 24.972060 Lz       = 24.972060 Volume   = 15572.671242 
+Density  = 0.983552 
+---------------- Step   140000 ----- CPU =    246.6205 (sec) ----------------
+Time     = 2700000.000000 Temp     = 276.120686 Press    = -686.474309 
+PotEng   = -9.653657 KinEng   = 0.821456 Lx       = 24.853585 
+Ly       = 24.853585 Lz       = 24.853585 Volume   = 15352.077057 
+Density  = 0.997685 
+---------------- Step   160000 ----- CPU =    281.6594 (sec) ----------------
+Time     = 2800000.000000 Temp     = 283.103596 Press    = 656.462923 
+PotEng   = -9.646050 KinEng   = 0.842230 Lx       = 24.790301 
+Ly       = 24.790301 Lz       = 24.790301 Volume   = 15235.102682 
+Density  = 1.005345 
+---------------- Step   180000 ----- CPU =    316.6611 (sec) ----------------
+Time     = 2900000.000000 Temp     = 276.603876 Press    = -296.376023 
+PotEng   = -9.666985 KinEng   = 0.822893 Lx       = 24.840712 
+Ly       = 24.840712 Lz       = 24.840712 Volume   = 15328.234088 
+Density  = 0.999237 
+---------------- Step   200000 ----- CPU =    351.7791 (sec) ----------------
+Time     = 3000000.000000 Temp     = 265.456648 Press    = -113.111527 
+PotEng   = -9.648430 KinEng   = 0.789730 Lx       = 24.771833 
+Ly       = 24.771833 Lz       = 24.771833 Volume   = 15201.079344 
+Density  = 1.007595 
+---------------- Step   220000 ----- CPU =    386.9123 (sec) ----------------
+Time     = 3100000.000000 Temp     = 261.624631 Press    = -98.885041 
+PotEng   = -9.627337 KinEng   = 0.778330 Lx       = 24.778128 
+Ly       = 24.778128 Lz       = 24.778128 Volume   = 15212.671612 
+Density  = 1.006827 
+---------------- Step   240000 ----- CPU =    421.8608 (sec) ----------------
+Time     = 3200000.000000 Temp     = 282.563910 Press    = -206.098337 
+PotEng   = -9.662348 KinEng   = 0.840624 Lx       = 24.874502 
+Ly       = 24.874502 Lz       = 24.874502 Volume   = 15390.870411 
+Density  = 0.995170 
+---------------- Step   260000 ----- CPU =    456.7465 (sec) ----------------
+Time     = 3300000.000000 Temp     = 269.670780 Press    = -289.725308 
+PotEng   = -9.603887 KinEng   = 0.802267 Lx       = 24.774774 
+Ly       = 24.774774 Lz       = 24.774774 Volume   = 15206.495055 
+Density  = 1.007236 
+---------------- Step   280000 ----- CPU =    491.8694 (sec) ----------------
+Time     = 3400000.000000 Temp     = 281.087150 Press    = -44.996318 
+PotEng   = -9.669634 KinEng   = 0.836231 Lx       = 24.793106 
+Ly       = 24.793106 Lz       = 24.793106 Volume   = 15240.274503 
+Density  = 1.005004 
+---------------- Step   300000 ----- CPU =    526.9545 (sec) ----------------
+Time     = 3500000.000000 Temp     = 270.750366 Press    = 1102.732275 
+PotEng   = -9.632069 KinEng   = 0.805479 Lx       = 24.772572 
+Ly       = 24.772572 Lz       = 24.772572 Volume   = 15202.439713 
+Density  = 1.007505 
+---------------- Step   320000 ----- CPU =    561.9572 (sec) ----------------
+Time     = 3600000.000000 Temp     = 274.285520 Press    = 1269.745559 
+PotEng   = -9.661168 KinEng   = 0.815996 Lx       = 24.732493 
+Ly       = 24.732493 Lz       = 24.732493 Volume   = 15128.772835 
+Density  = 1.012411 
+---------------- Step   340000 ----- CPU =    597.1709 (sec) ----------------
+Time     = 3700000.000000 Temp     = 287.426861 Press    = -134.556866 
+PotEng   = -9.636153 KinEng   = 0.855092 Lx       = 24.725195 
+Ly       = 24.725195 Lz       = 24.725195 Volume   = 15115.383955 
+Density  = 1.013308 
+---------------- Step   360000 ----- CPU =    632.2442 (sec) ----------------
+Time     = 3800000.000000 Temp     = 287.752824 Press    = -532.584597 
+PotEng   = -9.604961 KinEng   = 0.856061 Lx       = 24.899700 
+Ly       = 24.899700 Lz       = 24.899700 Volume   = 15437.691557 
+Density  = 0.992152 
+---------------- Step   380000 ----- CPU =    667.7075 (sec) ----------------
+Time     = 3900000.000000 Temp     = 285.391299 Press    = -226.297425 
+PotEng   = -9.655701 KinEng   = 0.849036 Lx       = 24.887790 
+Ly       = 24.887790 Lz       = 24.887790 Volume   = 15415.548409 
+Density  = 0.993577 
+---------------- Step   400000 ----- CPU =    702.6252 (sec) ----------------
+Time     = 4000000.000000 Temp     = 277.276687 Press    = -1466.834994 
+PotEng   = -9.641346 KinEng   = 0.824895 Lx       = 24.875759 
+Ly       = 24.875759 Lz       = 24.875759 Volume   = 15393.204803 
+Density  = 0.995019 
+---------------- Step   420000 ----- CPU =    737.6418 (sec) ----------------
+Time     = 4100000.000000 Temp     = 270.087318 Press    = -16.625918 
+PotEng   = -9.627726 KinEng   = 0.803507 Lx       = 24.743697 
+Ly       = 24.743697 Lz       = 24.743697 Volume   = 15149.341083 
+Density  = 1.011036 
+---------------- Step   440000 ----- CPU =    772.8176 (sec) ----------------
+Time     = 4200000.000000 Temp     = 296.750823 Press    = 59.138971 
+PotEng   = -9.617088 KinEng   = 0.882830 Lx       = 24.852652 
+Ly       = 24.852652 Lz       = 24.852652 Volume   = 15350.348557 
+Density  = 0.997797 
+---------------- Step   460000 ----- CPU =    807.8749 (sec) ----------------
+Time     = 4300000.000000 Temp     = 253.552195 Press    = 324.727619 
+PotEng   = -9.643975 KinEng   = 0.754315 Lx       = 24.788224 
+Ly       = 24.788224 Lz       = 24.788224 Volume   = 15231.274894 
+Density  = 1.005598 
+---------------- Step   480000 ----- CPU =    842.9559 (sec) ----------------
+Time     = 4400000.000000 Temp     = 282.390931 Press    = -27.319257 
+PotEng   = -9.599708 KinEng   = 0.840110 Lx       = 24.813061 
+Ly       = 24.813061 Lz       = 24.813061 Volume   = 15277.104027 
+Density  = 1.002581 
+---------------- Step   500000 ----- CPU =    878.0700 (sec) ----------------
+Time     = 4500000.000000 Temp     = 306.230063 Press    = 91.982833 
+PotEng   = -9.592345 KinEng   = 0.911031 Lx       = 24.854830 
+Ly       = 24.854830 Lz       = 24.854830 Volume   = 15354.384462 
+Density  = 0.997535 
+---------------- Step   520000 ----- CPU =    913.3085 (sec) ----------------
+Time     = 4600000.000000 Temp     = 273.792579 Press    = 671.750833 
+PotEng   = -9.606238 KinEng   = 0.814530 Lx       = 24.704328 
+Ly       = 24.704328 Lz       = 24.704328 Volume   = 15077.146650 
+Density  = 1.015878 
+---------------- Step   540000 ----- CPU =    948.3157 (sec) ----------------
+Time     = 4700000.000000 Temp     = 278.580203 Press    = 284.583312 
+PotEng   = -9.573835 KinEng   = 0.828773 Lx       = 24.875795 
+Ly       = 24.875795 Lz       = 24.875795 Volume   = 15393.271483 
+Density  = 0.995015 
+---------------- Step   560000 ----- CPU =    983.2814 (sec) ----------------
+Time     = 4800000.000000 Temp     = 283.636989 Press    = -567.050004 
+PotEng   = -9.547407 KinEng   = 0.843817 Lx       = 24.842465 
+Ly       = 24.842465 Lz       = 24.842465 Volume   = 15331.479290 
+Density  = 0.999025 
+---------------- Step   580000 ----- CPU =   1018.3327 (sec) ----------------
+Time     = 4900000.000000 Temp     = 274.123147 Press    = -739.877069 
+PotEng   = -9.627601 KinEng   = 0.815513 Lx       = 24.910873 
+Ly       = 24.910873 Lz       = 24.910873 Volume   = 15458.482741 
+Density  = 0.990817 
+---------------- Step   600000 ----- CPU =   1053.4670 (sec) ----------------
+Time     = 5000000.000000 Temp     = 287.623465 Press    = 346.463514 
+PotEng   = -9.607808 KinEng   = 0.855676 Lx       = 24.863172 
+Ly       = 24.863172 Lz       = 24.863172 Volume   = 15369.849051 
+Density  = 0.996531 
+---------------- Step   620000 ----- CPU =   1088.5311 (sec) ----------------
+Time     = 5100000.000000 Temp     = 276.338675 Press    = -27.283836 
+PotEng   = -9.639622 KinEng   = 0.822104 Lx       = 24.822426 
+Ly       = 24.822426 Lz       = 24.822426 Volume   = 15294.407953 
+Density  = 1.001447 
+---------------- Step   640000 ----- CPU =   1123.5805 (sec) ----------------
+Time     = 5200000.000000 Temp     = 295.480244 Press    = -258.328849 
+PotEng   = -9.564242 KinEng   = 0.879050 Lx       = 24.733018 
+Ly       = 24.733018 Lz       = 24.733018 Volume   = 15129.736138 
+Density  = 1.012346 
+---------------- Step   660000 ----- CPU =   1158.6179 (sec) ----------------
+Time     = 5300000.000000 Temp     = 286.298841 Press    = 466.842629 
+PotEng   = -9.614945 KinEng   = 0.851736 Lx       = 24.778515 
+Ly       = 24.778515 Lz       = 24.778515 Volume   = 15213.383340 
+Density  = 1.006780 
+---------------- Step   680000 ----- CPU =   1193.7769 (sec) ----------------
+Time     = 5400000.000000 Temp     = 292.408366 Press    = 300.933420 
+PotEng   = -9.606427 KinEng   = 0.869911 Lx       = 24.824130 
+Ly       = 24.824130 Lz       = 24.824130 Volume   = 15297.557931 
+Density  = 1.001241 
+---------------- Step   700000 ----- CPU =   1228.7444 (sec) ----------------
+Time     = 5500000.000000 Temp     = 272.788834 Press    = 358.378593 
+PotEng   = -9.630471 KinEng   = 0.811544 Lx       = 24.741602 
+Ly       = 24.741602 Lz       = 24.741602 Volume   = 15145.493943 
+Density  = 1.011293 
+---------------- Step   720000 ----- CPU =   1263.9875 (sec) ----------------
+Time     = 5600000.000000 Temp     = 285.046195 Press    = -469.387156 
+PotEng   = -9.552204 KinEng   = 0.848009 Lx       = 24.880496 
+Ly       = 24.880496 Lz       = 24.880496 Volume   = 15401.999694 
+Density  = 0.994451 
+---------------- Step   740000 ----- CPU =   1299.0894 (sec) ----------------
+Time     = 5700000.000000 Temp     = 275.736313 Press    = -378.923031 
+PotEng   = -9.668167 KinEng   = 0.820312 Lx       = 24.744561 
+Ly       = 24.744561 Lz       = 24.744561 Volume   = 15150.929557 
+Density  = 1.010930 
+---------------- Step   760000 ----- CPU =   1334.2842 (sec) ----------------
+Time     = 5800000.000000 Temp     = 274.151476 Press    = 759.298750 
+PotEng   = -9.634238 KinEng   = 0.815597 Lx       = 24.761257 
+Ly       = 24.761257 Lz       = 24.761257 Volume   = 15181.618988 
+Density  = 1.008887 
+---------------- Step   780000 ----- CPU =   1369.3100 (sec) ----------------
+Time     = 5900000.000000 Temp     = 285.845889 Press    = 1492.513027 
+PotEng   = -9.627624 KinEng   = 0.850388 Lx       = 24.741695 
+Ly       = 24.741695 Lz       = 24.741695 Volume   = 15145.665157 
+Density  = 1.011282 
+---------------- Step   800000 ----- CPU =   1404.1610 (sec) ----------------
+Time     = 6000000.000000 Temp     = 270.418948 Press    = 980.511033 
+PotEng   = -9.683933 KinEng   = 0.804493 Lx       = 24.816431 
+Ly       = 24.816431 Lz       = 24.816431 Volume   = 15283.329403 
+Density  = 1.002173 

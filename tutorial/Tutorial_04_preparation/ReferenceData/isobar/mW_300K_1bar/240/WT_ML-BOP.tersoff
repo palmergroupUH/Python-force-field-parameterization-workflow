@@ -1,0 +1,17 @@
+# DATE: 2018-05-25
+# Tersoff parameters for monoatomic CG water
+# obtained from a machine learning approach using
+# hierarchical objective genetic algorithm (HOGA).
+
+# these entries are in LAMMPS "metal" units:
+#   A,B = eV; lambda1,lambda2,lambda3 = 1/Angstroms; R,D = Angstroms
+#   other quantities are unitless
+
+# format of a single entry (one or more lines):
+#   element 1, element 2, element 3, 
+#   m, gamma, lambda3, c, d, costheta0, n, beta, 
+#   lambda2, B, R, D, lambda1, A
+
+WT  WT  WT  1.0  1.0 0.0 77638.534354 16.148387 -0.471029 0.770018 1e-06
+            2.19964 10921.97125 3.282761 0.270511 2.750522 38840.92139
+  
