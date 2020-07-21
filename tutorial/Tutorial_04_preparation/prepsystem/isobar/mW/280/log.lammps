@@ -1,0 +1,168 @@
+LAMMPS (4 Jan 2019)
+# LAMMPS input script
+boundary p p p
+units       real
+atom_style  atomic
+atom_modify map array sort 0 0
+read_data   data.in
+  orthogonal box = (-0.0133109 -0.0133109 -0.0133109) to (24.8483 24.8483 24.8483)
+  2 by 2 by 2 MPI processor grid
+  reading atoms ...
+  512 atoms
+  reading velocities ...
+  512 velocities
+pair_style  tersoff
+pair_coeff  * * WT_ML-BOP.tersoff WT
+
+# ----- Variables -----
+variable seed equal 87171
+variable T equal 260.0000000000
+variable P equal 0.986923 # 1 bar
+variable nsteps equal 10000
+variable sample equal 2000
+
+# ----- Initialize -----
+neighbor 2.0 nsq
+neigh_modify delay 0 every 1 check yes
+timestep 5 # 5 fs   # Fix timestep here
+
+# ----- Log file output -----
+thermo       10000
+thermo_style    custom  time temp press pe ke lx ly lz density vol
+thermo_modify line multi norm yes flush yes format float %.6f
+
+# ----- equilibruate --------
+fix 1 all npt temp ${T} ${T} 100 iso ${P} ${P} 1000
+fix 1 all npt temp 260 ${T} 100 iso ${P} ${P} 1000
+fix 1 all npt temp 260 260 100 iso ${P} ${P} 1000
+fix 1 all npt temp 260 260 100 iso 0.986923 ${P} 1000
+fix 1 all npt temp 260 260 100 iso 0.986923 0.986923 1000
+run 2000 # 1 ns
+Neighbor list info ...
+  update every 1 steps, delay 0 steps, check yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 5.73094
+  ghost atom cutoff = 5.73094
+  1 neighbor lists, perpetual/occasional/extra = 1 0 0
+  (1) pair tersoff, perpetual
+      attributes: full, newton on
+      pair build: full/nsq
+      stencil: none
+      bin: none
+Per MPI rank memory allocation (min/avg/max) = 2.684 | 2.684 | 2.684 Mbytes
+---------------- Step        0 ----- CPU =      0.0000 (sec) ----------------
+Time     = 0.000000 Temp     = 256.432304 Press    = -15648.744582 
+PotEng   = -9.748054 KinEng   = 0.762883 Lx       = 24.861622 
+Ly       = 24.861622 Lz       = 24.861622 Density  = 0.996718 
+Volume   = 15366.974410 
+---------------- Step     2000 ----- CPU =      1.5415 (sec) ----------------
+Time     = 10000.000000 Temp     = 267.750803 Press    = -332.822279 
+PotEng   = -10.954687 KinEng   = 0.796555 Lx       = 23.652672 
+Ly       = 23.652672 Lz       = 23.652672 Density  = 1.157497 
+Volume   = 13232.460930 
+Loop time of 1.54162 on 8 procs for 2000 steps with 512 atoms
+
+Performance: 560.451 ns/day, 0.043 hours/ns, 1297.340 timesteps/s
+99.7% CPU use with 8 MPI tasks x no OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 1.0247     | 1.2039     | 1.3809     |  11.1 | 78.09
+Neigh   | 0.014973   | 0.015812   | 0.0163     |   0.3 |  1.03
+Comm    | 0.11164    | 0.28826    | 0.46737    |  22.6 | 18.70
+Output  | 3.314e-05  | 4.4972e-05 | 0.00012207 |   0.0 |  0.00
+Modify  | 0.026737   | 0.027561   | 0.028505   |   0.3 |  1.79
+Other   |            | 0.006069   |            |       |  0.39
+
+Nlocal:    64 ave 71 max 59 min
+Histogram: 2 0 1 1 0 2 1 0 0 1
+Nghost:    427.75 ave 436 max 420 min
+Histogram: 2 1 0 0 0 1 2 0 1 1
+Neighs:    0 ave 0 max 0 min
+Histogram: 8 0 0 0 0 0 0 0 0 0
+FullNghs:  1885.5 ave 2085 max 1701 min
+Histogram: 2 0 1 1 0 0 1 1 0 2
+
+Total # of neighbors = 15084
+Ave neighs/atom = 29.4609
+Neighbor list builds = 106
+Dangerous builds = 0
+reset_timestep 0
+unfix 1  # Remove the fix ( important! )
+
+# ---- Custom dump ----
+# Easier to analyze than LAMMP's log file
+
+variable        engtot equal etotal
+variable        utotal equal pe
+variable        cellx equal lx
+variable        kintemp equal temp
+variable        virpress equal press
+variable        massdensity equal density
+variable 		volume equal vol
+variable 		num_frames equal ${nsteps}/${sample}
+variable 		num_frames equal 10000/${sample}
+variable 		num_frames equal 10000/2000
+
+fix             thermodata all print ${sample} "${volume}" file "dump.volume" screen no
+fix             thermodata all print 2000 "${volume}" file "dump.volume" screen no
+
+# DCD trajectory (every 0.5 ps)
+
+dump            1 all dcd 5000 traj.dcd
+
+# ----- Temperature/Pressure Controls -----
+fix 1 all npt temp ${T} ${T} 100 iso ${P} ${P} 1000
+fix 1 all npt temp 260 ${T} 100 iso ${P} ${P} 1000
+fix 1 all npt temp 260 260 100 iso ${P} ${P} 1000
+fix 1 all npt temp 260 260 100 iso 0.986923 ${P} 1000
+fix 1 all npt temp 260 260 100 iso 0.986923 0.986923 1000
+
+run ${nsteps}  # production 5 ns
+run 10000  
+Per MPI rank memory allocation (min/avg/max) = 2.71 | 2.772 | 2.959 Mbytes
+---------------- Step        0 ----- CPU =      0.0000 (sec) ----------------
+Time     = 10000.000000 Temp     = 267.750803 Press    = -332.822279 
+PotEng   = -10.954687 KinEng   = 0.796555 Lx       = 23.652672 
+Ly       = 23.652672 Lz       = 23.652672 Density  = 1.157497 
+Volume   = 13232.460930 
+---------------- Step    10000 ----- CPU =      5.9501 (sec) ----------------
+Time     = 60000.000000 Temp     = 256.679551 Press    = 485.253727 
+PotEng   = -11.190288 KinEng   = 0.763619 Lx       = 23.877896 
+Ly       = 23.877896 Lz       = 23.877896 Density  = 1.125051 
+Volume   = 13614.075895 
+Loop time of 5.95021 on 8 procs for 10000 steps with 512 atoms
+
+Performance: 726.025 ns/day, 0.033 hours/ns, 1680.614 timesteps/s
+99.9% CPU use with 8 MPI tasks x no OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 3.8372     | 4.5409     | 5.0678     |  20.9 | 76.31
+Neigh   | 0.069962   | 0.074045   | 0.076896   |   0.8 |  1.24
+Comm    | 0.64051    | 1.1674     | 1.8724     |  41.2 | 19.62
+Output  | 0.00067711 | 0.00075004 | 0.0011752  |   0.0 |  0.01
+Modify  | 0.13428    | 0.13724    | 0.14129    |   0.6 |  2.31
+Other   |            | 0.0299     |            |       |  0.50
+
+Nlocal:    64 ave 70 max 59 min
+Histogram: 1 2 0 0 2 0 1 1 0 1
+Nghost:    422 ave 432 max 415 min
+Histogram: 1 2 1 1 0 1 0 0 1 1
+Neighs:    0 ave 0 max 0 min
+Histogram: 8 0 0 0 0 0 0 0 0 0
+FullNghs:  1828.25 ave 2033 max 1644 min
+Histogram: 1 1 1 0 0 3 1 0 0 1
+
+Total # of neighbors = 14626
+Ave neighs/atom = 28.5664
+Neighbor list builds = 505
+Dangerous builds = 0
+
+write_data data.final
+
+print "${num_frames}" file finish.txt
+5
+Total wall time: 0:00:07

@@ -1,0 +1,448 @@
+# Current iteration 0: This is a restart file 
+
+# units:
+real
+# objective function defined:
+# format is:
+# 'matching type', 'sub_folder name',"weight of current objective functions", "cores for running sampling","cores for evaluating objective functions"
+# So,the corresponding python data type is: "string","string", "float","integer","integer"
+# Example:
+isobar mW_300K_1bar 1 12 1 Temp 230 240 250 260 270 280 tol 0 t 2001
+# shell command to launch sampling in each folder :
+# Python subprocess module launch these commands in non-blocking manner in each desired folder:
+# sampling input file names will be subsistuted as: in.force, in.rdf, in.isobar ...
+# Default sampling package is LAMMPS
+# output and restart frequency 
+
+5 5
+
+# This is the guess parameters: 
+
+# stillinger_weber6.289 2.4925 1.8 25.15 1.2 -0.333333333333 7.049556277 0.6022245584 4.0 0.0 0.0
+
+# This is the current best parameters: 
+
+stillinger_weber 5.660099999999998 2.326333333333334 23.473333333333336
+
+# fit (1) and fix (0) parameters: 
+
+1.0 1.0 0.0 1.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+
+# constraints (index lower-bound upper-bound ... ):
+
+None
+
+# set termination criterion: max number of iteration, tolerance for parameters, tolerance for objective 
+
+25000  1.0e-10 1.0e-10
+
+# create (Perturb) or use existing vertices (Restart): 
+
+# Nelder-Mead Nelder-Mead perturb
+
+# ['0.1', '-0.1', '-0.1']
+
+Nelder-Mead Restart 
+
+215424.02905777105 383985.92099999584 742338.9176742233 852036.4910903228
+
+5.660099999999998 2.326333333333334 23.473333333333336 
+
+6.289 2.4925 22.634999999999998 
+
+6.289 2.4925 25.15 
+
+6.289 2.24325 25.15 
+
+# Current iteration 5: This is a restart file 
+
+# units:
+real
+# objective function defined:
+# format is:
+# 'matching type', 'sub_folder name',"weight of current objective functions", "cores for running sampling","cores for evaluating objective functions"
+# So,the corresponding python data type is: "string","string", "float","integer","integer"
+# Example:
+isobar mW_300K_1bar 1 12 1 Temp 230 240 250 260 270 280 tol 0 t 2001
+# shell command to launch sampling in each folder :
+# Python subprocess module launch these commands in non-blocking manner in each desired folder:
+# sampling input file names will be subsistuted as: in.force, in.rdf, in.isobar ...
+# Default sampling package is LAMMPS
+# output and restart frequency 
+
+5 5
+
+# This is the guess parameters: 
+
+# stillinger_weber6.289 2.4925 1.8 25.15 1.2 -0.333333333333 7.049556277 0.6022245584 4.0 0.0 0.0
+
+# This is the current best parameters: 
+
+stillinger_weber 5.870213052022669 2.353576435128239 23.697541926277374
+
+# fit (1) and fix (0) parameters: 
+
+1.0 1.0 0.0 1.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+
+# constraints (index lower-bound upper-bound ... ):
+
+None
+
+# set termination criterion: max number of iteration, tolerance for parameters, tolerance for objective 
+
+25000  1.0e-10 1.0e-10
+
+# create (Perturb) or use existing vertices (Restart): 
+
+# Nelder-Mead Nelder-Mead perturb
+
+# ['0.1', '-0.1', '-0.1']
+
+Nelder-Mead Restart 
+
+7656.589730565046 87907.64535458157 93035.6722671242 127907.79411144188
+
+5.870213052022669 2.353576435128239 23.697541926277374 
+
+6.115756474991902 2.411558085052377 24.18937727929082 
+
+6.2016527777777775 2.3240254629629633 24.56782407407407 
+
+6.175704721793553 2.439566784907979 23.27710051583219 
+
+# Current iteration 10: This is a restart file 
+
+# units:
+real
+# objective function defined:
+# format is:
+# 'matching type', 'sub_folder name',"weight of current objective functions", "cores for running sampling","cores for evaluating objective functions"
+# So,the corresponding python data type is: "string","string", "float","integer","integer"
+# Example:
+isobar mW_300K_1bar 1 12 1 Temp 230 240 250 260 270 280 tol 0 t 2001
+# shell command to launch sampling in each folder :
+# Python subprocess module launch these commands in non-blocking manner in each desired folder:
+# sampling input file names will be subsistuted as: in.force, in.rdf, in.isobar ...
+# Default sampling package is LAMMPS
+# output and restart frequency 
+
+5 5
+
+# This is the guess parameters: 
+
+# stillinger_weber6.289 2.4925 1.8 25.15 1.2 -0.333333333333 7.049556277 0.6022245584 4.0 0.0 0.0
+
+# This is the current best parameters: 
+
+stillinger_weber 6.062773669399963 2.38246760699858 23.99863178680618
+
+# fit (1) and fix (0) parameters: 
+
+1.0 1.0 0.0 1.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+
+# constraints (index lower-bound upper-bound ... ):
+
+None
+
+# set termination criterion: max number of iteration, tolerance for parameters, tolerance for objective 
+
+25000  1.0e-10 1.0e-10
+
+# create (Perturb) or use existing vertices (Restart): 
+
+# Nelder-Mead Nelder-Mead perturb
+
+# ['0.1', '-0.1', '-0.1']
+
+Nelder-Mead Restart 
+
+3806.6810621454497 7656.589730565046 8593.269229257061 18125.4770221826
+
+6.062773669399963 2.38246760699858 23.99863178680618 
+
+5.870213052022669 2.353576435128239 23.697541926277374 
+
+6.087440648933085 2.3906176924645095 23.793473133831895 
+
+6.133536703912619 2.351906616995709 24.265728852743603 
+
+# Current iteration 15: This is a restart file 
+
+# units:
+real
+# objective function defined:
+# format is:
+# 'matching type', 'sub_folder name',"weight of current objective functions", "cores for running sampling","cores for evaluating objective functions"
+# So,the corresponding python data type is: "string","string", "float","integer","integer"
+# Example:
+isobar mW_300K_1bar 1 12 1 Temp 230 240 250 260 270 280 tol 0 t 2001
+# shell command to launch sampling in each folder :
+# Python subprocess module launch these commands in non-blocking manner in each desired folder:
+# sampling input file names will be subsistuted as: in.force, in.rdf, in.isobar ...
+# Default sampling package is LAMMPS
+# output and restart frequency 
+
+5 5
+
+# This is the guess parameters: 
+
+# stillinger_weber6.289 2.4925 1.8 25.15 1.2 -0.333333333333 7.049556277 0.6022245584 4.0 0.0 0.0
+
+# This is the current best parameters: 
+
+stillinger_weber 5.924218542519857 2.3886419971309216 23.57004026327343
+
+# fit (1) and fix (0) parameters: 
+
+1.0 1.0 0.0 1.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+
+# constraints (index lower-bound upper-bound ... ):
+
+None
+
+# set termination criterion: max number of iteration, tolerance for parameters, tolerance for objective 
+
+25000  1.0e-10 1.0e-10
+
+# create (Perturb) or use existing vertices (Restart): 
+
+# Nelder-Mead Nelder-Mead perturb
+
+# ['0.1', '-0.1', '-0.1']
+
+Nelder-Mead Restart 
+
+192.22375395285002 1367.2362006412836 2741.766100158435 3525.4081002752578
+
+5.924218542519857 2.3886419971309216 23.57004026327343 
+
+5.99143571694484 2.386569513538357 23.69212421618783 
+
+6.016588627106595 2.384525737042694 23.855767945628596 
+
+5.925381304411467 2.3741458419519907 23.67626474822907 
+
+# Current iteration 20: This is a restart file 
+
+# units:
+real
+# objective function defined:
+# format is:
+# 'matching type', 'sub_folder name',"weight of current objective functions", "cores for running sampling","cores for evaluating objective functions"
+# So,the corresponding python data type is: "string","string", "float","integer","integer"
+# Example:
+isobar mW_300K_1bar 1 12 1 Temp 230 240 250 260 270 280 tol 0 t 2001
+# shell command to launch sampling in each folder :
+# Python subprocess module launch these commands in non-blocking manner in each desired folder:
+# sampling input file names will be subsistuted as: in.force, in.rdf, in.isobar ...
+# Default sampling package is LAMMPS
+# output and restart frequency 
+
+5 5
+
+# This is the guess parameters: 
+
+# stillinger_weber6.289 2.4925 1.8 25.15 1.2 -0.333333333333 7.049556277 0.6022245584 4.0 0.0 0.0
+
+# This is the current best parameters: 
+
+stillinger_weber 5.926912237936803 2.381955385871884 23.611448454503417
+
+# fit (1) and fix (0) parameters: 
+
+1.0 1.0 0.0 1.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+
+# constraints (index lower-bound upper-bound ... ):
+
+None
+
+# set termination criterion: max number of iteration, tolerance for parameters, tolerance for objective 
+
+25000  1.0e-10 1.0e-10
+
+# create (Perturb) or use existing vertices (Restart): 
+
+# Nelder-Mead Nelder-Mead perturb
+
+# ['0.1', '-0.1', '-0.1']
+
+Nelder-Mead Restart 
+
+14.135926828102356 32.20264332308765 51.72547743069728 192.22375395285002
+
+5.926912237936803 2.381955385871884 23.611448454503417 
+
+5.89430923223219 2.383997656955208 23.51479897264233 
+
+5.891888690786486 2.385166175987781 23.444771741387424 
+
+5.924218542519857 2.3886419971309216 23.57004026327343 
+
+# Current iteration 25: This is a restart file 
+
+# units:
+real
+# objective function defined:
+# format is:
+# 'matching type', 'sub_folder name',"weight of current objective functions", "cores for running sampling","cores for evaluating objective functions"
+# So,the corresponding python data type is: "string","string", "float","integer","integer"
+# Example:
+isobar mW_300K_1bar 1 12 1 Temp 230 240 250 260 270 280 tol 0 t 2001
+# shell command to launch sampling in each folder :
+# Python subprocess module launch these commands in non-blocking manner in each desired folder:
+# sampling input file names will be subsistuted as: in.force, in.rdf, in.isobar ...
+# Default sampling package is LAMMPS
+# output and restart frequency 
+
+5 5
+
+# This is the guess parameters: 
+
+# stillinger_weber6.289 2.4925 1.8 25.15 1.2 -0.333333333333 7.049556277 0.6022245584 4.0 0.0 0.0
+
+# This is the current best parameters: 
+
+stillinger_weber 5.932126489351659 2.384028498140871 23.58511533616424
+
+# fit (1) and fix (0) parameters: 
+
+1.0 1.0 0.0 1.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+
+# constraints (index lower-bound upper-bound ... ):
+
+None
+
+# set termination criterion: max number of iteration, tolerance for parameters, tolerance for objective 
+
+25000  1.0e-10 1.0e-10
+
+# create (Perturb) or use existing vertices (Restart): 
+
+# Nelder-Mead Nelder-Mead perturb
+
+# ['0.1', '-0.1', '-0.1']
+
+Nelder-Mead Restart 
+
+1.2505149928688655 2.006956414348946 6.715887352352394 14.135926828102356
+
+5.932126489351659 2.384028498140871 23.58511533616424 
+
+5.91016095504221 2.384344992418614 23.529242569951535 
+
+5.912310468008818 2.3853287797006617 23.54606060111989 
+
+5.926912237936803 2.381955385871884 23.611448454503417 
+
+# Current iteration 30: This is a restart file 
+
+# units:
+real
+# objective function defined:
+# format is:
+# 'matching type', 'sub_folder name',"weight of current objective functions", "cores for running sampling","cores for evaluating objective functions"
+# So,the corresponding python data type is: "string","string", "float","integer","integer"
+# Example:
+isobar mW_300K_1bar 1 12 1 Temp 230 240 250 260 270 280 tol 0 t 2001
+# shell command to launch sampling in each folder :
+# Python subprocess module launch these commands in non-blocking manner in each desired folder:
+# sampling input file names will be subsistuted as: in.force, in.rdf, in.isobar ...
+# Default sampling package is LAMMPS
+# output and restart frequency 
+
+5 5
+
+# This is the guess parameters: 
+
+# stillinger_weber6.289 2.4925 1.8 25.15 1.2 -0.333333333333 7.049556277 0.6022245584 4.0 0.0 0.0
+
+# This is the current best parameters: 
+
+stillinger_weber 5.918608151980767 2.384323997754457 23.560017695326238
+
+# fit (1) and fix (0) parameters: 
+
+1.0 1.0 0.0 1.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+
+# constraints (index lower-bound upper-bound ... ):
+
+None
+
+# set termination criterion: max number of iteration, tolerance for parameters, tolerance for objective 
+
+25000  1.0e-10 1.0e-10
+
+# create (Perturb) or use existing vertices (Restart): 
+
+# Nelder-Mead Nelder-Mead perturb
+
+# ['0.1', '-0.1', '-0.1']
+
+Nelder-Mead Restart 
+
+0.5081430832152393 1.2505149928688655 1.955274258361121 2.006956414348946
+
+5.918608151980767 2.384323997754457 23.560017695326238 
+
+5.932126489351659 2.384028498140871 23.58511533616424 
+
+5.922038800215931 2.383539052039603 23.57513913576799 
+
+5.91016095504221 2.384344992418614 23.529242569951535 
+
+# Current iteration 35: This is a restart file 
+
+# units:
+real
+# objective function defined:
+# format is:
+# 'matching type', 'sub_folder name',"weight of current objective functions", "cores for running sampling","cores for evaluating objective functions"
+# So,the corresponding python data type is: "string","string", "float","integer","integer"
+# Example:
+isobar mW_300K_1bar 1 12 1 Temp 230 240 250 260 270 280 tol 0 t 2001
+# shell command to launch sampling in each folder :
+# Python subprocess module launch these commands in non-blocking manner in each desired folder:
+# sampling input file names will be subsistuted as: in.force, in.rdf, in.isobar ...
+# Default sampling package is LAMMPS
+# output and restart frequency 
+
+5 5
+
+# This is the guess parameters: 
+
+# stillinger_weber6.289 2.4925 1.8 25.15 1.2 -0.333333333333 7.049556277 0.6022245584 4.0 0.0 0.0
+
+# This is the current best parameters: 
+
+stillinger_weber 5.922182374880677 2.3839616090856373 23.567962929570648
+
+# fit (1) and fix (0) parameters: 
+
+1.0 1.0 0.0 1.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+
+# constraints (index lower-bound upper-bound ... ):
+
+None
+
+# set termination criterion: max number of iteration, tolerance for parameters, tolerance for objective 
+
+25000  1.0e-10 1.0e-10
+
+# create (Perturb) or use existing vertices (Restart): 
+
+# Nelder-Mead Nelder-Mead perturb
+
+# ['0.1', '-0.1', '-0.1']
+
+Nelder-Mead Restart 
+
+0.48323481075384095 1.7410271645623818 1.902318732228823 2.1399228752694937
+
+5.922182374880677 2.3839616090856373 23.567962929570648 
+
+5.920381396284584 2.384088691241689 23.560916564950386 
+
+5.928811784527999 2.3840062017891266 23.579397867299708 
+
+5.919799559614071 2.384203201531517 23.56266610674104 
+

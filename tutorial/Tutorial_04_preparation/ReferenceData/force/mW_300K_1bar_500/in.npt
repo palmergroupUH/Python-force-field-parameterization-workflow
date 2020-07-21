@@ -1,0 +1,75 @@
+# LAMMPS input script
+boundary p p p
+units       real
+atom_style  atomic
+atom_modify map array sort 0 0
+read_data   data.in 
+pair_style  sw
+pair_coeff  * * mW.sw W 
+
+# ----- Variables -----
+variable seed equal 78185
+variable T equal 300.0000000000 
+variable P equal 0.986923 
+
+# ----- Initialize -----
+neighbor 2.0 nsq
+neigh_modify delay 0 every 1 check yes
+timestep 5 # 5 fs   # Fix timestep here
+
+# ----- Log file output -----
+thermo       1000
+thermo_style    custom  time temp press pe ke lx ly lz density
+thermo_modify line multi norm yes flush yes format float %.6f
+
+# ----- Quick run to relax the structure, cooling from 300 K to final temperature T %
+velocity  all create 300 ${seed} 
+fix 1 all npt temp ${T} ${T} 100 iso ${P} ${P} 1000 
+run 1000000 # 5 ns
+reset_timestep 0
+unfix 1  # Remove the fix (important!)
+
+# ---- Custom dump ----
+# Easier to analyze than LAMMP's log file
+variable        engtot equal etotal
+variable        utotal equal pe
+variable        cellx equal lx
+variable        kintemp equal temp
+variable        virpress equal press
+variable        massdensity equal density
+variable        kinetic equal ke
+#fix             thermodata all print 200 "${engtot} ${utotal} ${cellx} ${kintemp} ${virpress} ${massdensity}" file "thermodata.out" screen no
+
+compute TEMP all temp 
+compute Pressure all pressure TEMP  
+compute Virial all pressure NULL virial 
+
+variable Pt equal c_Pressure
+variable Vir equal c_Virial 
+variable Temperature equal c_TEMP 
+variable Volume equal vol  
+
+fix             thermodata all print 1000 "${utotal}" file "Ref.eng" screen no  
+fix             pressdata all print 1000 "${virpress}" file "Ref.press" screen no  
+fix             pressuredata all print 1000 "${Pt}" file "Ref.pressure" screen no
+fix             virialdata all print 1000 "${Vir}" file "Ref.virial" screen no  
+fix             volumedata all print 1000 "${Volume}" file "Ref.volume" screen no  
+fix             temperaturedata all print 1000 "${Temperature}" file "Ref.temp" screen no  
+fix             kineticdata all print 1000 "${kinetic}" file "Ref.kinetic" screen no  
+
+dump 2 all custom 1000 Ref.force id type fx fy fz  
+dump 3 all custom 1000 Ref.coord id type x y z 
+
+dump_modify 2 format float %.7g sort id  
+dump_modify 3 format float %.7g sort id  
+
+
+# DCD trajectory (every 10 ps)
+dump            1 all dcd 10000 traj.dcd
+
+# ----- Temperature/Pressure Controls -----
+fix 1 all npt temp ${T} ${T} 100 iso ${P} ${P} 1000 
+ 
+run 500000 # production 2.5 ns 
+
+write_data data.final

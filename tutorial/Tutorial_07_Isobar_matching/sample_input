@@ -1,0 +1,89 @@
+# units:  
+
+real   
+
+# objective function defined: 
+# format is:  
+# 'matching type', 'sub_folder name',"weight of current objective functions", "cores for running sampling","cores for evaluating objective functions"
+# So,the corresponding python data type is: "string","string", "float","integer","integer"
+# Example: 
+
+isobar mW_300K_1bar 1 24 1 Temp 230 240 250 260 270 280 tol 0 t 2801
+
+# shell command to launch sampling in each folder :  
+# Python subprocess module launch these commands in non-blocking manner in each desired folder:
+# sampling input file names will be subsistuted as: in.force, in.rdf, in.isobar ... 
+# Default sampling package is LAMMPS 
+# Example:
+
+module load intel && srun -n %d -N1 -c1 --mpi=pmi2 lmp_ml_water < in.%s
+
+# output frequency: 
+# first column is for dumping current best parameters/obj 
+# second column is for dumping restart simplex 
+# Example:
+
+5 5 
+
+#stillinger_weber 6.189  2.3925  1.80  23.15  1.20  -0.333333333333 7.049556277  0.6022245584  4.0  0.0 0.0  
+# format is:
+# "force-field type name", "parameter1", "parameter2","parameter2", ...  
+# Example:
+
+stillinger_weber 6.289 2.4925 1.8 25.15 1.2 -0.333333333333 7.049556277 0.6022245584 4.0 0.0 0.0  
+#stillinger_weber 6.189  2.3925  1.80  25.15  1.20  -0.333333333333 7.049556277  0.6022245584  4.0  0.0 0.0 
+
+# fit (1) and fix (0) parameters: 
+# Example:
+
+1 1 0 1 0 0 0 0 0 0 0  
+
+# imposing the bounds on parameters  
+# format is: 
+# (index lower upper)  ... ): 
+# Example:
+None 
+
+# set termination criterion: 
+# format is:
+# max number of iteration, tolerance for parameters,tolerance for objective 
+# Example:
+
+25000 1e-10 1e-10
+
+# format is: 
+# "optimizer name", "optimizer options", "optimizer argument" ... 
+#
+# For Nelder-Mead: N vertex and N-1 fitting parameters (the intrinsic properties of the method)  
+# Choose the two modes: create (perturb) or use existing vertices (restart): 
+# if perturb mode 1 is used: 'Nelder-Mead perturb random/+/- floating_number/100'  
+# each parameters will be "randomly or + or -" percentage of its original value 
+# Example: 
+Nelder-Mead perturb 
+0.1 -0.1 -0.1
+
+
+
+#0.4 0.4 -0.4 0.4 0.4 -0.4 -0.4 -0.4 -0.4
+# if perturb mode 2 is used: 'Nelder-Mead perturb'  
+# then the next row  must be there to provide + or - magnitude for each fitting number mannually    
+# Example:  
+# Nelder-Mead perturb 
+# -0.2 -0.3 0.1 0.4 0.6 0.8 0.2 0.3 -0.2 
+
+# if restart mode is used: 'Nelder-Mead restart' 
+# ----------------  Format explained ---------------
+# The row below will be a row of objective function from each vertice 
+# empty space 
+# each row below corresponding to each vertex with n-1 columns of fitting parameters
+# ------------------------------------------------- 
+# Example: a 6 vertex simplex ( 6 vertex and 5 fitting parameters) 
+# Nelder-Mead restart 
+# 0.4 0.7 0.9 0.5 0.1 0.002  
+#
+# 0.02 0.04 0.09 2.0 3.0 
+# 0.2 5.04 3.09 1.0 0.02
+# 7.2 4.24 1.09 3.0 7.02 
+# 0.1 5.88 9.39 2.3 0.5 
+# 3.3 7.47 1.01 8.4 6.5 
+# 1.3 8.61 4.57 2.9 1.5 

@@ -1,0 +1,54 @@
+# LAMMPS input script
+boundary p p p
+units       real
+atom_style  atomic
+atom_modify map array sort 0 0
+read_data   data.in 
+pair_style  sw
+pair_coeff  * * mW.sw WT 
+
+# ----- Variables -----
+variable seed equal 16825
+variable T equal 260.0000000000 
+variable P equal 986.923 # 1 bar  
+
+# ----- Initialize -----
+neighbor 2.0 nsq
+neigh_modify delay 0 every 1 check yes
+timestep 5 # 5 fs   # Fix timestep here
+
+# ----- Log file output -----
+thermo       10000
+thermo_style    custom  time temp press pe ke lx ly lz density vol
+thermo_modify line multi norm yes flush yes format float %.6f
+
+# ----- equilibruate -------- 
+#velocity  all create ${T} ${seed} 
+fix 1 all npt temp ${T} ${T} 100 iso ${P} ${P} 1000 
+run 1000000 # 5 ns
+#reset_timestep 0
+#unfix 1  # Remove the fix (important!)
+
+# ---- Custom dump ----
+# Easier to analyze than LAMMP's log file
+
+variable        engtot equal etotal
+variable        utotal equal pe
+variable        cellx equal lx
+variable        kintemp equal temp
+variable        virpress equal press
+variable        massdensity equal density
+variable 		volume equal vol 
+
+fix             thermodata all print 1000 "${massdensity}" file "Ref.density" screen no
+
+
+# DCD trajectory (every 0.5 ps)
+#dump            1 all dcd 5000 traj.dcd
+
+# ----- Temperature/Pressure Controls -----
+fix 1 all npt temp ${T} ${T} 100 iso ${P} ${P} 1000 
+ 
+run 2000000  # production 10 ns 
+
+write_data data.final

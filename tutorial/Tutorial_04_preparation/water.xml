@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--This XML file is designed for use with Foyer in the Molecular Simulation and Design Framework (github.com/mosdef-hub).-->
+<ForceField>
+  <!--XML units: kJ/mol for energies, nm for lengths, and radians for angles.-->
+  <!--For conversion from K to kJ/mol, we use: 1.38064852E-23*6.022140857E23/1000.-->
+  <AtomTypes>
+    <Type name="cg water" class="cg H20" element="_H2O" mass="18.0153" def="[_H2O]" desc="coarse-grained water" doi="https://doi.org/10.1038/s41467-018-08222-6"/>
+  </AtomTypes>
+  <HarmonicBondForce>
+    <!--TraPPE uses fixed bond lengths. Force constants shown here come from GAFF, limited to three significant figures.-->
+  </HarmonicBondForce>
+  <HarmonicAngleForce/>
+  <RBTorsionForce>
+    <!--OPLS style torsions have been converted to Ryckaert-Bellemans style.-->
+  </RBTorsionForce>
+</ForceField>
