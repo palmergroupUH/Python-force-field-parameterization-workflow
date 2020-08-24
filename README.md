@@ -46,15 +46,10 @@ git clone https://github.com/jingxiangguo/Python-force-field-parameterization-wo
 ```
 cd Python-force-field-parameterization-workflow
 ``` 
-* install the package to your conda environment
+* install the package to your conda environment 
 
 ```
-pip install .
-```
-* or you can install the package in an editable mode (For furture development):
-
-```
-pip install -e .  
+pip install -e .
 ```
 * A Fortran library "fortranAPI" come with the package.
 Inside Fortran routines are C-interoperable, and thus can be
