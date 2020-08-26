@@ -78,7 +78,12 @@ optimization workflow
 
 ```
 
-* Run some unit-testings to further check the installation
+* Run some unit-testings to further check the installation 
+(You may need to install pytest) 
+
+```
+conda install pytest
+```
 
 ```
 pytest optimizer/
@@ -88,6 +93,8 @@ pytest fortranAPI/
 ```
 
 ## Examples:
+
+* Check out the tutorial folder for more details
 
 ## References: 
 
