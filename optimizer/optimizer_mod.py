@@ -23,18 +23,18 @@ This module contains a parent class "set_optimizer" that will be inherited
 by other optimizer modules: e.g. gradient_free.py, gradient.py, etc, which may 
 contains classes of optimization algorithm.
 
-The purposes of this module are two fold:
+The purposes of this module are threefold:
 
-1. provide a general interface for parsing a input file for optimization
-setting. Initialize, and check the user-provided parameters
+1. provide a general library interfaces for parsing an input file for
+optimization settings. Initialize, and check the user-provided parameters
 from the input file and pass them to other classes through inheritance.
 
 2. provide some utility functions for the output of the restart information,
 optimized parameters, and objective functions. These methods will also be
 inherited by other classes.
 
-3. provide some utility functions for a optimizer to perform operation like 
-bounds, constraints, grouping of optimized parameters.
+3. provide some utility functions for a optimizer to perform useful
+operations like bounds, constraints, grouping of optimized parameters.
 
 """
 

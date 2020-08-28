@@ -51,13 +51,12 @@ cd Python-force-field-parameterization-workflow
 ```
 pip install -e .
 ```
-* A Fortran library "fortranAPI" come with the package.
+* A Fortran library "fortranAPI" directory comes with the package.
 Inside Fortran routines are C-interoperable, and thus can be
 callable through Python using ctypes modules.
 
-* Note that this Fortran library is independent. 
-It provides some trajectory readers 
-and radial distribution function calculations routines.
+* Note that this Fortran library can be used independently. 
+It is used to accelerate some numerical intensive calculations in Python 
 
 * To compile it, run GNU "make" command. 
 
@@ -94,7 +93,7 @@ pytest fortranAPI/
 
 ## Examples:
 
-* Check out the tutorial folder for more details
+* Check out the "tutorial" directory for more details
 
 ## References: 
 
