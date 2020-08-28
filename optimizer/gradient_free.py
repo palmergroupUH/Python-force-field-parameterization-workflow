@@ -20,7 +20,8 @@
 
 """
 This module contains an implementation of Nelder-Mead simplex algorithm
-Check the method "run_optimization" for implementation details
+Check the method "run_optimization" in the "NelderMeadSimplex" class below 
+for more implementation details
 
 Example
 -------
