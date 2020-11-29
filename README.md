@@ -11,7 +11,7 @@
     - sampling methods/force-field potential functional forms
     - optimization algorithms
 
-## Softwares required:
+## Software required:
 
 * A compiled MD/MC packages exectuable (LAMMPS is already supported)
 

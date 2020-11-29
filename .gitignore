@@ -5,7 +5,6 @@ Python_optimization_workflow.egg-info/
 *.mod
 *.so
 *.a
-test/
 
 # ignore all python related files and folders:
 __init__.py
