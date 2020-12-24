@@ -136,9 +136,10 @@ class set_optimizer:
 
         # since restart file requires all the content,
         # read the content before skipped
+        
         self.non_optimizer_data_dict = IO.input_file.parse(input_file,
                                                            0,
-                                                           skipped,
+                                                           skipped + 1,
                                                            comment=True)
 
         # read the conetnt for optimizer
@@ -547,7 +548,7 @@ class set_optimizer:
     def check_guess_parameters(self):
 
         # The number of guess parameter should be equal to fitted + fixed
-
+        
         if (self.guess_parameter.size != self.fit_and_fix.size):
 
             self.logger.error("ERROR: The number of guess parameters "
@@ -608,11 +609,11 @@ class set_optimizer:
 
                     array[self.bounds_fit_index[i]] = lower
 
-                # evaluate the expression: lower bound < para
+                # evaluate the expression: upper bound < para
 
                 if (eval(bounds_upper_expr)):
 
-                    # lower bound is indeed < para
+                    # upper bound is indeed < para
 
                     pass
 
@@ -713,12 +714,12 @@ class set_optimizer:
                       "This is a restart file \n\n" % itera)
 
         for i, line in enumerate(self.non_optimizer_data_dict.keys()):
-
+            
             content[i+1] = (" ".join(para for para in
                                      self.non_optimizer_data_dict[line]) +
                             "\n")
 
-        return content, i
+        return content, i+1
 
     def optimizer_restart_content(self, itera, best_para):
 
@@ -732,15 +733,18 @@ class set_optimizer:
                                            self.dump_para) +
                                   "\n\n")
 
-        content[total_lines+3] = "# This is the guess parameters: \n\n"
+        content[total_lines+3] = "# Guess parameters: \n\n"
 
-        content[total_lines+4] = ("# " + " ".join(self.ptype_lst) +
+        content[total_lines+4] = ("# " + " ".join(self.ptype_lst) +  " " + 
                                   " ".join(str(ele) for ele in
                                            self.guess_parameter) +
                                   "\n\n")
-        content[total_lines+5] = "# This is the current best parameters: \n\n"
+        content[total_lines+5] = "# Current best parameters: \n\n"
+    
+        best_and_fixed = self.group_fixed(best_para) 
+
         content[total_lines+6] = (" ".join(self.ptype_lst) + " " +
-                                  " ".join(str(para) for para in best_para) +
+                                  " ".join(str(para) for para in best_and_fixed) +
                                   "\n\n")
 
         content[total_lines+7] = "# fit (1) and fix (0) parameters: \n\n"
@@ -766,8 +770,8 @@ class set_optimizer:
                                    "{0:.1e}".format(self.para_tol) +
                                    "\n\n")
 
-        content[total_lines+13] = ("# create (Perturb) or use existing"
-                                   " vertices (Restart): \n\n")
+        content[total_lines+13] = ("# create (perturb) or use existing"
+                                   " vertices (restart): \n\n")
 
         content[total_lines+14] = ("# " + self.optimizer_type +
                                    " " +
@@ -780,7 +784,7 @@ class set_optimizer:
                                             self.optimizer_input) +
                                    "\n\n")
 
-        content[total_lines+16] = self.optimizer_type + " Restart \n\n"
+        content[total_lines+16] = self.optimizer_type + " restart \n\n"
 
         return content
 
