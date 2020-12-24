@@ -71,11 +71,11 @@ def optimize_main():
 
     # global variables:
     # main_logger: an object that defines the log file output
-    # ( you don't have to do anything with it )
+    # (you don't have to do anything with it)
 
-    # TOTAL_CORES: Number of cores assigned by slurm scheduler
-    # INPUT: a string of given input file name
-    # JOBID: a combination of Slurm job id and user-provided id
+    # TOTAL_CORES: The number of cores assigned by slurm scheduler
+    # INPUT: The string of given input file name
+    # JOBID: The combination of Slurm job id and user-provided id
     (main_logger,
      TOTAL_CORES,
      INPUT,

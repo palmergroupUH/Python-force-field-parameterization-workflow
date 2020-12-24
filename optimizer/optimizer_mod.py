@@ -733,15 +733,18 @@ class set_optimizer:
                                            self.dump_para) +
                                   "\n\n")
 
-        content[total_lines+3] = "# This is the guess parameters: \n\n"
+        content[total_lines+3] = "# Guess parameters: \n\n"
 
-        content[total_lines+4] = ("# " + " ".join(self.ptype_lst) +
+        content[total_lines+4] = ("# " + " ".join(self.ptype_lst) +  " " + 
                                   " ".join(str(ele) for ele in
                                            self.guess_parameter) +
                                   "\n\n")
-        content[total_lines+5] = "# This is the current best parameters: \n\n"
+        content[total_lines+5] = "# Current best parameters: \n\n"
+    
+        best_and_fixed = self.group_fixed(best_para) 
+
         content[total_lines+6] = (" ".join(self.ptype_lst) + " " +
-                                  " ".join(str(para) for para in best_para) +
+                                  " ".join(str(para) for para in best_and_fixed) +
                                   "\n\n")
 
         content[total_lines+7] = "# fit (1) and fix (0) parameters: \n\n"

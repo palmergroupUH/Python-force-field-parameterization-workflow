@@ -1,14 +1,14 @@
-# A data-driven approach to systematically and reproduciably optimize force-field parameters 
+# A data-driven approach to systematically and reproduciably optimize force field parameters 
 
 <img src="workflow.png" width="800">
 
 ## Features:
 * Efficient adoption of parallism to perform sampling with a parallel simulator
-* Diverse choices of force-field functional forms supported by the chosen simulator
+* Diverse choices of force field functional forms supported by the chosen simulator
 * Flexible inclusions of distinct physical properties as reference data
 * Modular design to facilitate the exstensions with user-defined:
     - objective functional forms
-    - sampling methods/force-field potential functional forms
+    - sampling methods/force field potential functional forms
     - optimization algorithms
 
 ## Software required:
@@ -72,7 +72,7 @@ optimize -h
 usage: optimize [-h] -c CORES -i INPUT -j JOB [-m MODE] [-Ref REFERENCEDATA]
                 [-prep PREPSYSTEM]
 
-This is a Python software package implementing a force-field parameters
+This is a Python software package implementing a force field parameters
 optimization workflow
 
 ```
