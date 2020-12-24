@@ -70,8 +70,7 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
                  optimize_mode="min",
                  nm_type="adaptive"):
 
-        # built-in restart/output filename:
-
+        # built-in restart/output filename (modify if needed):
         self.log_file = "log.restart"
         self.current_file = "current.restart"
         self.best_obj_file = "best_objective.txt"
@@ -477,7 +476,7 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
                                         .astype(np.float64))
 
             self.sort_simplex(f_vertices, vertices_mat)
-
+           
         except (ValueError, TypeError):
 
             self.logger.error("ERROR: When Nelder-Mead restart mode "
@@ -829,15 +828,16 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
                                self.sigma *
                                (self.vertices_sorted[i+1, :] -
                                 self.best_vertex))
-
+            
             self.constrain(shrinked_vertex)
 
             shrinked_vertices[i, :] = shrinked_vertex
-
-        self.logger.info("The contracted vertex ( outisde/insdie )"
+            
+            
+        self.logger.info("The contracted vertex (outisde/inside) "
                          "is worse than the worst vertex ...\n\n"
                          "Perform shrinkage ... \n\n")
-
+        
         func_vertices = self.compute_func_vertices(shrinked_vertices,
                                                    choice="shrink")
 
@@ -1050,7 +1050,7 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
                              "and program exits ! \n")
             
             return True
-
+        
         if (abs(np.amax(self.func_vertices_sorted) /
                 np.amin(self.func_vertices_sorted)-1) <
                 self.obj_tol):
@@ -1065,10 +1065,10 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
                              "and program exits ! \n")
 
             return True
-
+        
         unique_obj, repeat = np.unique(self.func_vertices_sorted,
                                        return_counts=True)
-
+        
         if (unique_obj.size < self.func_vertices_sorted.size):
 
             self.logger.info("Convergence criterion 3 is met: "
@@ -1088,8 +1088,8 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
                              "program exits ! \n")
 
             return True
-
-        if (np.all(np.std(self.func_vertices_sorted) < self.para_tol)):
+        
+        if (np.all(np.std(self.vertices_sorted, axis=0) < self.para_tol)):
 
             sci_para = "{0:.1e}".format(self.para_tol)
 
@@ -1175,3 +1175,136 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
                                     simplex)
 
         return None
+
+
+
+
+# a gradient-free optimizer: Particle_swarm_optimization 
+
+
+class ParticleSwarm(optimizer.optimizer_mod.set_optimizer):
+
+    def __init__(self,
+                 input_files,
+                 f_objective,
+                 logname=None,
+                 skipped=None,
+                 output=None,
+                 optimize_mode="min",
+                 pso_type="in_progress"):
+
+        # built-in restart/output filename:
+
+        self.log_file = "log.restart"
+        self.current_file = "current.restart"
+        self.best_obj_file = "best_objective.txt"
+        self.best_parameters_file = "best_parameters.txt"
+
+        # Inherit the following from parent class:
+        # "set_optimizer" in "optimizer_mod.py"
+
+        super().__init__(input_files,
+                         logname=logname,
+                         skipped=skipped,
+                         optimize_mode=optimize_mode)
+
+        # variables and methods Inherited from set_optimizer:
+
+        # 0. dump frequecny self.dump_para:
+        # 1. self.ptype_lst:
+        # (list of string defining the type of parameters)
+
+        # 1. guess parameters (self.guess_parameter)
+        # 2. parameters to be fitted or fixed (self.fit_and_fix)
+        # 3. index of guess parameters to be constrained
+        # (self.bounds_fit_index)
+        # 4. constraints bounds (self.bounds)
+        # 5. the type of optimizer (self.optimizer_type)
+        # 5. mode of Nelder-Mead simplex: "perturb" or "restart"
+        # (self.optimizer_argument)
+        # 6. contents of optimizer (self.optimizer_input)
+
+        # Methods Inherited:
+        # 1. self.constrain()
+        # 2. self.group_fixed()
+        # 3. self.dump_restart()
+        # 4. self.dump_best_parameters()
+        # 5. self.dump_best_objective()
+
+        # computing objective function
+
+        self.f_obj = f_objective
+
+        # Define the following Nelder-Mead variables:
+        # self.vertices_sorted: all vertices that have been sorted
+        # self.func_vertices_sorted: all function values sorted at vertices
+        # self.num_vertices: number of vertices
+        # self.worst
+        # self.best
+        # self.lousy
+
+        # set the destination folders addresses for output and restart files
+        self.set_the_dumping_address(output)
+
+        # check optimizer type and its mode:
+
+        self.parse_Nelder_Mead_Input()
+
+        # initialize simplex
+
+        self.initialize_simplex()
+
+        # default: adaptive nelder-mead simplex coefficient
+
+        self.TransformationCoeff(nm_type)
+
+        # print Nelder-Mead optimization initialization
+
+        self.print_Nelder_Mead_simplex_log()
+
+    # check the general input:
+
+    def set_the_dumping_address(self, output):
+
+        if (output is None):
+
+            self.output_address = os.getcwd()
+
+            self.restart_address = os.getcwd()
+
+        else:
+
+            self.output_address = os.path.join(output, "Output")
+
+            self.restart_address = os.path.join(output, "Restart")
+
+        return None
+
+
+    def parse_PSO_Input(self):
+
+        if (self.optimizer_type == "PSO"):
+
+            # at least 1 argument needed for Nelder-Mead:
+            # either restart or perturb
+
+            if (len(self.optimizer_argument) == 1):
+
+                self.logger.error("ERROR: Missing a mode argument:"
+                                  "'Peturb' or 'restart'")
+
+                sys.exit("Check errors in log file !")
+
+            self.optimizer_mode = self.optimizer_argument[1]
+
+        else:
+
+            self.logger.error("Optimizer: %s not recognized ! "
+                              "Please choose optimizer: "
+                              "'Nelder-Mead' " % self.optimizer_type)
+
+            sys.exit("Check errors in log file !")
+
+        return None 
+
+ 
