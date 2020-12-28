@@ -7,7 +7,6 @@ Python_optimization_workflow.egg-info/
 *.a
 
 # ignore all python related files and folders:
-__init__.py
 *.pyc
 __pycache__/
 

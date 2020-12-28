@@ -280,4 +280,8 @@ class load(useful_tools):
 
         penalty = self.penalty(self.tol, self.num_T, predict_density_ary)
 
+        self.logger.info(30*"--" + "\n\n")
+        self.logger.info("Isobar matching Penalty: %d " % penalty)
+        self.logger.info(30*"--" + "\n\n")
+
         return self.obj_weight*(sum_sqr_dens*penalty + sum_sqr_dens)
