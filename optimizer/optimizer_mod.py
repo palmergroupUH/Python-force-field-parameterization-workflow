@@ -603,7 +603,7 @@ class set_optimizer:
                 else:
 
                     self.logger.info("Lower constraints are applied...")
-                    self.logger.info("Parameter: " +
+                    self.logger.info("Parameter (%d th): " % (self.bounds_index[i] + 1) +
                                      str(array[self.bounds_fit_index[i]]) +
                                      "  is constrained to " + str(lower))
 
@@ -621,7 +621,7 @@ class set_optimizer:
 
                     self.logger.info("Upper constraints are applied...")
 
-                    self.logger.info("Parameter: " +
+                    self.logger.info("Parameter (%d th): " % (self.bounds_index[i] + 1) +
                                      str(array[self.bounds_fit_index[i]]) +
                                      "  is constrained to " + str(upper))
 
