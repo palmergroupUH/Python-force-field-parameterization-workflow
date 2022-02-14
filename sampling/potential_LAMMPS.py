@@ -44,6 +44,13 @@ import sys
 # Local library:
 
 # Third-parties library:
+# GMSO
+import mbuild as mb
+import gmso
+from gmso.external.convert_mbuild import from_mbuild
+from gmso.formats.top import write_top
+from gmso.formats import write_lammpsdata
+from unyt import unyt_quantity 
 
 
 # This module defines the force field output format for LAMMPS
@@ -64,7 +71,8 @@ def choose_lammps_potential(ptype, force_field_parameters):
                       "tersoff/table": __pair_style_tersoff,
                       "stillinger_weber": __pair_style_sw,
                       "lj/cut": __pair_style_lj_cut,
-                      "buck/coul/long": __pair_style_buck_coul_long
+                      "buck/coul/long": __pair_style_buck_coul_long, 
+                      "lj/smooth/linear": __pair_style_lj_smooth_linear_GMSO
                       }
 
     # raise the errors and exit the program if
@@ -112,20 +120,51 @@ def propagate_force_field(wk_folder_tple, output_force_field_dict):
             for output_file in output_force_field_dict:
 
                 output_content = output_force_field_dict[output_file]
+                if (len(output_content) > 1 
+                    and output_content[0] == "TurnOnGMSO"):
+                    pass 
+                    #write_lammpsdata = output_content[1] 
+                    #filename = os.path.join(each_folder, output_file)
+                    #write_lammpsdata(output_content[2], filename, output_content[-1]) 
 
-                filename = os.path.join(each_folder, output_file)
+                else: 
+                    filename = os.path.join(each_folder, output_file)
 
-                with open(filename, "w") as output:
+                    with open(filename, "w") as output:
 
-                    for line in output_content:
+                        for line in output_content:
 
-                        output.write(line)
+                            output.write(line)
 
     potential_logger.debug("function:propagate_force_field "
                            " returned successfully; force-field parameters ")
 
     return None
 
+
+def __pair_style_lj_smooth_linear_GMSO(ptype, force_field_parameters):
+
+    # output dictionary:
+    # Generate a small box of Argon atoms using mBuild
+
+    # output dictionary :
+    force_field_dict = {}
+
+    ar = mb.Compound(name='Ar')
+
+    # (1.3954 g/cm^3 / 39.948 amu) * (3 nm) ^3
+    packed_system = mb.fill_box(
+        compound=ar,
+        n_compounds=512,
+        box=mb.Box([4.22187, 4.22187, 4.22187]),
+    )
+
+    # Convert system to a backend object
+    top = from_mbuild(packed_system)
+    lamp_data_name = "ar.lmp"
+    force_field_dict[lamp_data_name] = ("TurnOnGMSO", write_lammpsdata, top, "atomic") 
+     
+    return force_field_dict 
 
 def __pair_style_lj_cut(ptype, force_field_parameters):
 
