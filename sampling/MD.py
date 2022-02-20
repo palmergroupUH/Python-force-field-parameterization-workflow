@@ -11,7 +11,7 @@
 
 # Python-force-field-parameterization-workflow is free software;
 # you can redistribute it and/or modify it under the terms of the
-# MIT License 
+# MIT License
 
 # You should have received a copy of the MIT License along with the package.
 
@@ -19,19 +19,15 @@
 
 
 """
-This module contains a class to invoke LAMMPS
-optimization.
+This module contains a class defining how to invoke a MD simulators
+to compute predicted properties once a new set of optimized
+force-field parameter is generated.
 
-The executable "optimize" is invoked from the command-line interface. It
-will call "main()", which then call the function "optimize_main".
-Some other command-line programs related to this package can be developed,
-and invoked in an anaglous fashion.
-
-
-The "optimize_main" is composed of several instances from different modules,
-whic are laid out in procedure-oriented fashion so that the user can
-easily understand the whole workflow. This should make the customization
-more transparant.
+The major task of this class is:
+1. Taking the shell command from the input files
+processing it, and determine the number of cores for each job
+2. Generate and store a list of folders where predicted properties are computed 
+3. Loop over each folder and invoke the shell command to run simulations 
 
 """
 
@@ -45,14 +41,15 @@ import os
 # customized library:
 from sampling.potential_LAMMPS import choose_lammps_potential,\
                                       propagate_force_field
-
+# Third-party library 
+import gmso 
 # Launch and Terminate sampling jobs
 
 
 class run_as_subprocess:
 
-    """Invoke external sampling softwares of choice to calculate properties
-       using force-field potential in every iterations:
+    """Invoke external sampling softwares of choice to compute predicted properties
+       using the optimzied force-field parameters in every iterations:
 
     -Parameters:
     ------------
@@ -176,6 +173,17 @@ class run_as_subprocess:
         return None
 
     @classmethod
+    def useGMSO(cls, content_dict, force_field_parameters):
+        logger = logging.getLogger(__name__)
+        all_keys = list(content_dict.keys()) 
+        if (content_dict[all_keys[0]][0] == "TurnOnGMSO"):
+            top = content_dict[all_keys[0]][2]
+            write_lammpsdata = content_dict[all_keys[0]][1] 
+            set_params = content_dict[all_keys[0]][4]
+            top = set_params(top, force_field_parameters) 
+            write_lammpsdata(top, all_keys[0], content_dict[all_keys[0]][3])
+
+    @classmethod
     def run(cls, type_name, force_field_parameters):
 
         """
@@ -218,6 +226,7 @@ class run_as_subprocess:
             for folder in cls.wk_folder_list_cls[indx]:
 
                 os.chdir(folder)
+                cls.useGMSO(output_content_dict, force_field_parameters)
 
                 each_matching_type = cls.Launch_Jobs(cmd, each_matching_type)
 

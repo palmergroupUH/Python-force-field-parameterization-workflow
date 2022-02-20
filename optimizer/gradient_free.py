@@ -725,7 +725,7 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
         self.logger.info("Current Best objective: "
                          "%.10f\n\n" % self.best)
 
-        self.logger.info("Current Best parameters: " +
+        self.logger.info("Current Best parameters (fitting parameters only): " +
                          " ".join(str(para) for para in
                                   self.vertices_sorted[self.best_indx, :]) +
                          "\n\n")
@@ -733,7 +733,7 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
         self.logger.info("Current Worst objective: "
                          "%.10f\n\n" % self.worst)
 
-        self.logger.info("Current Worst parameters: " +
+        self.logger.info("Current Worst parameters (fitting parameters only): " +
                          " ".join(str(para) for para in
                                   self.vertices_sorted[self.worst_indx, :]) +
                          "\n")
@@ -750,28 +750,31 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
 
     def Centroid(self):
 
+        # compute the geometric center
+
+        self.logger.info("Compute the centroid  ...\n")
+
         # select all vertices except the worst vertex
 
         except_worst = self.vertices_sorted[:self.worst_indx, :]
 
-        self.logger.info("Compute the centroid  ...\n")
-
-        # compute the geometric center
-
         return np.mean(except_worst, axis=0)
 
     def Reflect(self, centroid):
+
+        self.logger.info("Perform reflection ... \n")
 
         reflected_vetertex = centroid + self.alpha*(centroid -
                                                     self.worst_vertex)
 
         self.constrain(reflected_vetertex)
 
-        self.logger.info("Perform reflection ... \n")
 
         return reflected_vetertex
 
     def Accept(self, vertex, func_vertex, transform_keyword):
+
+        self.logger.info("%s is accepted ... \n" % transform_keyword)
 
         # subsitude worst vertex
 
@@ -779,40 +782,39 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
 
         self.func_vertices_sorted[self.worst_indx] = func_vertex
 
-        self.logger.info("%s is accepted ... \n" % transform_keyword)
 
     def Expand(self, reflected, centroid):
+
+        self.logger.info("Perform expansion to further explore "
+                         "the reflected direction ... \n")
 
         expanded_vertex = centroid + self.kai*(reflected - centroid)
 
         self.constrain(expanded_vertex)
 
-        self.logger.info("Perform expansion to further explore "
-                         "the reflected direction ... \n")
-
         return expanded_vertex
 
     def Outside_Contract(self, centroid, reflected_vertex):
-
-        outside_vertex = centroid + self.gamma*(reflected_vertex - centroid)
-
-        self.constrain(outside_vertex)
 
         self.logger.info("Reflected vertex is in between "
                          "second-worst vertex and worst vertex ...\n"
                          "Perform outside contraction ... \n\n")
 
+        outside_vertex = centroid + self.gamma*(reflected_vertex - centroid)
+
+        self.constrain(outside_vertex)
+
         return outside_vertex
 
     def Inside_Contract(self, centroid):
 
-        inside_vertex = centroid + self.gamma*(self.worst_vertex - centroid)
-
-        self.constrain(inside_vertex)
-
         self.logger.info("Reflected vertex is worst than that "
                          "of the worst vertex ...\n\n"
                          "Perform inside contraction ... \n\n")
+
+        inside_vertex = centroid + self.gamma*(self.worst_vertex - centroid)
+
+        self.constrain(inside_vertex)
 
         return inside_vertex
 
@@ -863,6 +865,9 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
 
         for itera in range(self.max_iteration):
 
+            # Terminate if no transformation is performed
+            self.transform = 0 
+
             # terminate the optimization if
             # "self.check_convergence_status" returns True:
 
@@ -897,6 +902,8 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
                 self.converged = self.check_convergence_status(itera)
 
                 self.optimization_output(itera)
+    
+                self.transform += 1 
 
                 continue
 
@@ -926,6 +933,8 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
 
                     self.optimization_output(itera)
 
+                    self.transform += 1 
+
                     continue
 
                 else:
@@ -944,6 +953,8 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
                     self.converged = self.check_convergence_status(itera)
 
                     self.optimization_output(itera)
+                    
+                    self.transform += 1 
 
                     continue
 
@@ -979,6 +990,8 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
 
                         self.optimization_output(itera)
 
+                        self.transform += 1 
+
                         continue
 
                     else:
@@ -988,6 +1001,8 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
                         self.converged = self.check_convergence_status(itera)
 
                         self.optimization_output(itera)
+
+                        self.transform += 1 
 
                         continue
 
@@ -1019,6 +1034,8 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
 
                         self.optimization_output(itera)
 
+                        self.transform += 1 
+
                         continue
 
                     else:
@@ -1029,7 +1046,21 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
 
                         self.optimization_output(itera)
 
+                        self.transform += 1 
+
                         continue
+
+            if (self.transform == 0): 
+
+                self.logger.info("ERROR: None of the following criteria are met: \n" 
+                                  "1. The reflected vertex is not accepted.\n"
+                                  "2. The expansion criterion is not met.\n"
+                                  "3. The inside/outside contraction criterion is not met \n")
+
+                self.logger.info("This is may be due to the constraints applied. \n"
+                                 "You may try different perturbations or initial guess") 
+
+                break
 
 # =============================================================================
 #                             Termination criterion
@@ -1146,10 +1177,13 @@ class NelderMeadSimplex(optimizer.optimizer_mod.set_optimizer):
                                  self.best)
 
         # inherited from optimizer_mod
+
+        all_paras = self.group_fixed(self.best_vertex)
+
         self.dump_best_parameters(itera,
                                   self.best_parameters_file,
                                   self.output_address,
-                                  self.best_vertex)
+                                  all_paras)
 
         return None
 

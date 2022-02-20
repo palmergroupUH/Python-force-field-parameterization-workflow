@@ -347,10 +347,12 @@ class useful_tools:
              num_columns) = IO.reader.get_lines_columns(predicted_data)
 
             if (predicted_num_lines != ref_force_lines):
-
+                
                 time.sleep(5)
 
-                self.logger.info("time elapsed: %d ... \n" % count_time)
+                self.logger.info("time elapsed: %d ... \n"
+                                 "current Predicted line is %d \n "
+                                 "Reference lines need to be %d \n" % (count_time, predicted_num_lines, ref_force_lines))
 
                 count_time += 5
 
