@@ -141,6 +141,16 @@ def propagate_force_field(wk_folder_tple, output_force_field_dict):
 
     return None
 
+def set_lj_smooth_linear_GMSO(top, force_field_parameters):
+    ff = gmso.ForceField('ar.xml')
+    ar_type = ff.atom_types['Ar'] 
+    ar_type.parameters["sigma"] = unyt_quantity(force_field_parameters[1], 'angstrom')
+    ar_type.parameters["epsilon"] = unyt_quantity(force_field_parameters[0], "6.947694845464e-21*J") 
+    for site in top.sites:
+        site.atom_type = ar_type
+
+    top.update_topology()
+    return top 
 
 def __pair_style_lj_smooth_linear_GMSO(ptype, force_field_parameters):
 
@@ -162,7 +172,8 @@ def __pair_style_lj_smooth_linear_GMSO(ptype, force_field_parameters):
     # Convert system to a backend object
     top = from_mbuild(packed_system)
     lamp_data_name = "ar.lmp"
-    force_field_dict[lamp_data_name] = ("TurnOnGMSO", write_lammpsdata, top, "atomic") 
+    force_field_dict[lamp_data_name] = ("TurnOnGMSO", write_lammpsdata, top, "atomic", set_lj_smooth_linear_GMSO)
+
      
     return force_field_dict 
 

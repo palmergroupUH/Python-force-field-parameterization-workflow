@@ -43,7 +43,6 @@ from sampling.potential_LAMMPS import choose_lammps_potential,\
                                       propagate_force_field
 # Third-party library 
 import gmso 
-from unyt import unyt_quantity
 # Launch and Terminate sampling jobs
 
 
@@ -177,20 +176,12 @@ class run_as_subprocess:
     def useGMSO(cls, content_dict, force_field_parameters):
         logger = logging.getLogger(__name__)
         all_keys = list(content_dict.keys()) 
-        if (len(all_keys) == 1 and content_dict[all_keys[0]][0] == "TurnOnGMSO"):
-            top = content_dict[all_keys[0]][2] 
-            
-            ff = gmso.ForceField('ar.xml')
-            ar_type = ff.atom_types['Ar']
-            ar_type.parameters["sigma"] = unyt_quantity(force_field_parameters[1], 'angstrom')
-            ar_type.parameters["epsilon"] = unyt_quantity(force_field_parameters[0], "6.947694845464e-21*J") 
-            for site in top.sites:
-                site.atom_type = ar_type
-
-            top.update_topology()
-            lamp_data_name = "ar.lmp" 
+        if (content_dict[all_keys[0]][0] == "TurnOnGMSO"):
+            top = content_dict[all_keys[0]][2]
             write_lammpsdata = content_dict[all_keys[0]][1] 
-            write_lammpsdata(top, lamp_data_name, content_dict[all_keys[0]][3])
+            set_params = content_dict[all_keys[0]][4]
+            top = set_params(top, force_field_parameters) 
+            write_lammpsdata(top, all_keys[0], content_dict[all_keys[0]][3])
 
     @classmethod
     def run(cls, type_name, force_field_parameters):
